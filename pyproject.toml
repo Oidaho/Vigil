@@ -1,0 +1,21 @@
+[tool.poetry]
+package-mode = false
+name = "Vigil"
+version = "0.1.0"
+description = ""
+authors = ["Oidaho <76991612+Oidaho@users.noreply.github.com>"]
+license = "GPL-3.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+vk-api = "^11.9.9"
+loguru = "^0.7.3"
+peewee = "^3.17.8"
+pydantic-settings = "^2.6.1"
+pytz = "^2024.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
