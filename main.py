@@ -16,10 +16,10 @@ def setup_logger() -> None:
         colorize=True,
         format=" | ".join(
             (
-                "<green>{time:YYYY-MM-DD HH:mm:ss}</green>"
-                "<red>{module}</red>"
-                "<level>{level}</level>"
-                "{message}"
+                "<green>{time:YYYY-MM-DD HH:mm:ss}</green>",
+                "<red>{module}</red>",
+                "<level>{level}</level>",
+                "{message}",
             )
         ),
         level=log_level,
