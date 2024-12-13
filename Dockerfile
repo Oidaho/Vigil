@@ -11,6 +11,4 @@ RUN poetry install --no-dev --no-interaction --no-ansi
 
 COPY . .
 
-EXPOSE 8080
-
 CMD [ "poetry", "run", "python", "main.py" ]
