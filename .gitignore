@@ -1,4 +1,4 @@
-docker-compose.yml.dev
+dev.docker-compose.yml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
