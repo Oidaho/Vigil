@@ -19,7 +19,7 @@ class Bot:
         self.api = session.get_api()
 
     def _get_callback_handler(self):
-        CallbackHandler.bot = self.api
+        CallbackHandler.api = self.api
         return CallbackHandler
 
     def run(self, port=8080):
