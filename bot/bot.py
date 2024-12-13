@@ -77,7 +77,7 @@ class CallbackHandler(BaseHTTPRequestHandler):
         logger.debug(
             f"Response has been sent with confirmation code '{confirmation_code}'."
         )
-        self.wfile.write(confirmation_code)
+        self.wfile.write(confirmation_code.encode())
 
     def _handle_event(self, payload):
         logger.debug(payload)
