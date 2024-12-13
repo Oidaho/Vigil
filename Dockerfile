@@ -4,7 +4,7 @@ WORKDIR /
 
 RUN pip install poetry
 
-COPY ./pyptoject.toml .
+COPY ./pyproject.toml .
 
 RUN poetry config virtualenvs.create false
 RUN poetry install --no-dev --no-interaction --no-ansi
