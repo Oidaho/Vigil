@@ -33,6 +33,10 @@ class Bot:
 class CallbackHandler(BaseHTTPRequestHandler):
     api: Any
 
+    # overriding for disable default logging
+    # TODO: In the future, figure out how to redirect the output of logs
+    def log_message(self, formant, *args): ...
+
     def do_POST(self):
         if self.path != "/callback":
             self.send_response(404)
