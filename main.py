@@ -1,10 +1,15 @@
 # ./VK-Vigil/main.py
 
 import sys
+
 from loguru import logger
+
+from bot import Bot
+from config import configs
 
 
 def setup_logger() -> None:
+    log_level = "DEBUG" if configs.debug_mode else "INFO"
     logger.remove()
     logger.add(
         sys.stdout,
@@ -17,14 +22,19 @@ def setup_logger() -> None:
                 "{message}"
             )
         ),
-        level="DEBUG",
+        level=log_level,
     )
 
 
-def main():
+def main() -> None:
     """Program entry point."""
-
     setup_logger()
+
+    vigil = Bot(
+        acces_token=configs.bot.acces_token,
+        api_version=configs.bot.api_version,
+    )
+    vigil.run()
 
 
 if __name__ == "__main__":
