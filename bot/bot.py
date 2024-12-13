@@ -2,7 +2,6 @@
 
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from typing import Any
 
 from loguru import logger
 from vk_api import VkApi
@@ -19,10 +18,10 @@ class Bot:
         self.api = session.get_api()
 
     def _get_callback_handler(self):
-        CallbackHandler.api = self.api
+        CallbackHandler.bot = self
         return CallbackHandler
 
-    def run(self, port=8080):
+    def run(self, port: int = 8080):
         server_address = ("", port)
         httpd = HTTPServer(server_address, self._get_callback_handler())
 
@@ -31,7 +30,7 @@ class Bot:
 
 
 class CallbackHandler(BaseHTTPRequestHandler):
-    api: Any
+    bot: Bot
 
     # overriding for disable default logging
     # TODO: In the future, figure out how to redirect the output of logs
@@ -66,7 +65,7 @@ class CallbackHandler(BaseHTTPRequestHandler):
         return payload["secret"] == configs.bot.secret_key
 
     def _send_confirmation_response(self):
-        confirmation_code = self.api.groups.getCallbackConfirmationCode(
+        confirmation_code = self.bot.api.groups.getCallbackConfirmationCode(
             group_id=configs.bot.group_id
         )["code"]
 
