@@ -8,3 +8,4 @@ class BotSettings(BaseSettings):
 
     group_id: int
     acces_token: str
+    api_version: str = "5.199"
