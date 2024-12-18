@@ -30,11 +30,13 @@ def main() -> None:
     """Program entry point."""
     setup_logger()
 
-    vigil = Bot(
+    bot = Bot(
         acces_token=configs.bot.acces_token,
         api_version=configs.bot.api_version,
+        group_id=configs.bot.group_id,
     )
-    vigil.run()
+
+    bot.run()
 
 
 if __name__ == "__main__":
