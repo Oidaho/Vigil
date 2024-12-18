@@ -1,87 +1,43 @@
 # ./VK-Vigil/bot/bot.py
 
-import json
-from http.server import BaseHTTPRequestHandler, HTTPServer
-
 from loguru import logger
 from vk_api import VkApi
+from vk_api.bot_longpoll import VkBotLongPoll
 
 from config import configs
 
 
 class Bot:
-    def __init__(self, acces_token: str, api_version: str) -> None:
-        session = VkApi(
+    def __init__(self, acces_token: str, api_version: str, group_id: int) -> None:
+        self._make_session(acces_token, api_version)
+        self._get_longpoll(group_id)
+        logger.info(f"{configs.project_name} ready to work.")
+
+    def _make_session(self, acces_token: str, api_version: str):
+        logger.info("Making HTTP session...")
+        self.session = VkApi(
             token=acces_token,
             api_version=api_version,
         )
-        self.api = session.get_api()
 
-    def _get_callback_handler(self):
-        CallbackHandler.bot = self
-        return CallbackHandler
-
-    def run(self, port: int = 8080):
-        server_address = ("", port)
-        httpd = HTTPServer(server_address, self._get_callback_handler())
-
-        logger.info(f"Starting server on port {port}...")
-        httpd.serve_forever()
-
-
-class CallbackHandler(BaseHTTPRequestHandler):
-    bot: Bot
-
-    # overriding for disable default logging
-    # TODO: In the future, figure out how to redirect the output of logs
-    def log_message(self, formant, *args): ...
-
-    def do_POST(self):
-        if self.path != "/callback":
-            self.send_response(404)
-            self.end_headers()
-            return
-
-        content_length = int(self.headers["Content-Length"])
-        post_data = self.rfile.read(content_length)
-        payload = json.loads(post_data)
-
-        # Проверяем подлинность запроса
-        if not self._verify_request(payload):
-            self.send_response(403)
-            self.end_headers()
-            return
-
-        if payload.get("type") == "confirmation":
-            logger.info("Server confirmation request has been received.")
-            self._send_confirmation_response()
-        else:
-            self._handle_event(payload)
-
-    def _verify_request(self, payload):
-        if "secret" not in payload:
-            return False
-
-        return payload["secret"] == configs.bot.secret_key
-
-    def _send_confirmation_response(self):
-        confirmation_code = self.bot.api.groups.getCallbackConfirmationCode(
-            group_id=configs.bot.group_id
-        )["code"]
-
-        self.send_response(200)
-        self.send_header("Content-Type", "text/plain")
-        self.end_headers()
-
-        logger.debug(
-            f"Response has been sent with confirmation code '{confirmation_code}'."
+    def _get_longpoll(self, group_id: int):
+        logger.info("Creating longpoll instance...")
+        self.longpoll = VkBotLongPoll(
+            vk=self.session,
+            wait=5,
+            group_id=group_id,
         )
-        self.wfile.write(confirmation_code.encode())
 
-    def _handle_event(self, payload):
-        logger.debug(payload)
+    @property
+    def api(self):
+        return self.session.get_api()
 
-        self.send_response(200)
-        self.send_header("Content-Type", "text/plain")
-        self.end_headers()
-        self.wfile.write(b"ok")
+    def run(self):
+        logger.info("Starting listening longpoll server")
+        expected_events = self.longpoll.listen
+
+        logger.info("Awaiting events...")
+        for raw_event in expected_events():
+            if raw_event:
+                logger.info("New event recived.")
+                logger.debug(f"{raw_event}")
