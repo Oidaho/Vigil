@@ -18,6 +18,81 @@ class EventType(Enum):
     REACTION = "message_reaction_event"
 
 
+class Peer:
+    def __init__(self, data: Payload, api: VkApi) -> None:
+        if attempt := data.get("peer_id") is None:
+            if attempt := data["message"].get("peer_id") is None:
+                raise ValueError("Error when getting the peer ID.")
+
+        self.id: int = attempt
+        self.cid: int = self.id - int(2e9)
+        self.__api = api
+
+    @property
+    def name(self) -> str:
+        if not hasattr(self, "__name"):
+            peer_info = self.__api.messages.getConversationsById(peer_ids=self.id)
+            peer_info = peer_info["items"][0]["chat_settings"]
+            self.__name = peer_info.get("title")
+
+        return self.__name
+
+    def __repr__(self) -> str:
+        return f"Peer({self.id})"
+
+
+class User:
+    def __init__(self, data: Payload, api: VkApi) -> None:
+        if attempt := data.get("reacted_id") is None:
+            if attempt := data.get("user_id") is None:
+                if attempt := data["message"].get("from_id") is None:
+                    raise ValueError("Error when getting the user ID.")
+
+        self.id = attempt
+        self.__api = api
+
+    @property
+    def full_name(self) -> str:
+        if not hasattr(self, "__full_name"):
+            user_info = self.__api.users.get(user_ids=self.id)
+            user_info = user_info[0]
+            self.__full_name = " ".join(
+                [user_info.get("first_name"), user_info.get("last_name")]
+            )
+
+        return self.__full_name
+
+    @property
+    def first_name(self) -> str:
+        if not hasattr(self, "__first_name"):
+            user_info = self.__api.users.get(user_ids=self.id)
+            user_info = user_info[0]
+            self.__first_name = user_info.get("first_name")
+
+        return self.__first_name
+
+    @property
+    def last_name(self) -> str:
+        if not hasattr(self, "__last_name"):
+            user_info = self.__api.users.get(user_ids=self.id)
+            user_info = user_info[0]
+            self.__last_name = user_info.get("last_name")
+
+        return self.__last_name
+
+    @property
+    def nick(self) -> str | None:
+        if not hasattr(self, "__nick"):
+            user_info = self.__api.users.get(user_ids=self.id, fields=["domain"])
+            user_info = user_info[0]
+            self.__nick = user_info.get("domain")
+
+        return self.__nick
+
+    def __repr__(self) -> str:
+        return f"User({self.id})"
+
+
 class Reply:
     pass
 
@@ -128,81 +203,6 @@ class ClientInfo:
 
     def __repr__(self) -> str:
         return f"ClientInfo(lang={self.lang})"
-
-
-class Peer:
-    def __init__(self, data: Payload, api: VkApi) -> None:
-        if attempt := data.get("peer_id") is None:
-            if attempt := data["message"].get("peer_id") is None:
-                raise ValueError("Error when getting the peer ID.")
-
-        self.id: int = attempt
-        self.cid: int = self.id - int(2e9)
-        self.__api = api
-
-    @property
-    def name(self) -> str:
-        if not hasattr(self, "__name"):
-            peer_info = self.__api.messages.getConversationsById(peer_ids=self.id)
-            peer_info = peer_info["items"][0]["chat_settings"]
-            self.__name = peer_info.get("title")
-
-        return self.__name
-
-    def __repr__(self) -> str:
-        return f"Peer({self.id})"
-
-
-class User:
-    def __init__(self, data: Payload, api: VkApi) -> None:
-        if attempt := data.get("reacted_id") is None:
-            if attempt := data.get("user_id") is None:
-                if attempt := data["message"].get("from_id") is None:
-                    raise ValueError("Error when getting the user ID.")
-
-        self.id = attempt
-        self.__api = api
-
-    @property
-    def full_name(self) -> str:
-        if not hasattr(self, "__full_name"):
-            user_info = self.__api.users.get(user_ids=self.id)
-            user_info = user_info[0]
-            self.__full_name = " ".join(
-                [user_info.get("first_name"), user_info.get("last_name")]
-            )
-
-        return self.__full_name
-
-    @property
-    def first_name(self) -> str:
-        if not hasattr(self, "__first_name"):
-            user_info = self.__api.users.get(user_ids=self.id)
-            user_info = user_info[0]
-            self.__first_name = user_info.get("first_name")
-
-        return self.__first_name
-
-    @property
-    def last_name(self) -> str:
-        if not hasattr(self, "__last_name"):
-            user_info = self.__api.users.get(user_ids=self.id)
-            user_info = user_info[0]
-            self.__last_name = user_info.get("last_name")
-
-        return self.__last_name
-
-    @property
-    def nick(self) -> str | None:
-        if not hasattr(self, "__nick"):
-            user_info = self.__api.users.get(user_ids=self.id, fields=["domain"])
-            user_info = user_info[0]
-            self.__nick = user_info.get("domain")
-
-        return self.__nick
-
-    def __repr__(self) -> str:
-        return f"User({self.id})"
 
 
 class Context:
