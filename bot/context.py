@@ -128,13 +128,13 @@ class User:
 
 
 class Context:
-    __attribute_info = {
-        "client_info": {"key": "client_info", "class": ClientInfo},
-        "peer": {"key": "peer", "class": Peer},
-        "user": {"key": "user", "class": User},
-        "message": {"key": "message", "class": Message},
-        "payload": {"key": "payload", "class": Payload},
-        "reaction": {"key": "reaction_id", "class": Reaction},
+    __attribute_class = {
+        "client_info": ClientInfo,
+        "peer": Peer,
+        "user": User,
+        "reaction": Reaction,
+        "message": Message,
+        "payload": Payload,
     }
 
     def __init__(self, raw: Payload, api: VkApi) -> None:
@@ -157,12 +157,11 @@ class Context:
         elif self.event_type == EventType.REACTION:
             self.__extract_attribute("reaction", raw["object"])
 
-        delattr(self, "__attribute_info")
+        delattr(self, "__attribute_class")
 
     def __extract_attribute(self, attr_name: str, event_object: Payload) -> None:
         value = event_object.pop(attr_name, default=event_object)
-        attr = self.__attribute_info[attr_name]["key"]
-        setattr(self, attr, self.__attribute_info[attr_name]["class"](value, self.api))
+        setattr(self, attr_name, self.__attribute_class[attr_name](value, self.api))
 
     def __repr__(self) -> str:
         return f"EventContext(id={self.event_id}, type={self.event_type}, group={self.group_id})"
