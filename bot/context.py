@@ -27,7 +27,15 @@ class Reaction:
 
 
 class Button:
-    pass
+    def __init__(self, data: Payload, api: VkApi) -> None:
+        if attempt := data.get("event_id") is None:
+            raise ValueError("Error when getting the button data.")
+
+        self.id: str = attempt
+        self.payload: Payload = data.get("payload", {})
+
+    def __repr__(self) -> str:
+        return f"Button(id={self.id})"
 
 
 class ClientInfo:
