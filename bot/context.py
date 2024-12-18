@@ -93,8 +93,29 @@ class User:
         return f"User({self.id})"
 
 
+# At the moment, we are not interested in having nested reply and fwd inside Reply.
+# As is peer_id accounting. If the message is a reply - peer, the id matches the parent message.
+# And we are not interested in fwd messages. There's nothing to do with them.
 class Reply:
-    pass
+    def __init__(self, data: Payload, api: VkApi) -> None:
+        if attempt := data.get("conversation_message_id") is None:
+            raise ValueError("Error when getting the reply message cmID.")
+
+        self.cmid: int = attempt
+        self.__peer_id: int = data.get("peer_id")  # Forced use
+        self.__api = api
+
+    @property
+    def text(self) -> str:
+        if not hasattr(self, "__text"):
+            message_info = self.__api.messages.getByConversationMessageId(
+                peer_id=self.__peer_id,
+                conversation_message_ids=self.cmid,
+            )
+            message_info = message_info["items"][0]
+            self.__text = message_info.get("text")
+
+        return self.__text
 
 
 class Message:
