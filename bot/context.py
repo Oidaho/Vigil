@@ -102,11 +102,11 @@ class Context:
         self.event_id: str = raw["event_id"]
         self.group_id: int = raw["group_id"]
 
-        self.__extract_attribute("client_info", raw["object"])
         self.__extract_attribute("peer", raw["object"])
         self.__extract_attribute("user", raw["object"])
 
         if self.event_type == EventType.MESSAGE:
+            self.__extract_attribute("client_info", raw["object"])
             self.__extract_attribute("message", raw["object"])
 
         elif self.event_type == EventType.BUTTON:
