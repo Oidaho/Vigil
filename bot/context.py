@@ -57,7 +57,7 @@ class User:
     @property
     def first_name(self) -> str:
         if not hasattr(self, "first_name"):
-            user_info = self._api.users.get(user_ids=self.id)
+            user_info = self.api.users.get(user_ids=self.id)
             user_info = user_info[0]
             self.first_name = user_info.get("first_name")
 
@@ -66,7 +66,7 @@ class User:
     @property
     def last_name(self) -> str:
         if not hasattr(self, "last_name"):
-            user_info = self._api.users.get(user_ids=self.id)
+            user_info = self.api.users.get(user_ids=self.id)
             user_info = user_info[0]
             self.last_name = user_info.get("last_name")
 
@@ -75,7 +75,7 @@ class User:
     @property
     def nick(self) -> str:
         if not hasattr(self, "nick"):
-            user_info = self._api.users.get(user_ids=self.id, fields=["domain"])
+            user_info = self.api.users.get(user_ids=self.id, fields=["domain"])
             user_info = user_info[0]
             self.nick = user_info.get("domain")
 
