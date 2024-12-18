@@ -1,8 +1,9 @@
+from enum import Enum
+from typing import Dict
+
+from loguru import logger
 from vk_api import VkApi
 from vk_api.bot_longpoll import VkBotEvent
-from enum import Enum
-from loguru import logger
-from typing import Dict
 
 Payload = Dict[str, int | str | dict]
 
