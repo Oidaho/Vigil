@@ -18,8 +18,81 @@ class EventType(Enum):
     REACTION = "message_reaction_event"
 
 
-class Message:
+class Reply:
     pass
+
+
+class Message:
+    def __init__(self, data: Payload, api: VkApi) -> None:
+        if attempt := data.get("message") is None:
+            raise ValueError("Error when getting the message data.")
+
+        self.id: int = attempt.get("id")
+        self.cmid: int = attempt.get("conversation_message_id")
+        self.__peer_id: int = attempt.get("peer_id")  # Forced use
+        self.__api = api
+
+    @property
+    def text(self) -> str:
+        if not hasattr(self, "__text"):
+            message_info = self.__api.messages.getByConversationMessageId(
+                peer_id=self.__peer_id,
+                conversation_message_ids=self.cmid,
+            )
+            message_info = message_info["items"][0]
+            self.__text = message_info.get("text")
+
+        return self.__text
+
+    @property
+    def attachments(self) -> List[str]:
+        if not hasattr(self, "__attachments"):
+            message_info = self.__api.messages.getByConversationMessageId(
+                peer_id=self.__peer_id,
+                conversation_message_ids=self.cmid,
+            )
+            message_info = message_info["items"][0]
+
+            self.__attachments = []
+            for attachment in message_info.get("attachments", []):
+                self.__attachments.append(attachment.get("type"))
+
+            if message_info.get("geo", False):
+                self.__attachments.append("geo")
+
+        return self.__attachments
+
+    @property
+    def reply(self) -> Reply | None:
+        if not hasattr(self, "__reply"):
+            message_info = self.__api.messages.getByConversationMessageId(
+                peer_id=self.__peer_id,
+                conversation_message_ids=self.cmid,
+            )
+            message_info = message_info["items"][0]
+
+            reply = message_info.get("reply_message")
+            self.__reply = reply if reply is None else Reply(reply, self.__api)
+
+        return self.__reply
+
+    @property
+    def forward(self) -> List[Reply]:
+        if not hasattr(self, "__forward"):
+            message_info = self.__api.messages.getByConversationMessageId(
+                peer_id=self.__peer_id,
+                conversation_message_ids=self.cmid,
+            )
+            message_info = message_info["items"][0]
+
+            self.__forward = []
+            for reply in message_info.get("fwd_messages"):
+                self.__forward.append(Reply(reply, self.__api))
+
+        return self.__forward
+
+    def __repr__(self) -> str:
+        return f"Message(cmid={self.cmdid})"
 
 
 class Reaction:
@@ -69,12 +142,12 @@ class Peer:
 
     @property
     def name(self) -> str:
-        if not hasattr(self, "full_name"):
+        if not hasattr(self, "__name"):
             peer_info = self.__api.messages.getConversationsById(peer_ids=self.id)
             peer_info = peer_info["items"][0]["chat_settings"]
-            self.name = peer_info.get("title")
+            self.__name = peer_info.get("title")
 
-        return self.name
+        return self.__name
 
     def __repr__(self) -> str:
         return f"Peer({self.id})"
@@ -92,41 +165,41 @@ class User:
 
     @property
     def full_name(self) -> str:
-        if not hasattr(self, "full_name"):
+        if not hasattr(self, "__full_name"):
             user_info = self.__api.users.get(user_ids=self.id)
             user_info = user_info[0]
-            self.full_name = " ".join(
+            self.__full_name = " ".join(
                 [user_info.get("first_name"), user_info.get("last_name")]
             )
 
-        return self.full_name
+        return self.__full_name
 
     @property
     def first_name(self) -> str:
-        if not hasattr(self, "first_name"):
+        if not hasattr(self, "__first_name"):
             user_info = self.__api.users.get(user_ids=self.id)
             user_info = user_info[0]
-            self.first_name = user_info.get("first_name")
+            self.__first_name = user_info.get("first_name")
 
-        return self.first_name
+        return self.__first_name
 
     @property
     def last_name(self) -> str:
-        if not hasattr(self, "last_name"):
+        if not hasattr(self, "__last_name"):
             user_info = self.__api.users.get(user_ids=self.id)
             user_info = user_info[0]
-            self.last_name = user_info.get("last_name")
+            self.__last_name = user_info.get("last_name")
 
-        return self.last_name
+        return self.__last_name
 
     @property
-    def nick(self) -> str:
-        if not hasattr(self, "nick"):
+    def nick(self) -> str | None:
+        if not hasattr(self, "__nick"):
             user_info = self.__api.users.get(user_ids=self.id, fields=["domain"])
             user_info = user_info[0]
-            self.nick = user_info.get("domain")
+            self.__nick = user_info.get("domain")
 
-        return self.nick
+        return self.__nick
 
     def __repr__(self) -> str:
         return f"User({self.id})"
