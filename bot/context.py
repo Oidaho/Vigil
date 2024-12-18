@@ -266,7 +266,7 @@ class Context:
         return f"EventContext(id={self.event_id}, type={self.event_type}, group={self.group_id})"
 
 
-def get_context(self, event: VkBotEvent, api: VkApi) -> Context:
+def get_context(event: VkBotEvent, api: VkApi) -> Context:
     try:
         ctx = Context(event.raw, api)
 
