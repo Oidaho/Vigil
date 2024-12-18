@@ -34,7 +34,55 @@ class Peer:
 
 
 class User:
-    pass
+    def __init__(self, data: Payload, api: VkApi) -> None:
+        if attempt := data.get("reacted_id") is None:
+            if attempt := data.get("user_id") is None:
+                if attempt := data["message"].get("from_id") is None:
+                    raise ValueError("Error when getting the user ID.")
+
+        self.id = attempt
+        self.api = api
+
+    @property
+    def full_name(self):
+        if not hasattr(self, "full_name"):
+            user_info = self._api.users.get(user_ids=self.id)
+            user_info = user_info[0]
+            self.full_name = " ".join(
+                [user_info.get("first_name"), user_info.get("last_name")]
+            )
+
+        return self.full_name
+
+    @property
+    def first_name(self) -> str:
+        if not hasattr(self, "first_name"):
+            user_info = self._api.users.get(user_ids=self.id)
+            user_info = user_info[0]
+            self.first_name = user_info.get("first_name")
+
+        return self.first_name
+
+    @property
+    def last_name(self) -> str:
+        if not hasattr(self, "last_name"):
+            user_info = self._api.users.get(user_ids=self.id)
+            user_info = user_info[0]
+            self.last_name = user_info.get("last_name")
+
+        return self.last_name
+
+    @property
+    def nick(self) -> str:
+        if not hasattr(self, "nick"):
+            user_info = self._api.users.get(user_ids=self.id, fields=["domain"])
+            user_info = user_info[0]
+            self.nick = user_info.get("domain")
+
+        return self.nick
+
+    def __repr__(self) -> str:
+        return f"User({self.id})"
 
 
 class Context:
