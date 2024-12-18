@@ -60,12 +60,12 @@ class Peer:
 
         self.id: int = attempt
         self.cid: int = self.id - int(2e9)
-        self.api = api
+        self.__api = api
 
     @property
     def name(self) -> str:
         if not hasattr(self, "full_name"):
-            peer_info = self.api.messages.getConversationsById(peer_ids=self.id)
+            peer_info = self.__api.messages.getConversationsById(peer_ids=self.id)
             peer_info = peer_info["items"][0]["chat_settings"]
             self.name = peer_info.get("title")
 
@@ -83,12 +83,12 @@ class User:
                     raise ValueError("Error when getting the user ID.")
 
         self.id = attempt
-        self.api = api
+        self.__api = api
 
     @property
     def full_name(self) -> str:
         if not hasattr(self, "full_name"):
-            user_info = self._api.users.get(user_ids=self.id)
+            user_info = self.__api.users.get(user_ids=self.id)
             user_info = user_info[0]
             self.full_name = " ".join(
                 [user_info.get("first_name"), user_info.get("last_name")]
@@ -99,7 +99,7 @@ class User:
     @property
     def first_name(self) -> str:
         if not hasattr(self, "first_name"):
-            user_info = self.api.users.get(user_ids=self.id)
+            user_info = self.__api.users.get(user_ids=self.id)
             user_info = user_info[0]
             self.first_name = user_info.get("first_name")
 
@@ -108,7 +108,7 @@ class User:
     @property
     def last_name(self) -> str:
         if not hasattr(self, "last_name"):
-            user_info = self.api.users.get(user_ids=self.id)
+            user_info = self.__api.users.get(user_ids=self.id)
             user_info = user_info[0]
             self.last_name = user_info.get("last_name")
 
@@ -117,7 +117,7 @@ class User:
     @property
     def nick(self) -> str:
         if not hasattr(self, "nick"):
-            user_info = self.api.users.get(user_ids=self.id, fields=["domain"])
+            user_info = self.__api.users.get(user_ids=self.id, fields=["domain"])
             user_info = user_info[0]
             self.nick = user_info.get("domain")
 
@@ -157,16 +157,12 @@ class Context:
         elif self.event_type == EventType.REACTION:
             self.__extract_attribute("reaction", raw["object"])
 
-        self.__delete_unused()
+        delattr(self, "__attribute_info")
 
     def __extract_attribute(self, attr_name: str, event_object: Payload) -> None:
         value = event_object.pop(attr_name, default=event_object)
         attr = self.__attribute_info[attr_name]["key"]
         setattr(self, attr, self.__attribute_info[attr_name]["class"](value, self.api))
-
-    def __delete_unused(self) -> None:
-        delattr(self, "__attribute_info")
-        delattr(self, "api")
 
     def __repr__(self) -> str:
         return f"EventContext(id={self.event_id}, type={self.event_type}, group={self.group_id})"
