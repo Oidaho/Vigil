@@ -30,7 +30,26 @@ class Button:
 
 
 class Peer:
-    pass
+    def __init__(self, data: Payload, api: VkApi) -> None:
+        if attempt := data.get("peer_id") is None:
+            if attempt := data["message"].get("peer_id") is None:
+                raise ValueError("Error when getting the peer ID.")
+
+        self.id = attempt
+        self.cid = self.id - int(2e9)
+        self.api = api
+
+    @property
+    def name(self):
+        if not hasattr(self, "full_name"):
+            peer_info = self.api.messages.getConversationsById(peer_ids=self.id)
+            peer_info = peer_info["items"][0]["chat_settings"]
+            self.name = peer_info.get("title")
+
+        return self.name
+
+    def __repr__(self) -> str:
+        return f"Peer({self.id})"
 
 
 class User:
