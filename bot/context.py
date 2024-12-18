@@ -126,6 +126,9 @@ class Context:
         delattr(self, "__attribute_info")
         delattr(self, "api")
 
+    def __repr__(self) -> str:
+        return f"EventContext(id={self.event_id}, type={self.event_type}, group={self.group_id})"
+
 
 def get_context(self, event: VkBotEvent, api: VkApi) -> Context:
     try:
