@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Dict
+from typing import Dict, List
 
 from loguru import logger
 from vk_api import VkApi
@@ -8,14 +8,14 @@ from vk_api.bot_longpoll import VkBotEvent
 Payload = Dict[str, int | str | dict]
 
 
+class LangType(Enum):
+    RUSSIAN = 0
+
+
 class EventType(Enum):
     MESSAGE = "message_new"
     BUTTON = "message_event"
     REACTION = "message_reaction_event"
-
-
-class ClientInfo:
-    pass
 
 
 class Message:
@@ -30,18 +30,32 @@ class Button:
     pass
 
 
+class ClientInfo:
+    def __init__(self, data: Payload, api: VkApi) -> None:
+        if attempt := data.get("client_info") is None:
+            raise ValueError("Error when getting the client info.")
+
+        self.lang: LangType = LangType(attempt.get("lang_id"))
+        self.inline_keyboard: bool = attempt.get("inline_keyboard")
+        self.keyboard: bool = attempt.get("keyboard")
+        self.avalibleactions: List[str] = attempt.get("button_actions")
+
+    def __repr__(self) -> str:
+        return f"ClientInfo(lang={self.lang})"
+
+
 class Peer:
     def __init__(self, data: Payload, api: VkApi) -> None:
         if attempt := data.get("peer_id") is None:
             if attempt := data["message"].get("peer_id") is None:
                 raise ValueError("Error when getting the peer ID.")
 
-        self.id = attempt
-        self.cid = self.id - int(2e9)
+        self.id: int = attempt
+        self.cid: int = self.id - int(2e9)
         self.api = api
 
     @property
-    def name(self):
+    def name(self) -> str:
         if not hasattr(self, "full_name"):
             peer_info = self.api.messages.getConversationsById(peer_ids=self.id)
             peer_info = peer_info["items"][0]["chat_settings"]
@@ -64,7 +78,7 @@ class User:
         self.api = api
 
     @property
-    def full_name(self):
+    def full_name(self) -> str:
         if not hasattr(self, "full_name"):
             user_info = self._api.users.get(user_ids=self.id)
             user_info = user_info[0]
