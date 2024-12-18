@@ -23,7 +23,12 @@ class Message:
 
 
 class Reaction:
-    pass
+    def __init__(self, data: Payload, api: VkApi) -> None:
+        self.id: int = data.get("reaction_id", 0)
+        self.is_removed: bool = not bool(self.id)
+
+    def __repr__(self) -> str:
+        return f"Reaction(id={self.id})"
 
 
 class Button:
