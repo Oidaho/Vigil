@@ -1,16 +1,22 @@
 # ./VK-Vigil/bot/bot.py
 
+import time
+from concurrent.futures import ThreadPoolExecutor
+
 from loguru import logger
 from vk_api import VkApi
 from vk_api.bot_longpoll import VkBotLongPoll
 
 from config import configs
 
+from .context import Context, get_context
+
 
 class Bot:
     def __init__(self, acces_token: str, api_version: str, group_id: int) -> None:
         self._make_session(acces_token, api_version)
         self._get_longpoll(group_id)
+        self.thread_pool = ThreadPoolExecutor(max_workers=10)
         logger.info(f"{configs.project_name} ready to work.")
 
     def _make_session(self, acces_token: str, api_version: str):
@@ -28,16 +34,26 @@ class Bot:
             group_id=group_id,
         )
 
+    def _handle_event(self, context: Context) -> None:
+        # Placeholder
+        time.sleep(3)
+        logger.info(f"Event {context.event_id} handled.")
+        pass
+
     @property
     def api(self):
         return self.session.get_api()
 
     def run(self):
-        logger.info("Starting listening longpoll server")
-        expected_events = self.longpoll.listen
+        logger.info("Starting listening longpoll server.")
+        recived_events = self.longpoll.listen
 
         logger.info("Awaiting events...")
-        for raw_event in expected_events():
-            if raw_event:
+        for event in recived_events():
+            if event:
                 logger.info("New event recived.")
-                logger.debug(f"{raw_event}")
+                ctx = get_context(event, self.api)
+                logger.info(f"Context: {ctx}")
+                logger.debug(event.raw)
+
+                self.thread_pool.submit(self._handle_event, ctx)
