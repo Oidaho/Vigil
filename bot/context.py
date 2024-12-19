@@ -20,9 +20,9 @@ class EventType(Enum):
 
 class Peer:
     def __init__(self, data: Payload, api: VkApi) -> None:
-        if attempt := data.get("peer_id") is None:
-            if attempt := data["message"].get("peer_id") is None:
-                raise ValueError("Error when getting the peer ID.")
+        if (attempt := data.get("peer_id")) is None:
+            if (attempt := data["message"].get("peer_id")) is None:
+                raise AttributeError("Error when getting the peer ID")
 
         self.id: int = attempt
         self.cid: int = self.id - int(2e9)
@@ -38,15 +38,15 @@ class Peer:
         return self.__name
 
     def __repr__(self) -> str:
-        return f"Peer({self.id})"
+        return f"Peer(id={self.id})"
 
 
 class User:
     def __init__(self, data: Payload, api: VkApi) -> None:
-        if attempt := data.get("reacted_id") is None:
-            if attempt := data.get("user_id") is None:
-                if attempt := data["message"].get("from_id") is None:
-                    raise ValueError("Error when getting the user ID.")
+        if (attempt := data.get("reacted_id")) is None:
+            if (attempt := data.get("user_id")) is None:
+                if (attempt := data["message"].get("from_id")) is None:
+                    raise AttributeError("Error when getting the user ID")
 
         self.id = attempt
         self.__api = api
@@ -90,7 +90,7 @@ class User:
         return self.__nick
 
     def __repr__(self) -> str:
-        return f"User({self.id})"
+        return f"User(id={self.id})"
 
 
 # At the moment, we are not interested in having nested reply and fwd inside Reply.
@@ -98,9 +98,10 @@ class User:
 # And we are not interested in fwd messages. There's nothing to do with them.
 class Reply:
     def __init__(self, data: Payload, api: VkApi) -> None:
-        if attempt := data.get("conversation_message_id") is None:
-            raise ValueError("Error when getting the reply message cmID.")
+        if (attempt := data.get("conversation_message_id")) is None:
+            raise AttributeError("Error when getting the reply message cmID")
 
+        self.id: int = attempt.get("id")
         self.cmid: int = attempt
         self.__peer_id: int = data.get("peer_id")  # Forced use
         self.__api = api
@@ -117,15 +118,18 @@ class Reply:
 
         return self.__text
 
+    def __repr__(self) -> str:
+        return f"Reply(id={self.cmid})"
+
 
 class Message:
     def __init__(self, data: Payload, api: VkApi) -> None:
-        if attempt := data.get("message") is None:
-            raise ValueError("Error when getting the message data.")
+        if (attempt := data.get("conversation_message_id")) is None:
+            raise AttributeError("Error when getting the message data")
 
-        self.id: int = attempt.get("id")
-        self.cmid: int = attempt.get("conversation_message_id")
-        self.__peer_id: int = attempt.get("peer_id")  # Forced use
+        self.cmid: int = attempt
+        self.id: int = data.get("id")
+        self.__peer_id: int = data.get("peer_id")  # Forced use
         self.__api = api
 
     @property
@@ -188,7 +192,7 @@ class Message:
         return self.__forward
 
     def __repr__(self) -> str:
-        return f"Message(cmid={self.cmdid})"
+        return f"Message(cmid={self.cmid})"
 
 
 class Reaction:
@@ -202,11 +206,12 @@ class Reaction:
 
 class Button:
     def __init__(self, data: Payload, api: VkApi) -> None:
-        if attempt := data.get("event_id") is None:
-            raise ValueError("Error when getting the button data.")
+        if (attempt := data.get("event_id")) is None:
+            raise AttributeError("Error when getting the button data")
 
         self.id: str = attempt
         self.payload: Payload = data.get("payload", {})
+        self.cmid: int = data.get("conversation_message_id")
 
     def __repr__(self) -> str:
         return f"Button(id={self.id})"
@@ -214,8 +219,8 @@ class Button:
 
 class ClientInfo:
     def __init__(self, data: Payload, api: VkApi) -> None:
-        if attempt := data.get("client_info") is None:
-            raise ValueError("Error when getting the client info.")
+        if (attempt := data.get("client_info")) is None:
+            raise AttributeError("Error when getting the client info.")
 
         self.lang: LangType = LangType(attempt.get("lang_id"))
         self.inline_keyboard: bool = attempt.get("inline_keyboard")
@@ -223,17 +228,17 @@ class ClientInfo:
         self.avalibleactions: List[str] = attempt.get("button_actions")
 
     def __repr__(self) -> str:
-        return f"ClientInfo(lang={self.lang})"
+        return f"ClientInfo(lang={self.lang.name})"
 
 
 class Context:
     __attribute_class = {
-        "client_info": ClientInfo,
+        "client": ClientInfo,
         "peer": Peer,
         "user": User,
         "reaction": Reaction,
         "message": Message,
-        "payload": Payload,
+        "button": Button,
     }
 
     def __init__(self, raw: Payload, api: VkApi) -> None:
@@ -247,35 +252,35 @@ class Context:
         self.__extract_attribute("user", raw["object"])
 
         if self.event_type == EventType.MESSAGE:
-            self.__extract_attribute("client_info", raw["object"])
+            self.__extract_attribute("client", raw["object"])
             self.__extract_attribute("message", raw["object"])
 
         elif self.event_type == EventType.BUTTON:
-            self.__extract_attribute("payload", raw["object"])
+            self.__extract_attribute("button", raw["object"])
 
         elif self.event_type == EventType.REACTION:
             self.__extract_attribute("reaction", raw["object"])
 
-        delattr(self, "__attribute_class")
-
     def __extract_attribute(self, attr_name: str, event_object: Payload) -> None:
-        value = event_object.pop(attr_name, default=event_object)
+        value = event_object.pop(attr_name, event_object)
         setattr(self, attr_name, self.__attribute_class[attr_name](value, self.api))
+        logger.debug(f"Attribute '{attr_name}' extracted: {getattr(self, attr_name)}.")
 
     def __repr__(self) -> str:
-        return f"EventContext(id={self.event_id}, type={self.event_type}, group={self.group_id})"
+        return f"EventContext(id={self.event_id}, type={self.event_type.name}, group={self.group_id})"
 
 
 def get_context(event: VkBotEvent, api: VkApi) -> Context:
     try:
         ctx = Context(event.raw, api)
 
-    except ValueError:
+    except ValueError as error:
         logger.warning("Unable to load event context. Recived event with unknown type.")
+        logger.debug(f"Details about error: {error}")
 
-    except Exception as error:
+    except AttributeError as error:
         logger.error(
-            f"Something went wrong while receiving the message context: {error}"
+            f"Something went wrong while receiving the message context: {error}."
         )
 
     else:
