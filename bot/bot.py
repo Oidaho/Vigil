@@ -10,6 +10,7 @@ from vk_api.bot_longpoll import VkBotLongPoll
 from config import configs
 
 from .context import Context, get_context
+from .context import BaseRouter
 
 
 class Bot:
@@ -37,14 +38,23 @@ class Bot:
     def _handle_event(self, context: Context) -> None:
         # Placeholder
         time.sleep(3)
+
         logger.info(f"Event {context.event_id} handled.")
-        pass
 
     @property
     def api(self):
+        """Returns the Vkontakte API object for implementation
+        retaliatory actions from the bot.
+
+        Returns:
+            VkApi: The VKontakte API object.
+        """
         return self.session.get_api()
 
     def run(self):
+        """Launches the Bot. Starts sending requests to LPS,
+        receiving and processing the latest events.
+        """
         logger.info("Starting listening longpoll server.")
         recived_events = self.longpoll.listen
 
@@ -57,3 +67,7 @@ class Bot:
                 logger.debug(event.raw)
 
                 self.thread_pool.submit(self._handle_event, ctx)
+
+    def include(self, router: BaseRouter) -> None:
+        # Sketch
+        pass
