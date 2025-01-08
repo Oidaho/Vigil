@@ -1,3 +1,5 @@
+# ./Vigil/bot/context.py
+
 from enum import Enum
 from typing import Dict, List
 
@@ -16,6 +18,7 @@ class EventType(Enum):
     MESSAGE = "message_new"
     BUTTON = "message_event"
     REACTION = "message_reaction_event"
+    COMMAND = "message_command"
 
 
 class Peer:
@@ -26,6 +29,7 @@ class Peer:
 
         self.id: int = attempt
         self.cid: int = self.id - int(2e9)
+
         self.__api = api
 
     @property
@@ -103,6 +107,7 @@ class Reply:
 
         self.id: int = attempt.get("id")
         self.cmid: int = attempt
+
         self.__peer_id: int = data.get("peer_id")  # Forced use
         self.__api = api
 
@@ -122,6 +127,23 @@ class Reply:
         return f"Reply(id={self.cmid})"
 
 
+class Command:
+    def __init__(self, data: Payload, api: VkApi) -> None:
+        if (attempt := data.get("text")) is None:
+            raise AttributeError("Error when getting the command data")
+
+        self.text: str = attempt
+
+        splited = self.text.split(" ")
+        self.name: str = splited[0][1:]
+        self.args: List[str] = splited[1:]
+
+        self.__api = api
+
+    def __repr__(self) -> str:
+        return f"Command(name={self.name})"
+
+
 class Message:
     def __init__(self, data: Payload, api: VkApi) -> None:
         if (attempt := data.get("conversation_message_id")) is None:
@@ -129,20 +151,9 @@ class Message:
 
         self.cmid: int = attempt
         self.id: int = data.get("id")
+        self.text: str = data.get("text")
         self.__peer_id: int = data.get("peer_id")  # Forced use
         self.__api = api
-
-    @property
-    def text(self) -> str:
-        if not hasattr(self, "__text"):
-            message_info = self.__api.messages.getByConversationMessageId(
-                peer_id=self.__peer_id,
-                conversation_message_ids=self.cmid,
-            )
-            message_info = message_info["items"][0]
-            self.__text = message_info.get("text")
-
-        return self.__text
 
     @property
     def attachments(self) -> List[str]:
@@ -239,27 +250,34 @@ class Context:
         "reaction": Reaction,
         "message": Message,
         "button": Button,
+        "command": Command,
     }
 
-    def __init__(self, raw: Payload, api: VkApi) -> None:
+    def __init__(self, raw: Payload, api: VkApi, command_prefix: str) -> None:
         self.api = api
 
         self.event_type: EventType = EventType(raw["type"])
         self.event_id: str = raw["event_id"]
         self.group_id: int = raw["group_id"]
 
-        self.__extract_attribute("peer", raw["object"])
-        self.__extract_attribute("user", raw["object"])
+        event_object = raw["object"]
+
+        self.__extract_attribute("peer", event_object)
+        self.__extract_attribute("user", event_object)
 
         if self.event_type == EventType.MESSAGE:
-            self.__extract_attribute("client", raw["object"])
-            self.__extract_attribute("message", raw["object"])
+            self.__extract_attribute("client", event_object)
+            self.__extract_attribute("message", event_object)
+
+            if self.message.text.startswith(command_prefix):
+                self.event_type = EventType("message_command")
+                self.__extract_attribute("command", event_object)
 
         elif self.event_type == EventType.BUTTON:
-            self.__extract_attribute("button", raw["object"])
+            self.__extract_attribute("button", event_object)
 
         elif self.event_type == EventType.REACTION:
-            self.__extract_attribute("reaction", raw["object"])
+            self.__extract_attribute("reaction", event_object)
 
     def __extract_attribute(self, attr_name: str, event_object: Payload) -> None:
         value = event_object.pop(attr_name, event_object)
@@ -270,9 +288,9 @@ class Context:
         return f"EventContext(id={self.event_id}, type={self.event_type.name}, group={self.group_id})"
 
 
-def get_context(event: VkBotEvent, api: VkApi) -> Context:
+def get_context(event: VkBotEvent, api: VkApi, command_prefix: str) -> Context:
     try:
-        ctx = Context(event.raw, api)
+        ctx = Context(event.raw, api, command_prefix)
 
     except ValueError as error:
         logger.warning("Unable to load event context. Recived event with unknown type.")
