@@ -1,5 +1,6 @@
-# ./VK-Vigil/bot/__init__.py
+# ./Vigil/bot/__init__.py
 
 from .bot import Bot
+from .routers import Commands, Filters, Buttons
 
-__all__ = ("Bot",)
+__all__ = ("Bot", "Commands", "Filters", "Buttons")
