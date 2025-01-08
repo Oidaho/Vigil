@@ -3,7 +3,7 @@ services:
     container_name: vigil
     build:
       context: ./
-      dockerfile: dockerfile
+      dockerfile: Dockerfile
     environment:
       - debug_mode=...
       - bot_group_id=...
