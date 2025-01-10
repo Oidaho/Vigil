@@ -54,3 +54,18 @@ def mark_command(ctx: Context, args: NamedTuple) -> bool:
     )
 
     return True
+
+
+@router.register(name="kick", args=("user_tag", "reason"))
+def kick_command(ctx: Context, args: NamedTuple) -> bool:
+    pass
+
+
+@router.register(name="kick", args=("user_tag", "reason"))
+def warn_command(ctx: Context, args: NamedTuple) -> bool:
+    pass
+
+
+@router.register(name="kick", args=("user_tag", "reason"))
+def unwarn_command(ctx: Context, args: NamedTuple) -> bool:
+    pass
