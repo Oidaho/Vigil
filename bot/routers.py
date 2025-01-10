@@ -15,6 +15,12 @@ class BaseRouter:
 
 
 class Commands(BaseRouter):
+    """The router class for COMMAND type events.
+
+    Bounded type:
+        EventType.COMMAND
+    """
+
     def __init__(self) -> None:
         self.bounded_type = EventType.COMMAND
 

@@ -1,6 +1,7 @@
 # ./Vigil/bot/bot.py
 
 from concurrent.futures import ThreadPoolExecutor
+from typing import Dict, Any
 
 from loguru import logger
 from vk_api import VkApi
@@ -14,6 +15,7 @@ from .routers import BaseRouter
 
 class Bot:
     command_prefix: str = None
+    routing_map: Dict[EventType, Any] = {}
 
     def __init__(self, acces_token: str, api_version: str, group_id: int) -> None:
         self._make_session(acces_token, api_version)
@@ -36,6 +38,21 @@ class Bot:
             group_id=group_id,
         )
 
+    def __handle_ctx(self, ctx: Context) -> None:
+        router_func = self.routing_map.get(ctx.event_type, None)
+
+        if router_func is None:
+            logger.warning(
+                f"Skipping event <{ctx.event_id}| {ctx.event_type}>. There is no suitable router."
+            )
+
+        else:
+            try:
+                pass
+
+            except Exception:
+                pass
+
     @property
     def api(self):
         """Returns the Vkontakte API object for implementation
@@ -45,6 +62,17 @@ class Bot:
             VkApi: The VKontakte API object.
         """
         return self.session.get_api()
+
+    def include_router(self, router: BaseRouter) -> None:
+        """Binds the router to a specific type of event,
+        which is specified for it as 'bounded'. In case of binding
+        router to a certain type of event - these events will start
+        processed by handlers registered in the router.
+
+        Args:
+            router (BaseRouter): Event router.
+        """
+        self.routing_map[router.bounded_type] = router.route
 
     def set_command_prefix(self, prefix: str) -> None:
         """This function sets the prefix for recognizing the command.
@@ -79,4 +107,4 @@ class Bot:
                 ctx = get_context(event, self.api, self.command_prefix)
                 logger.info(f"Context: {ctx}")
 
-                # self.thread_pool.submit(self._handle_event, ctx)
+                self.thread_pool.submit(self.__handle_ctx, ctx)

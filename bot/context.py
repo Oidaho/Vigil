@@ -129,7 +129,7 @@ class Reply:
 
 class Command:
     def __init__(self, data: Payload, api: VkApi) -> None:
-        if (attempt := data.get("text")) is None:
+        if (attempt := data["message"].get("text")) is None:
             raise AttributeError("Error when getting the command data")
 
         self.text: str = attempt
@@ -280,7 +280,7 @@ class Context:
             self.__extract_attribute("reaction", event_object)
 
     def __extract_attribute(self, attr_name: str, event_object: Payload) -> None:
-        value = event_object.pop(attr_name, event_object)
+        value = event_object.get(attr_name, event_object)
         setattr(self, attr_name, self.__attribute_class[attr_name](value, self.api))
         logger.debug(f"Attribute '{attr_name}' extracted: {getattr(self, attr_name)}.")
 
