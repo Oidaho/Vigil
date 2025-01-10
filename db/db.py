@@ -7,6 +7,8 @@ from config import configs
 DIALECT = configs.database.dialect
 db_instance: Database
 
+# TODO: Обернуть в функцию get_instance().
+# В будущем это будет необходимо для настройки веб-панели
 match DIALECT:
     case "sqlite":
         db_instance = SqliteDatabase(f"{configs.project_name}.db")
