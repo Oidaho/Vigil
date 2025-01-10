@@ -28,12 +28,6 @@ class Conversation(Model):
 
 # For storing moderation staff
 class Staff(Model):
-    conversation = ForeignKeyField(
-        model=Conversation,
-        backref="staff",
-        on_delete="CASCADE",
-        on_update="CASCADE",
-    )
     user_id = BigIntegerField()
     permission_lvl = SmallIntegerField()
 
