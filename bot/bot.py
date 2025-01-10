@@ -42,19 +42,21 @@ class Bot:
         )
 
     def __handle_ctx(self, ctx: Context) -> None:
-        router_func = self.routing_map.get(ctx.event_type, None)
+        routing_func = self.routing_map.get(ctx.event_type, None)
 
-        if router_func is None:
+        if routing_func is None:
             logger.warning(
                 f"Skipping event <{ctx.event_id}| {ctx.event_type}>. There is no suitable router."
             )
 
         else:
             try:
-                pass
+                routing_func(ctx)
 
-            except Exception:
-                pass
+            except Exception as error:
+                logger.error(
+                    f"Something went wrong during the routing of the event: {error}"
+                )
 
     @property
     def api(self):
