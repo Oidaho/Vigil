@@ -6,6 +6,7 @@ from loguru import logger
 
 from bot import Bot
 from config import configs
+from routers import command_router
 
 
 def setup_logger() -> None:
@@ -27,7 +28,7 @@ def setup_logger() -> None:
 
 
 def main() -> None:
-    """Program entry point."""
+    """Entry point"""
     setup_logger()
 
     bot = Bot(
@@ -35,6 +36,8 @@ def main() -> None:
         api_version=configs.bot.api_version,
         group_id=configs.bot.group_id,
     )
+
+    bot.include_router(router=command_router)
 
     bot.run()
 
