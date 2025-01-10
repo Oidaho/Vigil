@@ -77,7 +77,7 @@ class Commands(BaseRouter):
         def decorator(func):
             @wraps(func)
             def wrapper(context: Context):
-                """The shell of the function executing the invoked command.
+                """The wrapp of the function executing the invoked command.
                 She is responsible for logging the progress of the command, as well as
                 for converting some ctx.command.args object into a NamedTuple instance.
 
