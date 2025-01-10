@@ -94,7 +94,9 @@ class Commands(BaseRouter):
                     )
 
                 result = func(ctx=context, args=packed)
-                logger.info(f"Event triggered command '{name}' execution.")
+                logger.info(
+                    f"Event triggered command '{name}' execution with args {packed}."
+                )
                 return result
 
             self.handlers[name if name else func.__name__] = wrapper
