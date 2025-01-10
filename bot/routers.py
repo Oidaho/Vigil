@@ -43,7 +43,12 @@ class Commands(BaseRouter):
 
         handler(context)
 
-    def register(self, name: str = None, args: Collection[str] = ()) -> None:
+    def register(
+        self,
+        name: str = None,
+        args: Collection[str] = (),
+        delete_src: bool = True,
+    ) -> None:
         """A decorator that registers a new command and assigns it a name
         and by setting additional parameters. Handler functions, marked
         with this decorator, must have required arguments: ctx, args
@@ -97,6 +102,17 @@ class Commands(BaseRouter):
                 logger.info(
                     f"Event triggered command '{name}' execution with args {packed}."
                 )
+
+                if delete_src:
+                    context.api.messages.delete(
+                        cmids=context.message.cmid,
+                        peer_id=context.peer.id,
+                        delete_for_all=1,
+                    )
+                    logger.info(
+                        "The message that triggered the command has been deleted."
+                    )
+
                 return result
 
             self.handlers[name if name else func.__name__] = wrapper
