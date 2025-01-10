@@ -7,6 +7,37 @@ from loguru import logger
 from bot import Bot
 from config import configs
 from routers import command_router
+from db import db_instance
+from db.models import (
+    Conversation,
+    Staff,
+    Sanction,
+    Menu,
+    Queue,
+    Filter,
+    Delay,
+    Word,
+    Link,
+    Host,
+)
+
+
+def setup_database() -> None:
+    db_instance.connect()
+    db_instance.create_tables(
+        models=[
+            Conversation,
+            Staff,
+            Sanction,
+            Menu,
+            Queue,
+            Filter,
+            Delay,
+            Word,
+            Link,
+            Host,
+        ]
+    )
 
 
 def setup_logger() -> None:
@@ -30,6 +61,7 @@ def setup_logger() -> None:
 def main() -> None:
     """Entry point"""
     setup_logger()
+    setup_database()
 
     bot = Bot(
         acces_token=configs.bot.acces_token,
