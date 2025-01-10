@@ -12,6 +12,7 @@ Payload = Dict[str, int | str | dict]
 
 class LangType(Enum):
     RUSSIAN = 0
+    # TODO: Add more if possible
 
 
 class EventType(Enum):
