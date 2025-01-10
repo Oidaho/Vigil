@@ -13,6 +13,9 @@ from .context import Context, get_context, EventType
 from .routers import BaseRouter
 
 
+STD_COMMAND_PREFIX = "/"
+
+
 class Bot:
     command_prefix: str = None
     routing_map: Dict[EventType, Any] = {}
@@ -90,7 +93,7 @@ class Bot:
         receiving and processing the latest events.
         """
         if self.command_prefix is None:
-            self.command_prefix = "/"
+            self.command_prefix = STD_COMMAND_PREFIX
             logger.warning(
                 f"Command prefix was not set. Bot will use the standard prefix '{self.command_prefix}'."
             )
