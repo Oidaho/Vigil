@@ -10,8 +10,8 @@ RegistredCollection = Tuple[str, Dict[str, Callable]]
 
 
 class BaseRouter:
-    handlers: Dict[str, Callable]
-    bounded_type: EventType
+    handlers: Dict[str, Callable] = {}
+    bounded_type: EventType = None
 
 
 class Commands(BaseRouter):
