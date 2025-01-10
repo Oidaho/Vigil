@@ -60,6 +60,9 @@ class Commands(BaseRouter):
             args (Collection[str], optional): Positional list of argument names,
                             which the command accepts.
                             Defaults to ().
+            delete_src (bool, optional): Automatic message deletion,
+                            which triggered the command.
+                            Defaults to True.
 
         Example:
         ```
