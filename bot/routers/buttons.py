@@ -8,7 +8,7 @@ from ..keyboards.responds import ShowSnackbar
 from .base import Router
 
 
-def error(ctx: Context, payload: Dict[str, int | str]) -> bool:
+def error(ctx: Context) -> bool:
     ctx.api.messages.sendMessageEventAnswer(
         event_id=ctx.button.id,
         user_id=ctx.user.id,
@@ -19,7 +19,7 @@ def error(ctx: Context, payload: Dict[str, int | str]) -> bool:
     return True
 
 
-def permission(ctx: Context, payload: Dict[str, int | str]) -> bool:
+def permission(ctx: Context) -> bool:
     ctx.api.messages.sendMessageEventAnswer(
         event_id=ctx.button.id,
         user_id=ctx.user.id,
