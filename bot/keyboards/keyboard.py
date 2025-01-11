@@ -45,10 +45,12 @@ class Keyboard:
 
         return self
 
-    def add_button(self, action: Action, color: ButtonColor) -> Any:
+    def add_button(self, name: str, action: Action, color: ButtonColor) -> Any:
         # TODO: Добавить ограничение по кнопкам в строке
         if not self.rows:
             raise RuntimeError("Missing rows.")
+
+        action.payload.setdefault("name", name)
 
         new_button = Button(action, color, self.owner_id).as_dict()
         self.rows[-1].append(new_button)

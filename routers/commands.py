@@ -20,28 +20,30 @@ def mark_command(ctx: Context, args: NamedTuple) -> bool:
         Keyboard(inline=True, one_time=False, owner_id=ctx.user.id)
         .add_row()
         .add_button(
-            Callback(label="CHAT", payload={"call": "set_mark", "mark": "CHAT"}),
+            "set_mark",
+            Callback(label="CHAT", payload={"mark": "CHAT"}),
             ButtonColor.POSITIVE,
         )
         .add_button(
-            Callback(label="LOG", payload={"call": "set_mark", "mark": "LOG"}),
+            "set_mark",
+            Callback(label="LOG", payload={"mark": "LOG"}),
             ButtonColor.POSITIVE,
         )
         .add_row()
         .add_button(
-            Callback(
-                label="Обновить данные беседы",
-                payload={"call": "update_coversation"},
-            ),
+            "update_coversation",
+            Callback(label="Обновить данные беседы"),
             ButtonColor.SECONDARY,
         )
         .add_row()
         .add_button(
-            Callback(label="Сбросить метку", payload={"call": "drop_mark"}),
+            "drop_mark",
+            Callback(label="Сбросить метку"),
             ButtonColor.NEGATIVE,
         )
         .add_button(
-            Callback(label="Закрыть", payload={"call": "cancel"}),
+            "close_this",
+            Callback(label="Закрыть"),
             ButtonColor.NEGATIVE,
         )
     )
