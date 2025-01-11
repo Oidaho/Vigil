@@ -71,3 +71,8 @@ def warn_command(ctx: Context, args: NamedTuple) -> bool:
 @router.register(name="kick", args=("user_tag", "reason"))
 def unwarn_command(ctx: Context, args: NamedTuple) -> bool:
     pass
+
+
+@router.register(name="punish", args=())
+def punish_command(ctx: Context, args: NamedTuple) -> bool:
+    pass
