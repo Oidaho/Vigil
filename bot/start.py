@@ -4,7 +4,7 @@ import sys
 
 from loguru import logger
 
-from bot import Bot
+from src import Bot
 from config import configs
 from routers import command_router, button_router
 from db import db_instance

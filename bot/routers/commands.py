@@ -1,9 +1,9 @@
-from bot.routers import CommandRouter
-from bot.context import Context
+from src.routers import CommandRouter
+from src.context import Context
 from typing import NamedTuple
 
-from bot.keyboards import Keyboard, ButtonColor
-from bot.keyboards.actions import Callback
+from src.keyboards import Keyboard, ButtonColor
+from src.keyboards.actions import Callback
 
 
 router = CommandRouter()
