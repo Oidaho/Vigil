@@ -290,6 +290,18 @@ class Context:
 
 
 def get_context(event: VkBotEvent, api: VkApi, command_prefix: str) -> Context:
+    """Extracts all the necessary information from the VK event, and also,
+    if necessary, makes additional requests to the VK api, specifying
+    some necessary information.
+
+    Args:
+        event (VkBotEvent): VK Event.
+        api (VkApi): VkApi object.
+        command_prefix (str): Command prefix used by the bot.
+
+    Returns:
+        Context: Event context.
+    """
     try:
         ctx = Context(event.raw, api, command_prefix)
 
