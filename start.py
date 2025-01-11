@@ -6,7 +6,7 @@ from loguru import logger
 
 from bot import Bot
 from config import configs
-from routers import command_router
+from routers import command_router, button_router
 from db import db_instance
 from db.models import (
     Conversation,
@@ -70,6 +70,7 @@ def main() -> None:
     )
 
     bot.include_router(router=command_router)
+    bot.include_router(router=button_router)
 
     bot.run()
 
