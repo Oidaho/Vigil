@@ -1,4 +1,5 @@
 from collections import namedtuple
+from typing import NamedTuple
 from functools import wraps
 from typing import Collection
 
