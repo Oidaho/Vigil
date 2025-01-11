@@ -1,6 +1,6 @@
 from typing import Callable, Dict
 
-from .context import EventType
+from ..context import EventType
 
 
 class Router:
