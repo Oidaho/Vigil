@@ -10,7 +10,7 @@ from vk_api.bot_longpoll import VkBotLongPoll
 from config import configs
 
 from .context import Context, get_context, EventType
-from .routers import BaseRouter
+from .routers.base import Router
 
 
 STD_COMMAND_PREFIX = "/"
@@ -68,14 +68,14 @@ class Bot:
         """
         return self.session.get_api()
 
-    def include_router(self, router: BaseRouter) -> None:
+    def include_router(self, router: Router) -> None:
         """Binds the router to a specific type of event,
         which is specified for it as 'bounded'. In case of binding
         router to a certain type of event - these events will start
         processed by handlers registered in the router.
 
         Args:
-            router (BaseRouter): Event router.
+            router (Router): Event router.
         """
         self.routing_map[router.bounded_type] = router.route
 
