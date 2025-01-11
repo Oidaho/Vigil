@@ -65,7 +65,7 @@ class ButtonRouter(Router):
         except PermissionError as error:
             error_func = self.handlers.get("lack_permission")
             error_func(context)
-            logger.info(f"Buttonm handler '{name}' execution canceled: {error}")
+            logger.info(f"Button handler '{name}' execution canceled: {error}")
 
         except Exception as error:
             error_func = self.handlers.get("error")

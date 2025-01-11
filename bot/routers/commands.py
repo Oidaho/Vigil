@@ -32,10 +32,17 @@ class CommandRouter(Router):
         name = context.command.name
         handler = self.handlers.get(name)
 
-        if not handler:
-            raise NameError(f"Couldn't find a command named '{name}'.")
+        try:
+            if handler is None:
+                raise NameError(f"Couldn't find a command named '{name}'.")
 
-        handler(context)
+            handler(context)
+
+        except ValueError as error:
+            logger.info(f"Command '{name}' execution canceled: {error}")
+
+        except Exception as error:
+            logger.error(f"Error when executing '{name}' command: {error}")
 
     def register(
         self,
@@ -91,9 +98,7 @@ class CommandRouter(Router):
                 elif len(context.command.args) == len(args):
                     packed = pack_arguments(*context.command.args)
                 else:
-                    raise ValueError(
-                        f"There are not enough arguments to execute command '{name}'."
-                    )
+                    raise ValueError("There are not enough arguments.")
 
                 result = func(ctx=context, args=packed)
                 logger.info(
