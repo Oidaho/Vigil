@@ -1,20 +1,14 @@
-from functools import wraps
-from typing import Callable, Dict, Tuple, Collection
 from collections import namedtuple
+from functools import wraps
+from typing import Collection
 
 from loguru import logger
 
-from .context import Context, EventType
-
-RegistredCollection = Tuple[str, Dict[str, Callable]]
-
-
-class BaseRouter:
-    handlers: Dict[str, Callable] = {}
-    bounded_type: EventType = None
+from ..context import Context, EventType
+from .base import Router
 
 
-class Commands(BaseRouter):
+class CommandRouter(Router):
     """The router class for COMMAND type events.
 
     Bounded type:
@@ -33,13 +27,13 @@ class Commands(BaseRouter):
             context (Context):  The context of the event.
 
         Raises:
-            RuntimeError: Routing deadlock. The command was not found.
+            RuntimeError: Routing deadlock. The command handler was not found.
         """
         name = context.command.name
         handler = self.handlers.get(name)
 
         if not handler:
-            raise RuntimeError(f"Couldn't find a command named '{name}'.")
+            raise NameError(f"Couldn't find a command named '{name}'.")
 
         handler(context)
 
@@ -49,12 +43,12 @@ class Commands(BaseRouter):
         args: Collection[str] = (),
         delete_src: bool = True,
     ) -> None:
-        """A decorator that registers a new command and assigns it a name
+        """A decorator that registers a new command handler and assigns it a name
         and by setting additional parameters. Handler functions, marked
-        with this decorator, must have required arguments: ctx, args
+        with this decorator, must have required arguments: `ctx`, `args`
 
         Args:
-            name (str, optional): The name of the team. If not specified,
+            name (str, optional): The name of the command. If not specified,
                             the name of the handler function will be taken.
                             Defaults to None.
             args (Collection[str], optional): Positional list of argument names,
@@ -66,7 +60,7 @@ class Commands(BaseRouter):
 
         Example:
         ```
-            router = Commands()
+            router = CommandRouter()
 
             @router.register(name='test', args=("arg_1", "arg_2"))
             def test_command(ctx, args) -> None:
@@ -122,19 +116,3 @@ class Commands(BaseRouter):
             return wrapper
 
         return decorator
-
-
-# TODO: write me
-class Filters(BaseRouter):
-    def __init__(self) -> None:
-        self.bounded_type = EventType.MESSAGE
-
-
-class Buttons(BaseRouter):
-    def __init__(self) -> None:
-        self.bounded_type = EventType.BUTTON
-
-
-class Reactions(BaseRouter):
-    def __init__(self) -> None:
-        self.bounded_type = EventType.REACTION
