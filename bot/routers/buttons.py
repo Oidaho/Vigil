@@ -1,8 +1,8 @@
-from bot.routers import ButtonRouter
-from bot.context import Context
+from src.routers import ButtonRouter
+from src.context import Context
 from typing import Dict
 
-from bot.keyboards.answers import ShowSnackbar
+from src.keyboards.answers import ShowSnackbar
 
 
 router = ButtonRouter()
