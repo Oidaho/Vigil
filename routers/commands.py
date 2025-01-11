@@ -1,4 +1,4 @@
-from bot.routers import Commands
+from bot.routers import CommandRouter
 from bot.context import Context
 from typing import NamedTuple
 
@@ -6,7 +6,7 @@ from bot.keyboards import Keyboard, ButtonColor
 from bot.keyboards.actions import Callback
 
 
-router = Commands()
+router = CommandRouter()
 
 
 @router.register(name="mark", args=())
@@ -42,7 +42,7 @@ def mark_command(ctx: Context, args: NamedTuple) -> bool:
             ButtonColor.NEGATIVE,
         )
         .add_button(
-            "close_this",
+            "close",
             Callback(label="Закрыть"),
             ButtonColor.NEGATIVE,
         )
