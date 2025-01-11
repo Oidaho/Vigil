@@ -1,6 +1,6 @@
 services:
-  vigil:
-    container_name: vigil
+  bot:
+    container_name: bot
     build:
       context: ./
       dockerfile: Dockerfile
