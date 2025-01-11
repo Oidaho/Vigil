@@ -1,4 +1,5 @@
 from collections import namedtuple
+from typing import NamedTuple
 from functools import wraps
 from typing import Collection
 
@@ -48,6 +49,7 @@ class CommandRouter(Router):
         self,
         name: str = None,
         args: Collection[str] = (),
+        args_necessary: bool = True,
         delete_src: bool = True,
     ) -> None:
         """A decorator that registers a new command handler and assigns it a name
@@ -61,6 +63,12 @@ class CommandRouter(Router):
             args (Collection[str], optional): Positional list of argument names,
                             which the command accepts.
                             Defaults to ().
+            args_necessary (bool, optional): Specifies whether submitting arguments to the
+                            command is a prerequisite. This means that the command
+                            can be called without arguments. However, if you try to
+                            call a command with fewer arguments than necessary,
+                            it will not be executed.
+                            Defaults to True.
             delete_src (bool, optional): Automatic message deletion,
                             which triggered the command.
                             Defaults to True.
@@ -97,6 +105,8 @@ class CommandRouter(Router):
                     packed = pack_arguments(*(context.command.args[0 : len(args)]))
                 elif len(context.command.args) == len(args):
                     packed = pack_arguments(*context.command.args)
+                elif len(args) == 0 and not args_necessary:
+                    packed = tuple()
                 else:
                     raise ValueError(
                         f"There are not enough arguments in command '{name}'."
