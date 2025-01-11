@@ -39,10 +39,10 @@ class CommandRouter(Router):
             handler(context)
 
         except ValueError as error:
-            logger.info(f"Command '{name}' execution canceled: {error}")
+            logger.info(f"Command execution canceled: {error}")
 
         except Exception as error:
-            logger.error(f"Error when executing '{name}' command: {error}")
+            logger.error(f"Error when executing command: {error}")
 
     def register(
         self,
@@ -98,7 +98,9 @@ class CommandRouter(Router):
                 elif len(context.command.args) == len(args):
                     packed = pack_arguments(*context.command.args)
                 else:
-                    raise ValueError("There are not enough arguments.")
+                    raise ValueError(
+                        f"There are not enough arguments in command '{name}'."
+                    )
 
                 result = func(ctx=context, args=packed)
                 logger.info(

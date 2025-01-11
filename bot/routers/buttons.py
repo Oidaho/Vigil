@@ -64,12 +64,12 @@ class ButtonRouter(Router):
         except PermissionError as error:
             error_func = self.handlers.get("lack_permission")
             error_func(context)
-            logger.info(f"Button handler '{name}' execution canceled: {error}")
+            logger.info(f"Button handler execution canceled: {error}")
 
         except Exception as error:
             error_func = self.handlers.get("error")
             error_func(context)
-            logger.error(f"Error when executing '{name}' button handler: {error}")
+            logger.error(f"Error when executing button handler: {error}")
 
     def register(self, name: str = None, check_owner: bool = False) -> None:
         """A decorator that registers a new button handler and assigns it a name.
@@ -103,7 +103,7 @@ class ButtonRouter(Router):
 
                 if check_owner and (context.user.id != payload["owner"]):
                     raise PermissionError(
-                        f"User <{context.user.id}> is not keyboard owner."
+                        f"User <{context.user.id}> is not button '{name}' owner."
                     )
 
                 result = func(ctx=context, payload=payload)
