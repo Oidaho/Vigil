@@ -1,11 +1,8 @@
 [tool.poetry]
 package-mode = false
-name = "Vigil"
-version = "0.1.0"
-description = ""
-authors = ["Oidaho <76991612+Oidaho@users.noreply.github.com>"]
+name = "bot"
+authors = ["Oidaho <oidaho.main@yandex.ru>"]
 license = "GPL-3.0"
-readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
