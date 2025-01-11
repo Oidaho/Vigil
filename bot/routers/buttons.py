@@ -1,5 +1,4 @@
 from functools import wraps
-from typing import Dict
 
 from loguru import logger
 
@@ -13,7 +12,7 @@ def error(ctx: Context) -> bool:
         event_id=ctx.button.id,
         user_id=ctx.user.id,
         peer_id=ctx.peer.id,
-        event_data=ShowSnackbar("⚠️ Something went wrong.").as_dict(),
+        event_data=ShowSnackbar("⚠️ Something went wrong.").json_str(),
     )
 
     return True
@@ -24,7 +23,7 @@ def permission(ctx: Context) -> bool:
         event_id=ctx.button.id,
         user_id=ctx.user.id,
         peer_id=ctx.peer.id,
-        event_data=ShowSnackbar("⚠️ Lack permission.").as_dict(),
+        event_data=ShowSnackbar("⚠️ Lack permission.").json_str(),
     )
 
     return True

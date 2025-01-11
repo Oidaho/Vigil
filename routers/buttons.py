@@ -20,7 +20,7 @@ def close_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
         event_id=ctx.button.id,
         user_id=ctx.user.id,
         peer_id=ctx.peer.id,
-        event_data=ShowSnackbar("❌ Closed.").as_dict(),
+        event_data=ShowSnackbar("❌ Closed.").json_str(),
     )
 
     # TODO: При необходимости рассмотреть вариант с удалением учтеной сессии из БД

@@ -9,7 +9,7 @@ class Action(ButtonPart):
 class Callback(Action):
     """Sends a click notification to the server."""
 
-    def __init__(self, label: str, payload: Payload):
+    def __init__(self, label: str, payload: Payload = {}):
         super().__init__("callback")
 
         self.label = label
@@ -19,7 +19,7 @@ class Callback(Action):
 class Text(Action):
     """Sends the text of the clicked button to the dialog."""
 
-    def __init__(self, label: str, payload: Payload):
+    def __init__(self, label: str, payload: Payload = {}):
         super().__init__("text")
 
         self.label = label
@@ -29,7 +29,7 @@ class Text(Action):
 class OpenLink(Action):
     """Follows a link."""
 
-    def __init__(self, url: str, label: str, payload: Payload):
+    def __init__(self, url: str, label: str, payload: Payload = {}):
         super().__init__("open_link")
 
         self.link = url
@@ -40,7 +40,7 @@ class OpenLink(Action):
 class Location(Action):
     """Sends geolocation to the dialog."""
 
-    def __init__(self, url: str, label: str, payload: Payload):
+    def __init__(self, url: str, label: str, payload: Payload = {}):
         super().__init__("location")
 
         self.link = url
@@ -51,7 +51,7 @@ class Location(Action):
 class VKPay(Action):
     """Opens the VKPay payment window."""
 
-    def __init__(self, payment_hash: str, label: str, payload: Payload):
+    def __init__(self, payment_hash: str, label: str, payload: Payload = {}):
         super().__init__("vkpay")
 
         self.hash = payment_hash
@@ -68,7 +68,7 @@ class OpenApp(Action):
         label: str,
         app_id: int,
         owner_id: int,
-        payload: Payload,
+        payload: Payload = {},
     ):
         super().__init__("open_app")
 

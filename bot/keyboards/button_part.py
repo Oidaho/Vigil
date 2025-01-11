@@ -13,5 +13,5 @@ class ButtonPart:
 
         return payload
 
-    def as_str(self) -> str:
+    def json_str(self) -> str:
         return json.dumps(self.as_dict())
