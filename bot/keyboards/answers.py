@@ -1,12 +1,12 @@
 from .button_part import ButtonPart
 
 
-class Respond(ButtonPart):
+class Answer(ButtonPart):
     pass
 
 
-class ShowSnackbar(Respond):
-    """Responds to button pressing by calling snackbar."""
+class ShowSnackbar(Answer):
+    """Answers to button pressing by calling snackbar."""
 
     def __init__(self, text: str):
         super().__init__("show_snackbar")
@@ -14,8 +14,8 @@ class ShowSnackbar(Respond):
         self.text = text
 
 
-class OpenLink(Respond):
-    """Responds to button pressing by redirecting to the link."""
+class OpenLink(Answer):
+    """Answers to button pressing by redirecting to the link."""
 
     def __init__(self, url: str):
         super().__init__("open_link")
@@ -23,8 +23,8 @@ class OpenLink(Respond):
         self.link = url
 
 
-class OpenApp(Respond):
-    """Responds to button pressing by opening a mini-app."""
+class OpenApp(Answer):
+    """Answers to button pressing by opening a mini-app."""
 
     def __init__(self, app_hash: str, app_id: int, owner_id: int):
         super().__init__("open_app")

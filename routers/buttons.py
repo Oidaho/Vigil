@@ -2,13 +2,13 @@ from bot.routers import ButtonRouter
 from bot.context import Context
 from typing import Dict
 
-from bot.keyboards.responds import ShowSnackbar
+from bot.keyboards.answers import ShowSnackbar
 
 
 router = ButtonRouter()
 
 
-@router.register(name="close")
+@router.register(name="close", check_owner=True)
 def close_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
     ctx.api.messages.delete(
         peer_id=ctx.peer.id,

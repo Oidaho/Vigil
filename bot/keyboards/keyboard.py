@@ -20,7 +20,7 @@ class Button:
         self.owner_id = owner_id
 
     def as_dict(self) -> Payload:
-        self.action.payload.update({"keyboard_owner": self.owner_id})
+        self.action.payload.update({"owner": self.owner_id})
 
         data = {"action": self.action.as_dict(), "color": self.color.value}
 
