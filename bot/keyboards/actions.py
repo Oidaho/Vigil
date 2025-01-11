@@ -1,3 +1,5 @@
+from typing import Optional
+
 from .button_part import ButtonPart, Payload
 
 
@@ -9,54 +11,56 @@ class Action(ButtonPart):
 class Callback(Action):
     """Sends a click notification to the server."""
 
-    def __init__(self, label: str, payload: Payload = {}):
+    def __init__(self, label: str, payload: Optional[Payload] = None):
         super().__init__("callback")
 
         self.label = label
-        self.payload = payload
+        self.payload = payload or dict()
 
 
 class Text(Action):
     """Sends the text of the clicked button to the dialog."""
 
-    def __init__(self, label: str, payload: Payload = {}):
+    def __init__(self, label: str, payload: Optional[Payload] = None):
         super().__init__("text")
 
         self.label = label
-        self.payload = payload
+        self.payload = payload or dict()
 
 
 class OpenLink(Action):
     """Follows a link."""
 
-    def __init__(self, url: str, label: str, payload: Payload = {}):
+    def __init__(self, url: str, label: str, payload: Optional[Payload] = None):
         super().__init__("open_link")
 
         self.link = url
         self.label = label
-        self.payload = payload
+        self.payload = payload or dict()
 
 
 class Location(Action):
     """Sends geolocation to the dialog."""
 
-    def __init__(self, url: str, label: str, payload: Payload = {}):
+    def __init__(self, url: str, label: str, payload: Optional[Payload] = None):
         super().__init__("location")
 
         self.link = url
         self.label = label
-        self.payload = payload
+        self.payload = payload or dict()
 
 
 class VKPay(Action):
     """Opens the VKPay payment window."""
 
-    def __init__(self, payment_hash: str, label: str, payload: Payload = {}):
+    def __init__(
+        self, payment_hash: str, label: str, payload: Optional[Payload] = None
+    ):
         super().__init__("vkpay")
 
         self.hash = payment_hash
         self.label = label
-        self.payload = payload
+        self.payload = payload or dict()
 
 
 class OpenApp(Action):
@@ -68,12 +72,12 @@ class OpenApp(Action):
         label: str,
         app_id: int,
         owner_id: int,
-        payload: Payload = {},
+        payload: Optional[Payload] = None,
     ):
         super().__init__("open_app")
 
         self.hash = app_hash
         self.label = label
-        self.payload = payload
         self.app_id = app_id
         self.owner_id = owner_id
+        self.payload = payload or dict()

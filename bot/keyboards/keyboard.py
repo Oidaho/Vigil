@@ -20,7 +20,7 @@ class Button:
         self.owner_id = owner_id
 
     def as_dict(self) -> Payload:
-        self.action.payload.setdefault("keyboard_owner", self.owner_id)
+        self.action.payload.update({"keyboard_owner": self.owner_id})
 
         data = {"action": self.action.as_dict(), "color": self.color.value}
 
@@ -50,7 +50,7 @@ class Keyboard:
         if not self.rows:
             raise RuntimeError("Missing rows.")
 
-        action.payload.setdefault("name", name)
+        action.payload.update({"name": name})
 
         new_button = Button(action, color, self.owner_id).as_dict()
         self.rows[-1].append(new_button)
