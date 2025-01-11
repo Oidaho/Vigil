@@ -15,7 +15,7 @@ class ShowSnackbar(Respond):
 
 
 class OpenLink(Respond):
-    """Responds to button clicks by redirecting to the link."""
+    """Responds to button pressing by redirecting to the link."""
 
     def __init__(self, url: str):
         super().__init__("open_link")
@@ -24,7 +24,7 @@ class OpenLink(Respond):
 
 
 class OpenApp(Respond):
-    """Responds to a button press by opening a mini-app."""
+    """Responds to button pressing by opening a mini-app."""
 
     def __init__(self, app_hash: str, app_id: int, owner_id: int):
         super().__init__("open_app")
