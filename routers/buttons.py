@@ -12,7 +12,7 @@ router = ButtonRouter()
 def close_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
     ctx.api.messages.delete(
         peer_id=ctx.peer.id,
-        cmids=ctx.message.cmid,
+        cmids=ctx.button.cmid,
         delete_for_all=1,
     )
 
