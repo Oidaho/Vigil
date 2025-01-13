@@ -31,6 +31,8 @@ class CommandRouter(Router):
         Raises:
             RuntimeError: Routing deadlock. The command handler was not found.
         """
+        self.check_rules(context)
+
         name = context.command.name
         handler = self.handlers.get(name)
 
