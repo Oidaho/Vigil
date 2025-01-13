@@ -5,11 +5,13 @@ from typing import NamedTuple
 from src.keyboards import Keyboard, ButtonColor
 from src.keyboards.actions import Callback
 
+from rules.commands import FromMarkedOnly
+
 
 router = CommandRouter()
 
 
-@router.register(name="mark", args=())
+@router.register(name="mark", args=(), execution_ruleset=[])
 def mark_command(ctx: Context, args: NamedTuple) -> bool:
     text = (
         "⚠️ Вы хотите задать метку беседе? \n\n"
@@ -58,21 +60,37 @@ def mark_command(ctx: Context, args: NamedTuple) -> bool:
     return True
 
 
-@router.register(name="kick", args=("user_tag", "reason"))
+@router.register(
+    name="kick",
+    args=("user_tag", "reason"),
+    execution_ruleset=[FromMarkedOnly(mark="LOG")],
+)
 def kick_command(ctx: Context, args: NamedTuple) -> bool:
     pass
 
 
-@router.register(name="kick", args=("user_tag", "reason"))
+@router.register(
+    name="kick",
+    args=("user_tag", "reason"),
+    execution_ruleset=[FromMarkedOnly(mark="LOG")],
+)
 def warn_command(ctx: Context, args: NamedTuple) -> bool:
     pass
 
 
-@router.register(name="kick", args=("user_tag", "reason"))
+@router.register(
+    name="kick",
+    args=("user_tag", "reason"),
+    execution_ruleset=[FromMarkedOnly(mark="LOG")],
+)
 def unwarn_command(ctx: Context, args: NamedTuple) -> bool:
     pass
 
 
-@router.register(name="punish", args=())
+@router.register(
+    name="punish",
+    args=(),
+    execution_ruleset=[FromMarkedOnly(mark="LOG")],
+)
 def punish_command(ctx: Context, args: NamedTuple) -> bool:
     pass

@@ -42,8 +42,8 @@ class CommandRouter(Router):
 
             handler(context)
 
-        except ValueError as error:
-            logger.info(f"Command execution canceled: {error}")
+        except (ValueError, RuntimeError) as error:
+            logger.warning(f"Command execution canceled: {error}")
 
         except Exception as error:
             logger.error(f"Error when executing command: {error}")
@@ -54,6 +54,7 @@ class CommandRouter(Router):
         args: Collection[str] = (),
         args_necessary: bool = True,
         delete_src: bool = True,
+        execution_ruleset: List[Rule] = [],
     ) -> None:
         """A decorator that registers a new command handler and assigns it a name
         and by setting additional parameters. Handler functions, marked
@@ -102,6 +103,9 @@ class CommandRouter(Router):
                 Returns:
                     Callble: The wrapped executor function.
                 """
+                for rule in execution_ruleset:
+                    rule(context)
+
                 pack_arguments = namedtuple("Arguments", args)
 
                 if len(context.command.args) > len(args):
