@@ -5,7 +5,7 @@ from typing import NamedTuple
 from src.keyboards import Keyboard, ButtonColor
 from src.keyboards.actions import Callback
 
-from rules.commands import FromMarkedOnly
+from rules.commands import FromMarkedOnly, ReplyRequired
 
 
 router = CommandRouter()
@@ -90,7 +90,10 @@ def unwarn_command(ctx: Context, args: NamedTuple) -> bool:
 @router.register(
     name="punish",
     args=(),
-    execution_ruleset=[FromMarkedOnly(mark="LOG")],
+    execution_ruleset=[
+        FromMarkedOnly(mark="LOG"),
+        ReplyRequired(),
+    ],
 )
 def punish_command(ctx: Context, args: NamedTuple) -> bool:
     pass

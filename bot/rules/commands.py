@@ -19,3 +19,11 @@ class FromMarkedOnly(Rule):
             return False
 
         return True
+
+
+class ReplyRequired(Rule):
+    def check(self, ctx: Context) -> bool:
+        if ctx.message.reply:
+            return True
+
+        return False
