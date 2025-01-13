@@ -15,7 +15,7 @@ def error_factory(text: str) -> Callable:
             event_id=ctx.button.id,
             user_id=ctx.user.id,
             peer_id=ctx.peer.id,
-            event_data=ShowSnackbar().json_str(),
+            event_data=ShowSnackbar(text).json_str(),
         )
 
         return True
