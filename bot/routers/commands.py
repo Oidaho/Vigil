@@ -33,7 +33,7 @@ def mark_command(ctx: Context, args: NamedTuple) -> bool:
         )
         .add_row()
         .add_button(
-            "update_coversation",
+            "update_conversation",
             Callback(label="Обновить данные беседы"),
             ButtonColor.SECONDARY,
         )
