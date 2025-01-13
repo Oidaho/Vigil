@@ -53,6 +53,9 @@ class Bot:
             try:
                 routing_func(ctx)
 
+            except RuntimeError as error:
+                logger.warning(f"Routing canceled: {error}")
+
             except Exception as error:
                 logger.error(
                     f"Something went wrong during the routing of the event: {error}"

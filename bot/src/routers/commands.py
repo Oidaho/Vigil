@@ -1,11 +1,12 @@
 from collections import namedtuple
 from functools import wraps
-from typing import Collection
+from typing import Collection, List
 
 from loguru import logger
 
 from ..context import Context, EventType
 from .base import Router
+from .rules import Rule
 
 
 class CommandRouter(Router):
@@ -15,7 +16,8 @@ class CommandRouter(Router):
         EventType.COMMAND
     """
 
-    def __init__(self) -> None:
+    def __init__(self, routing_ruleset: List[Rule] = []) -> None:
+        super().__init__(ruleset=routing_ruleset)
         self.bounded_type = EventType.COMMAND
 
     def route(self, context: Context) -> None:

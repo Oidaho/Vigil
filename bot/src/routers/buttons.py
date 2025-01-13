@@ -1,10 +1,12 @@
 from functools import wraps
+from typing import List
 
 from loguru import logger
 
 from ..context import Context, EventType
 from ..keyboards.answers import ShowSnackbar
 from .base import Router
+from .rules import Rule
 
 
 def error(ctx: Context) -> bool:
@@ -36,7 +38,8 @@ class ButtonRouter(Router):
         EventType.BUTTON
     """
 
-    def __init__(self) -> None:
+    def __init__(self, routing_ruleset: List[Rule] = []) -> None:
+        super().__init__(ruleset=routing_ruleset)
         self.bounded_type = EventType.BUTTON
         self.handlers["error"] = error
         self.handlers["lack_permission"] = permission
@@ -52,6 +55,8 @@ class ButtonRouter(Router):
         Raises:
             RuntimeError: Routing deadlock. The button handler was not found.
         """
+        self.check_rules(context)
+
         name = context.button.payload.get("name")
         handler = self.handlers.get(name)
 
