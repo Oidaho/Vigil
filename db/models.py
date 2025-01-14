@@ -30,6 +30,7 @@ class Conversation(Model):
 class Staff(Model):
     user_id = BigIntegerField()
     permission_lvl = SmallIntegerField()
+    password_hash = TextField()
 
     class Meta:
         table_name = "staff"
@@ -46,26 +47,9 @@ class Sanction(Model):
     )
     user_id = BigIntegerField()
     warns_count = SmallIntegerField()
-    expiration = DateTimeField()
 
     class Meta:
         table_name = "sanctions"
-        database = db_instance
-
-
-# To store active menus (keyboards)
-class Menu(Model):
-    conversation = ForeignKeyField(
-        model=Conversation,
-        backref="staff",
-        on_delete="CASCADE",
-        on_update="CASCADE",
-    )
-    message_id = BigIntegerField()
-    expiration = DateTimeField()
-
-    class Meta:
-        table_name = "menus"
         database = db_instance
 
 
