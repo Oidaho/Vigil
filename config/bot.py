@@ -9,3 +9,5 @@ class BotSettings(BaseSettings):
     group_id: int = 0
     acces_token: str = "token"
     api_version: str = "5.199"
+    command_prefix: str = "/"
+    max_warns: int = 5

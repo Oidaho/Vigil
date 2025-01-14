@@ -17,7 +17,6 @@ STD_COMMAND_PREFIX = "/"
 
 
 class Bot:
-    command_prefix: str = None
     routing_map: Dict[EventType, Any] = {}
 
     def __init__(self, acces_token: str, api_version: str, group_id: int) -> None:
@@ -87,26 +86,10 @@ class Bot:
         """
         self.routing_map[router.bounded_type] = router.route
 
-    def set_command_prefix(self, prefix: str) -> None:
-        """This function sets the prefix for recognizing the command.
-        This means that in case the text of the message event starts
-        with a character (or group of characters), the event will be recognized as an attempt
-        call the command. In this case, the context of the event will change slightly.
-
-        Args:
-            prefix (str): The prefix for recognizing the command.
-        """
-        self.command_prefix = prefix
-
     def run(self):
         """Launches the Bot. Starts sending requests to LPS,
         receiving and processing the latest events.
         """
-        if self.command_prefix is None:
-            self.command_prefix = STD_COMMAND_PREFIX
-            logger.warning(
-                f"Command prefix was not set. Bot will use the standard prefix '{self.command_prefix}'."
-            )
 
         logger.info("Starting listening longpoll server.")
         recived_events = self.longpoll.listen
@@ -117,7 +100,7 @@ class Bot:
                 logger.info("New event recived.")
                 logger.debug(event.raw)
 
-                ctx = get_context(event, self.api, self.command_prefix)
+                ctx = get_context(event, self.api)
                 logger.info(f"Context: {ctx}")
 
                 self.thread_pool.submit(self.__handle_ctx, ctx)

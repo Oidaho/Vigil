@@ -6,6 +6,7 @@ from typing import Dict, List
 from loguru import logger
 from vk_api import VkApi
 from vk_api.bot_longpoll import VkBotEvent
+from config import configs
 
 Payload = Dict[str, int | str | dict]
 
@@ -243,7 +244,7 @@ class Context:
         "command": Command,
     }
 
-    def __init__(self, raw: Payload, api: VkApi, command_prefix: str) -> None:
+    def __init__(self, raw: Payload, api: VkApi) -> None:
         self.api = api
 
         self.event_type: EventType = EventType(raw["type"])
@@ -259,7 +260,7 @@ class Context:
             self.__extract_attribute("client", event_object)
             self.__extract_attribute("message", event_object)
 
-            if self.message.text.startswith(command_prefix):
+            if self.message.text.startswith(configs.bot.command_prefix):
                 self.event_type = EventType("message_command")
                 self.__extract_attribute("command", event_object)
 
@@ -278,7 +279,7 @@ class Context:
         return f"EventContext(id={self.event_id}, type={self.event_type.name}, group={self.group_id})"
 
 
-def get_context(event: VkBotEvent, api: VkApi, command_prefix: str) -> Context:
+def get_context(event: VkBotEvent, api: VkApi) -> Context:
     """Extracts all the necessary information from the VK event, and also,
     if necessary, makes additional requests to the VK api, specifying
     some necessary information.
@@ -292,7 +293,7 @@ def get_context(event: VkBotEvent, api: VkApi, command_prefix: str) -> Context:
         Context: Event context.
     """
     try:
-        ctx = Context(event.raw, api, command_prefix)
+        ctx = Context(event.raw, api)
 
     except ValueError as error:
         logger.warning("Unable to load event context. Recived event with unknown type.")
