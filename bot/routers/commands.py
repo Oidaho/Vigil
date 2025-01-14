@@ -96,7 +96,8 @@ def unwarn_command(ctx: Context, args: NamedTuple) -> bool:
     ],
 )
 def punish_command(ctx: Context, args: NamedTuple) -> bool:
-    target = ctx.message.forward[0].author
+    target_user = ctx.message.forward[0].author
+    target_msg = ctx.message.forward[0].cmid
 
     text = (
         "❓ Как вы хотите наказать пользователя? \n\n"
@@ -117,7 +118,8 @@ def punish_command(ctx: Context, args: NamedTuple) -> bool:
                 label=label,
                 payload={
                     "punishment": punishment,
-                    "target": target,
+                    "target_user": target_user,
+                    "target_msg": target_msg,
                 },
             ),
             color,

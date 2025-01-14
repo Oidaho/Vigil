@@ -9,16 +9,16 @@ from db.models import Conversation
 
 
 def exec_punishment(ctx: Context, punishment: str, args: NamedTuple) -> bool:
-    target = extract_id(args.user_tag)
+    target_user = extract_id(args.user_tag)
 
-    if target is None:
+    if target_user is None:
         return False
 
     text, keyboard = select_conversation(
         ctx=ctx,
         punishment=punishment,
         additionals={
-            "target": target,
+            "target_user": target_user,
             "reason": args.reason,
         },
     )

@@ -107,13 +107,12 @@ def update_conversation_button(ctx: Context, payload: Dict[str, int | str]) -> b
 
 @router.register(name="punish_in", check_owner=True)
 def punish_in_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
-    target = payload["target"]
-    punishment = payload["punishment"]
     text, keyboard = select_conversation(
         ctx=ctx,
-        punishment=punishment,
+        punishment=payload["punishment"],
         additionals={
-            "target": target,
+            "target_user": payload["target_user"],
+            "target_msg": payload["target_msg"],
             "reason": "Нарушение в чате.",
         },
     )
@@ -139,7 +138,7 @@ def punish_in_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
 @router.register(name="execute_punishment", check_owner=True)
 def execute_punishment_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
     text = (
-        f"[id{payload['target']}| Пользователь] был наказан.\n "
+        f"[id{payload['target_user']}| Пользователь] был наказан.\n "
         f"Беседа: {payload['peer_name']}\n "
         f"Наказание: {payload['punishment']}\n "
         f"Причина: {payload['reason']}"
@@ -152,6 +151,18 @@ def execute_punishment_button(ctx: Context, payload: Dict[str, int | str]) -> bo
         keyboard=keyboard.json_str(),
     )
 
-    # TODO: Парсинг наказания и ответные действия
+    match payload["punishment"]:
+        case "unwarn":
+            pass
+        case "delete":
+            pass
+        case "warn":
+            pass
+        case "kick":
+            pass
+
+        case _:
+            return False
+
     # TODO: Уведомить пользователя в чате
     return True
