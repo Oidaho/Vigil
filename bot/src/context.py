@@ -124,6 +124,18 @@ class Reply:
 
         return self.__text
 
+    @property
+    def author(self) -> int:
+        if not hasattr(self, "__text"):
+            message_info = self.__api.messages.getByConversationMessageId(
+                peer_id=self.__peer_id,
+                conversation_message_ids=self.cmid,
+            )
+            message_info = message_info["items"][0]
+            self.__author = message_info.get("from_id")
+
+        return self.__author
+
     def __repr__(self) -> str:
         return f"Reply(id={self.cmid})"
 
