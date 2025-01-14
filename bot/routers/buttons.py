@@ -68,7 +68,7 @@ def drop_mark_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
 
     if conversation is not None:
         mark = conversation.mark
-        conversation.delete()
+        conversation.delete_instance()
         snackbar_message = f'📝 Метка "{mark}" снята с беседы.'
 
     else:

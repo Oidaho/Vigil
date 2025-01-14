@@ -125,7 +125,7 @@ def execute_unwarn(ctx: Context, payload: Dict[str, int | str]) -> bool:
     if sanction is not None:
         warns = sanction.warns_count - 1
         if warns <= 0:
-            sanction.delete()
+            sanction.delete_instance()
 
         else:
             sanction.warns_count = warns
@@ -182,7 +182,7 @@ def execute_warn(ctx: Context, payload: Dict[str, int | str]) -> int:
 
         warns = sanction.warns_count
         if warns >= configs.bot.max_warns:
-            sanction.delete()
+            sanction.delete_instance()
             kick = True
             text = f"[id{payload['target_user']}|Пользователь] исключен, получив много предупреждений.\n"
 
