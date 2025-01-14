@@ -94,6 +94,7 @@ def unwarn_command(ctx: Context, args: NamedTuple) -> bool:
         FromMarkedOnly(mark="LOG"),
         ForwardRequired(msg_count=1),
     ],
+    delete_src=False,
 )
 def punish_command(ctx: Context, args: NamedTuple) -> bool:
     target_user = ctx.message.forward[0].author

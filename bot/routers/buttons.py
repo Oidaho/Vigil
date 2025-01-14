@@ -1,13 +1,18 @@
 from typing import Dict
 
 from src.context import Context
-from src.keyboards import EmptyKeyboard
 from src.keyboards.answers import ShowSnackbar
 from src.routers import ButtonRouter
 
 from db.models import Conversation
 
-from .utils import select_conversation
+from .utils import (
+    select_conversation,
+    execute_kick,
+    execute_delete,
+    execute_unwarn,
+    execute_warn,
+)
 
 router = ButtonRouter()
 
@@ -137,32 +142,15 @@ def punish_in_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
 
 @router.register(name="execute_punishment", check_owner=True)
 def execute_punishment_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
-    text = (
-        f"[id{payload['target_user']}| Пользователь] был наказан.\n "
-        f"Беседа: {payload['peer_name']}\n "
-        f"Наказание: {payload['punishment']}\n "
-        f"Причина: {payload['reason']}"
-    )
-    keyboard = EmptyKeyboard()
-    ctx.api.messages.edit(
-        peer_id=ctx.peer.id,
-        cmid=ctx.button.cmid,
-        message=text,
-        keyboard=keyboard.json_str(),
-    )
+    punishments = {
+        "kick": execute_kick,
+        "warn": execute_warn,
+        "unwarn": execute_unwarn,
+        "delete": execute_delete,
+    }
 
-    match payload["punishment"]:
-        case "unwarn":
-            pass
-        case "delete":
-            pass
-        case "warn":
-            pass
-        case "kick":
-            pass
+    func = punishments.get(payload["punishment"])
+    if func is not None:
+        return func(ctx, payload)
 
-        case _:
-            return False
-
-    # TODO: Уведомить пользователя в чате
-    return True
+    return False
