@@ -68,3 +68,11 @@ class Keyboard:
 
     def json_str(self) -> str:
         return json.dumps(self.as_dict())
+
+
+class EmptyKeyboard(Keyboard):
+    def __init__(self) -> None:
+        return
+
+    def as_dict(self) -> Payload:
+        return {}
