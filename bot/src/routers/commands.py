@@ -82,8 +82,9 @@ class CommandRouter(Router):
             router = CommandRouter()
 
             @router.register(name='test', args=("arg_1", "arg_2"))
-            def test_command(ctx, args) -> None:
-                pass
+            def test_command(ctx, args) -> bool:
+               # response actions here
+               return True
         ```
         """
 

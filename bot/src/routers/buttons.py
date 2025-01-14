@@ -96,8 +96,9 @@ class ButtonRouter(Router):
             router = Buttons()
 
             @router.register(name='close')
-            def close_button(ctx, payload) -> None:
-                pass
+            def close_button(ctx, payload) -> bool:
+               # response actions here
+               return True
         ```
         """
 
