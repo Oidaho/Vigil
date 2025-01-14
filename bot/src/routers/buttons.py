@@ -33,9 +33,9 @@ class ButtonRouter(Router):
     def __init__(self, routing_ruleset: List[Rule] = []) -> None:
         super().__init__(ruleset=routing_ruleset)
         self.bounded_type = EventType.BUTTON
-        self.handlers["error"] = error_factory("⚠️ Something went wrong.")
-        self.handlers["rejected"] = error_factory("⚠️ Lack permission.")
-        self.handlers["lack_permission"] = error_factory("⚠️ Action rejected.")
+        self.handlers["error"] = error_factory("⚠️ Что-то пошло не так.")
+        self.handlers["rejected"] = error_factory("⚠️ Действие отклонено.")
+        self.handlers["lack_permission"] = error_factory("⚠️ Недостаточно прав.")
 
     def route(self, context: Context) -> None:
         """The function extracts the button name from the context
