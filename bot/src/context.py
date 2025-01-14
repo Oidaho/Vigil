@@ -106,35 +106,12 @@ class Reply:
         if (attempt := data.get("conversation_message_id")) is None:
             raise AttributeError("Error when getting the reply message cmID")
 
-        self.id: int = attempt.get("id")
+        self.id: int = data.get("id")
         self.cmid: int = attempt
+        self.text: str = data.get("text")
+        self.author: int = data.get("from_id")
 
-        self.__peer_id: int = data.get("peer_id")  # Forced use
         self.__api = api
-
-    @property
-    def text(self) -> str:
-        if not hasattr(self, "__text"):
-            message_info = self.__api.messages.getByConversationMessageId(
-                peer_id=self.__peer_id,
-                conversation_message_ids=self.cmid,
-            )
-            message_info = message_info["items"][0]
-            self.__text = message_info.get("text")
-
-        return self.__text
-
-    @property
-    def author(self) -> int:
-        if not hasattr(self, "__text"):
-            message_info = self.__api.messages.getByConversationMessageId(
-                peer_id=self.__peer_id,
-                conversation_message_ids=self.cmid,
-            )
-            message_info = message_info["items"][0]
-            self.__author = message_info.get("from_id")
-
-        return self.__author
 
     def __repr__(self) -> str:
         return f"Reply(id={self.cmid})"
