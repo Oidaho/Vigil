@@ -111,6 +111,7 @@ class Reply:
         self.cmid: int = attempt
         self.text: str = data.get("text")
         self.author: int = data.get("from_id")
+        self.peer: int = data.get("peer_id")
 
         self.__api = api
 
@@ -143,6 +144,7 @@ class Message:
         self.cmid: int = attempt
         self.id: int = data.get("id")
         self.text: str = data.get("text")
+
         self.__peer_id: int = data.get("peer_id")  # Forced use
         self.__api = api
 
