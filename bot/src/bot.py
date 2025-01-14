@@ -51,7 +51,12 @@ class Bot:
 
         else:
             try:
-                routing_func(ctx)
+                if routing_func(ctx):
+                    text = "Event handling was completed successfully."
+                else:
+                    text = "Event handling is completed, however, not all responses could be applied."
+
+                logger.info(text)
 
             except RuntimeError as error:
                 logger.warning(f"Routing canceled: {error}")

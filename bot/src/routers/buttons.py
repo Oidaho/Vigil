@@ -57,7 +57,7 @@ class ButtonRouter(Router):
             if handler is None:
                 raise NameError(f"Couldn't find a button handler named '{name}'.")
 
-            handler(context)
+            return handler(context)
 
         except (RuntimeError, PermissionError) as error:
             if isinstance(error, RuntimeError):

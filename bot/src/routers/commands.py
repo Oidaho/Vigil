@@ -40,7 +40,7 @@ class CommandRouter(Router):
             if handler is None:
                 raise NameError(f"Couldn't find a command named '{name}'.")
 
-            handler(context)
+            return handler(context)
 
         except (ValueError, RuntimeError) as error:
             logger.warning(f"Command execution canceled: {error}")
