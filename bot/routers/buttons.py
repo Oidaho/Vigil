@@ -1,10 +1,13 @@
-from src.routers import ButtonRouter
-from src.context import Context
 from typing import Dict
 
+from src.context import Context
+from src.keyboards import EmptyKeyboard
 from src.keyboards.answers import ShowSnackbar
+from src.routers import ButtonRouter
+
 from db.models import Conversation
 
+from .utils import select_conversation
 
 router = ButtonRouter()
 
@@ -21,10 +24,8 @@ def close_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
         event_id=ctx.button.id,
         user_id=ctx.user.id,
         peer_id=ctx.peer.id,
-        event_data=ShowSnackbar("❌ Closed.").json_str(),
+        event_data=ShowSnackbar("❌ Закрыто.").json_str(),
     )
-
-    # TODO: При необходимости рассмотреть вариант с удалением учтеной сессии из БД
 
     return True
 
@@ -101,4 +102,56 @@ def update_conversation_button(ctx: Context, payload: Dict[str, int | str]) -> b
         event_data=ShowSnackbar(snackbar_message).json_str(),
     )
 
+    return True
+
+
+@router.register(name="punish_in", check_owner=True)
+def punish_in_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
+    target = payload["target"]
+    punishment = payload["punishment"]
+    text, keyboard = select_conversation(
+        ctx=ctx,
+        punishment=punishment,
+        additionals={
+            "target": target,
+            "reason": "Нарушение в чате.",
+        },
+    )
+
+    ctx.api.messages.edit(
+        peer_id=ctx.peer.id,
+        cmid=ctx.button.cmid,
+        message=text,
+        keyboard=keyboard.json_str(),
+    )
+
+    snackbar_message = "🧑‍⚖️ Наказание выбрано."
+    ctx.api.messages.sendMessageEventAnswer(
+        event_id=ctx.button.id,
+        user_id=ctx.user.id,
+        peer_id=ctx.peer.id,
+        event_data=ShowSnackbar(snackbar_message).json_str(),
+    )
+
+    return True
+
+
+@router.register(name="execute_punishment", check_owner=True)
+def execute_punishment_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
+    text = (
+        f"[id{payload['target']}| Пользователь] был наказан.\n "
+        f"Беседа: {payload['peer_name']}\n "
+        f"Наказание: {payload['punishment']}\n "
+        f"Причина: {payload['reason']}"
+    )
+    keyboard = EmptyKeyboard()
+    ctx.api.messages.edit(
+        peer_id=ctx.peer.id,
+        cmid=ctx.button.cmid,
+        message=text,
+        keyboard=keyboard.json_str(),
+    )
+
+    # TODO: Парсинг наказания и ответные действия
+    # TODO: Уведомить пользователя в чате
     return True

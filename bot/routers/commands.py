@@ -1,12 +1,12 @@
-from src.routers import CommandRouter
-from src.context import Context
 from typing import NamedTuple
 
-from src.keyboards import Keyboard, ButtonColor
+from rules.commands import FromMarkedOnly, ForwardRequired
+from src.context import Context
+from src.keyboards import ButtonColor, Keyboard
 from src.keyboards.actions import Callback
+from src.routers import CommandRouter
 
-from rules.commands import FromMarkedOnly, ReplyRequired
-
+from .utils import exec_punishment
 
 router = CommandRouter()
 
@@ -46,7 +46,7 @@ def mark_command(ctx: Context, args: NamedTuple) -> bool:
         .add_button(
             "close",
             Callback(label="Закрыть"),
-            ButtonColor.NEGATIVE,
+            ButtonColor.SECONDARY,
         )
     )
 
@@ -66,25 +66,25 @@ def mark_command(ctx: Context, args: NamedTuple) -> bool:
     execution_ruleset=[FromMarkedOnly(mark="LOG")],
 )
 def kick_command(ctx: Context, args: NamedTuple) -> bool:
-    pass
+    return exec_punishment(ctx=ctx, punishment="kick", args=args)
 
 
 @router.register(
-    name="kick",
+    name="warn",
     args=("user_tag", "reason"),
     execution_ruleset=[FromMarkedOnly(mark="LOG")],
 )
 def warn_command(ctx: Context, args: NamedTuple) -> bool:
-    pass
+    return exec_punishment(ctx=ctx, punishment="warn", args=args)
 
 
 @router.register(
-    name="kick",
+    name="unwarn",
     args=("user_tag", "reason"),
     execution_ruleset=[FromMarkedOnly(mark="LOG")],
 )
 def unwarn_command(ctx: Context, args: NamedTuple) -> bool:
-    pass
+    return exec_punishment(ctx=ctx, punishment="unwarn", args=args)
 
 
 @router.register(
@@ -92,8 +92,48 @@ def unwarn_command(ctx: Context, args: NamedTuple) -> bool:
     args=(),
     execution_ruleset=[
         FromMarkedOnly(mark="LOG"),
-        ReplyRequired(),
+        ForwardRequired(msg_count=1),
     ],
 )
 def punish_command(ctx: Context, args: NamedTuple) -> bool:
-    pass
+    target = ctx.message.forward[0].author
+
+    text = (
+        "❓ Как вы хотите наказать пользователя? \n\n"
+        "Выберите необходимое дествие из меню ниже:"
+    )
+
+    keyboard = Keyboard(inline=True, one_time=False, owner_id=ctx.user.id).add_row()
+
+    pinushments = (
+        ("Удалить сообщение", "delete", ButtonColor.PRIMARY),
+        ("Предупредить", "warn", ButtonColor.PRIMARY),
+        ("Выгнать", "kick", ButtonColor.NEGATIVE),
+    )
+    for label, punishment, color in pinushments:
+        keyboard.add_button(
+            "punish_in",
+            Callback(
+                label=label,
+                payload={
+                    "punishment": punishment,
+                    "target": target,
+                },
+            ),
+            color,
+        )
+
+    keyboard.add_row().add_button(
+        "close",
+        Callback(label="Закрыть"),
+        ButtonColor.SECONDARY,
+    )
+
+    ctx.api.messages.send(
+        peer_ids=ctx.peer.id,
+        random_id=0,
+        message=text,
+        keyboard=keyboard.json_str(),
+    )
+
+    return True
