@@ -1,3 +1,3 @@
-from .keyboard import Keyboard, ButtonColor
+from .keyboard import Keyboard, EmptyKeyboard, ButtonColor
 
-__all__ = ("Keyboard", "ButtonColor")
+__all__ = ("Keyboard", "EmptyKeyboard", "ButtonColor")
