@@ -27,3 +27,14 @@ class ReplyRequired(Rule):
             return True
 
         return False
+
+
+class ForwardRequired(Rule):
+    def __init__(self, msg_count: int) -> None:
+        self.count = msg_count
+
+    def check(self, ctx: Context) -> bool:
+        if len(ctx.message.forward) == self.count:
+            return True
+
+        return False
