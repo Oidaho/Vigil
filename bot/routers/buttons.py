@@ -7,7 +7,6 @@ from src.routers import ButtonRouter
 from db.models import Conversation
 
 from .utils import (
-    select_conversation,
     execute_kick,
     execute_delete,
     execute_unwarn,
@@ -110,36 +109,6 @@ def update_conversation_button(ctx: Context, payload: Dict[str, int | str]) -> b
     return True
 
 
-@router.register(name="punish_in", check_owner=True)
-def punish_in_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
-    text, keyboard = select_conversation(
-        ctx=ctx,
-        punishment=payload["punishment"],
-        additionals={
-            "target_user": payload["target_user"],
-            "target_msg": payload["target_msg"],
-            "reason": "Нарушение в чате.",
-        },
-    )
-
-    ctx.api.messages.edit(
-        peer_id=ctx.peer.id,
-        cmid=ctx.button.cmid,
-        message=text,
-        keyboard=keyboard.json_str(),
-    )
-
-    snackbar_message = "🧑‍⚖️ Наказание выбрано."
-    ctx.api.messages.sendMessageEventAnswer(
-        event_id=ctx.button.id,
-        user_id=ctx.user.id,
-        peer_id=ctx.peer.id,
-        event_data=ShowSnackbar(snackbar_message).json_str(),
-    )
-
-    return True
-
-
 @router.register(name="execute_punishment", check_owner=True)
 def execute_punishment_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
     punishments = {
@@ -151,6 +120,14 @@ def execute_punishment_button(ctx: Context, payload: Dict[str, int | str]) -> bo
 
     func = punishments.get(payload["punishment"])
     if func is not None:
+        snackbar_message = "🧑‍⚖️ Наказание выбрано."
+        ctx.api.messages.sendMessageEventAnswer(
+            event_id=ctx.button.id,
+            user_id=ctx.user.id,
+            peer_id=ctx.peer.id,
+            event_data=ShowSnackbar(snackbar_message).json_str(),
+        )
+
         return func(ctx, payload)
 
     return False

@@ -6,6 +6,7 @@ from src.keyboards import ButtonColor, Keyboard
 from src.keyboards.actions import Callback
 from src.routers import CommandRouter
 
+from db.models import Conversation
 from .utils import exec_punishment
 
 router = CommandRouter()
@@ -99,6 +100,8 @@ def unwarn_command(ctx: Context, args: NamedTuple) -> bool:
 def punish_command(ctx: Context, args: NamedTuple) -> bool:
     target_user = ctx.message.forward[0].author
     target_msg = ctx.message.forward[0].cmid
+    peer_id = ctx.message.forward[0].peer
+    peer_name = Conversation.select().where(Conversation.peer_id == peer_id).get().name
 
     text = (
         "❓ Как вы хотите наказать пользователя? \n\n"
@@ -114,13 +117,16 @@ def punish_command(ctx: Context, args: NamedTuple) -> bool:
     )
     for label, punishment, color in pinushments:
         keyboard.add_button(
-            "punish_in",
+            "execute_punishment",
             Callback(
                 label=label,
                 payload={
                     "punishment": punishment,
                     "target_user": target_user,
                     "target_msg": target_msg,
+                    "peer_id": peer_id,
+                    "peer_name": peer_name,
+                    "reason": "Нарушение в чате.",
                 },
             ),
             color,
