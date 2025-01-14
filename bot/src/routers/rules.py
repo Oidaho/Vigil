@@ -4,6 +4,9 @@ from ..context import Context
 
 
 class Rule(ABC):
+    def __init__(self) -> None:
+        pass
+
     def __call__(self, ctx: Context) -> None:
         if not (rule_check := self.check(ctx)):
             raise RuntimeError(
