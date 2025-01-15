@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from db import db_instance
 from db.models import Staff
 from config import configs
-from routes import auth_router, pages_router
+from routes import auth_router, pages_router, health_rouret
 
 
 def add_admin() -> None:
@@ -40,3 +40,4 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(auth_router)
 app.include_router(pages_router)
+app.include_router(health_rouret)
