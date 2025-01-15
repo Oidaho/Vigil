@@ -3,11 +3,12 @@ from fastapi.staticfiles import StaticFiles
 from routes import auth_router, pages_router
 from contextlib import asynccontextmanager
 from db import get_db_isntanse
+from config import configs
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    db = get_db_isntanse()
+    db = get_db_isntanse(configs.database.dialect)
     db.connect()
 
     yield
