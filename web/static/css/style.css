@@ -1,0 +1,22 @@
+body{
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    width: 100svw;
+    height: 5svh;
+}
+
+main {
+    width: 100svw;
+    height: 93vh;
+    font-family: "Rubik", serif;
+}
+
+footer {
+    width: 100svw;
+    height: 2svh;
+    
+}
+

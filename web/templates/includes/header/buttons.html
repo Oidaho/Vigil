@@ -1,0 +1,7 @@
+<div>
+    {% if authenticated %}
+        <button class="btn btn-outline-danger btn-sm custom-hover-button" onclick="location.href='/logout'">Logout</button>
+    {% else %}
+        <button class="btn btn-outline-success btn-sm custom-hover-button" onclick="location.href='/login'">Login</button>
+    {% endif %}
+</div>
