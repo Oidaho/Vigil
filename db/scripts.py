@@ -25,11 +25,6 @@ def set_conversation_default_settings():
                     (NEW.id, 'account_age', 7),
                     (NEW.id, 'menu_session', 5);
 
-                INSERT INTO delays(bpid, setting, delay)
-                VALUES (NEW.id, 'green_zone', 1),
-                    (NEW.id, 'yellow_zone', 7),
-                    (NEW.id, 'red_zone', 30);
-
                 INSERT INTO settings(bpid, name, status, destination, points)
                 VALUES (NEW.id, 'photo', 'active', 'filter', 1),
                     (NEW.id, 'video', 'active', 'filter', 1),

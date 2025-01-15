@@ -1,5 +1,5 @@
 # ./VK-Vigil/database/__init__.py
-from .db import db_instance
+from .db import get_db_isntanse
 
 
-__all__ = ("db_instance",)
+__all__ = ("get_db_isntanse",)
