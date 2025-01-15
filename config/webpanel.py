@@ -15,6 +15,6 @@ class WebpanelSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="web_")
 
 
-    jwt: JWTSettings = ()
+    jwt: JWTSettings = JWTSettings()
     admi_id: str = 1
     password: str = "password"
