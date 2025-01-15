@@ -4,7 +4,7 @@ import bcrypt
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from db import db_isntanse
+from db import db_instance
 from db.models import Staff
 from config import configs
 from routes import auth_router, pages_router
@@ -26,12 +26,12 @@ def add_admin() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    db_isntanse.connect()
+    db_instance.connect()
     add_admin()
 
     yield
 
-    db_isntanse.close()
+    db_instance.close()
 
 
 app = FastAPI(title="Web-panel", lifespan=lifespan)
