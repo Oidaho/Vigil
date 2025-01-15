@@ -8,7 +8,7 @@ class JWTSettings(BaseSettings):
 
     secret: str = "secret"
     algorithm: str = "HS512"
-    access_token_lifetime: int = 30  # minutes
+    access_token_lifetime: int = 120  # minutes
     refresh_token_lifetime: int = 7  # days
 
 
@@ -16,5 +16,5 @@ class WebpanelSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="web_")
 
     jwt: JWTSettings = JWTSettings()
-    admi_id: int = 1
+    admin_id: int = 1
     password: str = "password"
