@@ -7,7 +7,7 @@ from loguru import logger
 from src import Bot
 from config import configs
 from routers import command_router, button_router
-from db import get_db_isntanse
+from db import db_instance
 from db.models import (
     Conversation,
     Staff,
@@ -22,9 +22,8 @@ from db.models import (
 
 
 def setup_database() -> None:
-    db = get_db_isntanse(configs.database.dialect)
-    db.connect()
-    db.create_tables(
+    db_instance.connect()
+    db_instance.create_tables(
         models=[
             Conversation,
             Staff,
@@ -73,6 +72,8 @@ def main() -> None:
 
     bot.run()
 
+
+    db_instance.close()
 
 if __name__ == "__main__":
     main()
