@@ -6,6 +6,17 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class WebpanelSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="web_")
 
+
+    jwt: JWTSettings = ()
     admi_id: str = 1
     password: str = "password"
-    jwt_secret: str = "secret"
+
+
+class JWTSettings(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="jwt_")
+
+    secret: str = "secret"
+    algorithm: str = "HS512"
+    access_token_lifetime: int = 30 # minutes
+    refresh_token_lifetime: int = 7 # days
+    

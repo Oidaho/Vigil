@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings
 from .database import DatabaseSettings
 from .chache import CacheSettings
 from .bot import BotSettings
-from .web import WebpanelSettings
+from .webpanel import WebpanelSettings
 
 
 class Settings(BaseSettings):
