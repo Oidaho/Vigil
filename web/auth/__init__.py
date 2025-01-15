@@ -1,4 +1,13 @@
-from .auth import create_auth, get_auth, AUTH_COOKIE_NAME
+from .functions import (
+    AUTH_COOKIE_NAME,
+    authenticate_user,
+    get_current_user,
+    set_current_user,
+)
 
-
-__all__ = ("create_auth", "get_auth", "AUTH_COOKIE_NAME")
+__all__ = (
+    "AUTH_COOKIE_NAME",
+    "authenticate_user",
+    "get_current_user",
+    "set_current_user",
+)

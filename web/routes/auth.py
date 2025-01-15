@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Form, Request, Response, status
+from fastapi import APIRouter, Form, Request, Response, status, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from fastapi.templating import Jinja2Templates
-from auth import AUTH_COOKIE_NAME, get_auth, create_auth
+from auth import AUTH_COOKIE_NAME, set_current_user, authenticate_user
 from config import configs
 
 templates = Jinja2Templates(directory="templates")
@@ -11,31 +11,26 @@ router = APIRouter()
 
 @router.get("/login", response_class=HTMLResponse)
 def login_page(request: Request):
-    is_authenticated, vk_id = get_auth(request=request)
-
-    if is_authenticated:
-        return RedirectResponse(
-            "/",
-            status_code=status.HTTP_307_TEMPORARY_REDIRECT,
-        )
-
     context = {
         "request": request,
         "project": configs.project_name,
         "title": "Вход",
-        "authenticated": is_authenticated,
+        "authenticated": False,
     }
 
     return templates.TemplateResponse("login.html", context)
 
 
 @router.post("/login")
-def perform_login(user_id: int = Form(...), password: str = Form(...)):
-    response = create_auth(user_id=user_id, password=password)
-    if response is not None:
-        return response
+def login(response: Response, user_id: int = Form(...), password: str = Form(...)):
+    is_authenticated = authenticate_user(user_id, password)
 
-    return RedirectResponse("/login", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
+    if not is_authenticated:
+        raise HTTPException(status_code=400, detail="Invalid credentials")
+
+    set_current_user(response, user_id)
+
+    return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
 
 
 @router.get("/logout")
