@@ -31,11 +31,7 @@ def login_page(request: Request):
 
 
 @router.post("/login")
-def login(
-    request: Request,
-    user_id: int = Form(...),
-    password: str = Form(...),
-):
+def login(request: Request, user_id: int = Form(...), password: str = Form(...)):
     is_authenticated, error = authenticate_user(user_id, password)
 
     if not is_authenticated:
