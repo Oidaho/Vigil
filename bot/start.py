@@ -22,7 +22,7 @@ from db.models import (
 
 
 def setup_database() -> None:
-    db = get_db_isntanse()
+    db = get_db_isntanse(configs.database.dialect)
     db.connect()
     db.create_tables(
         models=[

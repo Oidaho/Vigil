@@ -5,14 +5,10 @@ from peewee import SqliteDatabase, PostgresqlDatabase, Database
 from config import configs
 
 
-DIALECT = configs.database.dialect
-db_instance: Database = None
-
-
-def get_db_isntanse() -> Database | NoReturn:
-    match DIALECT:
+def get_db_isntanse(dialect: str) -> Database | NoReturn:
+    match dialect.lower():
         case "sqlite":
-            return SqliteDatabase("/app/db/bot.sqlite3")
+            db_instance = SqliteDatabase("/app/db/bot.sqlite3")
 
         case "postgresql":
             dsn = "postgresql://{username}:{password}@{hostname}/bot".format(
@@ -20,10 +16,11 @@ def get_db_isntanse() -> Database | NoReturn:
                 password=configs.database.password,
                 hostname=configs.database.hostname,
             )
-            return PostgresqlDatabase(database=dsn)
+            db_instance = PostgresqlDatabase(database=dsn)
 
         case _:
             raise ValueError(
-                f"Enable to create database isntance. Unknow\\Unsupported dialect '{DIALECT}'."
+                f"Enable to create database isntance. Unknow\\Unsupported dialect '{dialect}'."
             )
-    
+
+    return db_instance
