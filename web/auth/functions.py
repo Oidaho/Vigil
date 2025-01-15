@@ -4,17 +4,20 @@ import jwt
 from fastapi import HTTPException, Request, Response, status
 
 from config import configs
+from db.models import Staff
+import bcrypt
 
 AUTH_COOKIE_NAME = f"{configs.project_name}_auth_token"
 
 
 def authenticate_user(user_id: int, password: str) -> bool:
-    # TODO: Хеширование пароля и работа с БД
-    if user_id in (1, 2) and password == "password":
-        if user_id == 2:
-            return True, None
+    user = Staff.select().where(Staff.user_id == user_id).get_or_none()
+    if user:
+        if bcrypt.checkpw(password.encode("utf-8"), user.password_hash):
+            if user.permission_lvl > 5:
+                return True, None
 
-        return False, "Недостаточно прав"
+            return False, "Недостаточно прав"
 
     return False, "Неверный ID или пароль"
 
