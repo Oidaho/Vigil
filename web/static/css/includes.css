@@ -4,13 +4,15 @@
     font-weight: bold;
     font-family: 'Nunito', sans-serif;
     color: white;
+    text-decoration: none;
+    cursor: pointer;
 }
 
-.project-name {
+.logo .project-name {
     font-size: 1.5rem;
 }
 
-.project-sub {
+.logo .project-sub {
     font-size: 0.8rem; 
     vertical-align: sub;
     margin-left: 4px; 
