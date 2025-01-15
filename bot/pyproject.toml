@@ -11,7 +11,6 @@ loguru = "^0.7.3"
 peewee = "^3.17.8"
 pydantic-settings = "^2.6.1"
 pytz = "^2024.2"
-apscheduler = "^3.11.0"
 psycopg2-binary = "^2.9.10"
 
 
