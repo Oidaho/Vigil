@@ -5,16 +5,29 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from db import db_isntanse
+from db.models import Staff
+from config import configs
 from routes import auth_router, pages_router
 
 
 def add_admin() -> None:
-    pass
+    user_id = configs.web.admin_id
+    hashed_password = bcrypt.hashpw(
+        configs.web.password.encode("utf-8"), bcrypt.gensalt()
+    )
+
+    new_admin = Staff(
+        user_id=user_id,
+        permission_lvl=10,
+        password_hash=hashed_password,
+    )
+    new_admin.save()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     db_isntanse.connect()
+    add_admin()
 
     yield
 
