@@ -28,6 +28,7 @@ async def read_root(request: Request):
     context = {
         "request": request,
         "project": configs.project_name,
+        "title": "Главная",
         "authenticated": is_authenticated(request),
     }
 
@@ -39,8 +40,8 @@ async def login_page(request: Request):
     context = {
         "request": request,
         "project": configs.project_name,
-        "authenticated": False,
         "title": "Вход",
+        "authenticated": False,
     }
 
     return templates.TemplateResponse("login.html", context)
