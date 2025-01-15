@@ -10,14 +10,20 @@ AUTH_COOKIE_NAME = f"{configs.project_name}_auth_token"
 
 def authenticate_user(user_id: int, password: str) -> bool:
     # TODO: Хеширование пароля и работа с БД
-    return user_id == 1 and password == "password"
+    if user_id in (1, 2) and password == "password":
+        if user_id == 2:
+            return True, None
+
+        return False, "Недостаточно прав"
+
+    return False, "Неверный ID или пароль"
 
 
 def set_current_user(response: Response, user_id: int) -> None:
+    lifetime = timedelta(minutes=configs.web.jwt.access_token_lifetime)
     payload = {
         "sub": str(user_id),
-        "exp": datetime.utcnow()
-        + timedelta(minutes=configs.web.jwt.access_token_lifetime),
+        "exp": datetime.utcnow() + lifetime,
         "iat": datetime.utcnow(),
     }
 
@@ -34,7 +40,7 @@ def set_current_user(response: Response, user_id: int) -> None:
         # TODO: HTTPS
         # secure=True,
         samesite="lax",
-        max_age=3600,
+        max_age=lifetime.seconds,
     )
 
 

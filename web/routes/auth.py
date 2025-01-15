@@ -9,28 +9,46 @@ templates = Jinja2Templates(directory="templates")
 router = APIRouter()
 
 
-@router.get("/login", response_class=HTMLResponse)
-def login_page(request: Request):
+def render_login_page(
+    request: Request,
+    status_code: int,
+    error: str | None = None,
+) -> HTMLResponse:
     context = {
         "request": request,
         "project": configs.project_name,
         "title": "Вход",
         "authenticated": False,
+        "error": error,
     }
 
     return templates.TemplateResponse("login.html", context)
 
 
+@router.get("/login", response_class=HTMLResponse)
+def login_page(request: Request):
+    return render_login_page(request=request, status_code=status.HTTP_200_OK)
+
+
 @router.post("/login")
-def login(response: Response, user_id: int = Form(...), password: str = Form(...)):
-    is_authenticated = authenticate_user(user_id, password)
+def login(
+    request: Request,
+    user_id: int = Form(...),
+    password: str = Form(...),
+):
+    is_authenticated, error = authenticate_user(user_id, password)
 
     if not is_authenticated:
-        raise HTTPException(status_code=400, detail="Invalid credentials")
+        return render_login_page(
+            request=request,
+            error=error,
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
 
+    response = RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
     set_current_user(response, user_id)
 
-    return RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
+    return response
 
 
 @router.get("/logout")
