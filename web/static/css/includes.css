@@ -56,12 +56,14 @@
 /* ---------------- includes/footer/company.html ---------------- */
 .company {
     font-family: "Teko", serif;
-    font-size: 13px; /* Уменьшаем размер шрифта */
+    font-size: 13px;
     font-weight: bold;
     text-transform: uppercase;
-    display: inline-flex; /* Делаем контейнер компактным */
-    align-items: center; /* Выравниваем элементы по вертикали */
-    gap: 2px; /* Расстояние между буквами */
+    display: inline-flex; 
+    align-items: center; 
+    gap: 2px;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 
