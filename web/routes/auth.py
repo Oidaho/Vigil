@@ -30,8 +30,8 @@ def login_page(request: Request):
 
 
 @router.post("/login")
-def perform_login(vk_id: int = Form(...), password: str = Form(...)):
-    response = create_auth(user_id=vk_id, password=password)
+def perform_login(user_id: int = Form(...), password: str = Form(...)):
+    response = create_auth(user_id=user_id, password=password)
     if response is not None:
         return response
 
