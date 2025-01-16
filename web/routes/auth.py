@@ -9,11 +9,7 @@ templates = Jinja2Templates(directory="templates")
 router = APIRouter()
 
 
-def render_login_page(
-    request: Request,
-    status_code: int,
-    error: str | None = None,
-) -> HTMLResponse:
+def render_login_page(request: Request, error: str | None) -> HTMLResponse:
     context = {
         "request": request,
         "project": configs.project_name,
@@ -27,7 +23,7 @@ def render_login_page(
 
 @router.get("/login", response_class=HTMLResponse)
 def login_page(request: Request):
-    return render_login_page(request=request, status_code=status.HTTP_200_OK)
+    return render_login_page(request=request, error=None)
 
 
 @router.post("/login")
@@ -35,11 +31,7 @@ def login(request: Request, user_id: int = Form(...), password: str = Form(...))
     is_authenticated, error = authenticate_user(user_id, password)
 
     if not is_authenticated:
-        return render_login_page(
-            request=request,
-            error=error,
-            status_code=status.HTTP_400_BAD_REQUEST,
-        )
+        return render_login_page(request=request, error=error)
 
     response = RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)
     set_current_user(response, user_id)
@@ -50,8 +42,7 @@ def login(request: Request, user_id: int = Form(...), password: str = Form(...))
 @router.get("/logout")
 def logout():
     response = RedirectResponse(
-        "/login",
-        status_code=status.HTTP_307_TEMPORARY_REDIRECT,
+        "/login", status_code=status.HTTP_307_TEMPORARY_REDIRECT
     )
     response.delete_cookie(AUTH_COOKIE_NAME)
     return response

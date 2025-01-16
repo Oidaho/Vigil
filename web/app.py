@@ -4,17 +4,15 @@ import bcrypt
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from db import db_instance
+from db import connect_and_prepare, disconnect
 from db.models import Staff
 from config import configs
 from routes import (
-    auth_,
-    health_,
-    index_,
-    peers_,
-    queue_,
-    sanctions_,
-    staff_,
+    auth_router,
+    health_router,
+    index_router,
+    peers_router,
+    staff_router,
 )
 
 
@@ -25,9 +23,9 @@ def add_admin() -> None:
     )
 
     new_admin, created = Staff.get_or_create(
-        user_id=user_id,
+        id=user_id,
         defaults={
-            "permission_lvl": 10,
+            "permission": 3,
             "password_hash": hashed_password,
         },
     )
@@ -35,22 +33,22 @@ def add_admin() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    db_instance.connect()
+    # db
+    connect_and_prepare()
     add_admin()
 
     yield
 
-    db_instance.close()
+    # db
+    disconnect()
 
 
 app = FastAPI(title="Web-panel", lifespan=lifespan)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-app.include_router(auth_)
-app.include_router(health_)
-app.include_router(index_)
-app.include_router(peers_)
-app.include_router(queue_)
-app.include_router(sanctions_)
-app.include_router(staff_)
+app.include_router(auth_router)
+app.include_router(health_router)
+app.include_router(index_router)
+app.include_router(peers_router)
+app.include_router(staff_router)

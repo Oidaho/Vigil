@@ -1,86 +1,43 @@
-from fastapi import APIRouter, Body, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from auth import get_current_user
+from auth import AuthData, get_current_user
 from config import configs
-from db.models import Conversation, Setting, Delay
+from db.models import Peer
 
 templates = Jinja2Templates(directory="templates")
-router = APIRouter()
+router = APIRouter(prefix="/peers")
 
 
-@router.get("/conversations", response_class=HTMLResponse)
-def conversations(request: Request, authenticated=Depends(get_current_user)):
-    peers = Conversation.select()
+@router.get("/", response_class=HTMLResponse)
+def peers_page(
+    request: Request,
+    authenticated: AuthData = Depends(get_current_user),
+):
+    peers = Peer.select()
 
     context = {
-        "request": request,
-        "project": configs.project_name,
         "title": "Чаты",
-        "authenticated": True,
+        "authenticated": authenticated,
+        "project": configs.project_name,
         "conversations": peers,
+        "request": request,
     }
 
-    return templates.TemplateResponse("conversations.html", context)
+    return templates.TemplateResponse("peers.html", context)
 
 
-@router.patch("/conversations/{peer_id}")
-def update_conversation(
+@router.delete("/{peer_id}")
+def unmark_peer(
     peer_id: int,
-    settings: list = Body(...),
-    delays: list = Body(...),
-    authenticated=Depends(get_current_user),
+    authenticated: AuthData = Depends(get_current_user),
 ):
-    conversation = Conversation.get_or_none(Conversation.peer_id == peer_id)
-    if conversation:
-        for setting_update in settings:
-            if "id" not in setting_update or "is_enabled" not in setting_update:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Неверный формат данных для настройки. Ожидаются 'id' и 'is_enabled'.",
-                )
-
-            setting = Setting.get_or_none(
-                Setting.id == setting_update["id"],
-                Setting.conversation == conversation,
-            )
-            if setting:
-                setting.is_enabled = bool(int(setting_update["is_enabled"]))
-                setting.save()
-
-        for delay_update in delays:
-            if "id" not in delay_update or "count" not in delay_update:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Неверный формат данных для задержки. Ожидаются 'id' и 'count'.",
-                )
-
-            delay = Delay.get_or_none(
-                Delay.id == delay_update["id"],
-                Delay.conversation == conversation,
-            )
-            if delay:
-                delay.count = delay_update["count"]
-                delay.save()
-
-        return {"message": "Настройки успешно обновлены"}
+    peer = Peer.get_or_none(Peer.id == peer_id).select()
+    if peer:
+        peer.delete_instance()
+        return {"message": "Peer mark has been removed"}
 
     raise HTTPException(
-        status_code=status.HTTP_400_BAD_REQUEST,
-        detail="Неверный формат данных. Ожидаются списки 'settings' и 'delays'.",
-    )
-
-
-@router.delete("/conversations/{peer_id}")
-def delete_conversation(peer_id: int, authenticated=Depends(get_current_user)):
-    conversation = (
-        Conversation.select().where(Conversation.peer_id == peer_id).get_or_none()
-    )
-    if conversation:
-        conversation.delete_instance()
-        return {"message": "Метка беседы снята"}
-
-    raise HTTPException(
-        status_code=status.HTTP_400_BAD_REQUEST, detail="Не удалось снять метку беседы"
+        status_code=status.HTTP_404_NOT_FOUND, detail="No such peer was found"
     )

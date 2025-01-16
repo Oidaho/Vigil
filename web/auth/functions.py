@@ -1,25 +1,32 @@
 from datetime import datetime, timedelta
 
+import bcrypt
 import jwt
 from fastapi import HTTPException, Request, Response, status
+from pydantic import BaseModel
 
 from config import configs
 from db.models import Staff
-import bcrypt
 
 AUTH_COOKIE_NAME = f"{configs.project_name}_auth_token"
 
 
+class AuthData(BaseModel):
+    id: int
+    permission: int
+    status: bool
+
+
 def authenticate_user(user_id: int, password: str) -> bool:
-    user = Staff.select().where(Staff.user_id == user_id).get_or_none()
+    user = Staff.get_or_none(Staff.id == user_id)
     if user:
         if bcrypt.checkpw(password.encode("utf-8"), user.password_hash.encode("utf-8")):
-            if user.permission_lvl >= 9:
+            if user.permission >= 2:
                 return True, None
 
-            return False, "Недостаточно прав"
+            return False, "Lack permission"
 
-    return False, "Неверный ID или пароль"
+    return False, "Invalid ID or password"
 
 
 def set_current_user(response: Response, user_id: int) -> None:
@@ -47,7 +54,7 @@ def set_current_user(response: Response, user_id: int) -> None:
     )
 
 
-def get_current_user(request: Request) -> int:
+def get_current_user(request: Request) -> AuthData:
     token = request.cookies.get(AUTH_COOKIE_NAME)
     if not token:
         raise HTTPException(
@@ -71,7 +78,12 @@ def get_current_user(request: Request) -> int:
             headers={"Location": "/login"},
         )
 
-    # TODO: Подойдет для получения данных со страницы VK
-    # user_info = get_user_info(vk_id)
+    user = Staff.get_or_none(Staff.id == user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_307_TEMPORARY_REDIRECT,
+            detail="Invalid VK ID",
+            headers={"Location": "/login"},
+        )
 
-    return user_id
+    return AuthData(id=user.id, permission=user.permission, status=True)
