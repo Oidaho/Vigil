@@ -1,6 +1,5 @@
 # ./VK-Vigil/database/db.py
 
-from typing import NoReturn
 from peewee import PostgresqlDatabase
 from config import configs
 
