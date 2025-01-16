@@ -11,4 +11,4 @@ dsn = "postgresql://{username}:{password}@{hostname}:{port}/bot".format(
     port=configs.database.port,
 )
 
-db_instance = PostgresqlDatabase(database=dsn)
+instance = PostgresqlDatabase(database=dsn)
