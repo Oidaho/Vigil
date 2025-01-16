@@ -16,12 +16,13 @@ def add_admin() -> None:
         configs.web.password.encode("utf-8"), bcrypt.gensalt()
     )
 
-    new_admin = Staff(
+    new_admin, created = Staff.get_or_create(
         user_id=user_id,
-        permission_lvl=10,
-        password_hash=hashed_password,
+        defaults={
+            "permission_lvl": 10,
+            "password_hash": hashed_password,
+        },
     )
-    new_admin.save()
 
 
 @asynccontextmanager
