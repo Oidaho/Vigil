@@ -2,24 +2,21 @@
 
 let currentUserId = null;
 
-// Открыть модальное окно для удаления пользователя
 function openDeleteUserModal(userId) {
     currentUserId = userId;
-    document.getElementById('deleteUserModal').style.display = 'flex';
+    new bootstrap.Modal(document.getElementById('deleteUserModal')).show();
 }
 
-// Открыть модальное окно для добавления пользователя
+
 function openAddUserModal() {
-    document.getElementById('addUserModal').style.display = 'flex';
+    new bootstrap.Modal(document.getElementById('addUserModal')).show();
 }
 
-// Закрыть модальное окно
 function closeModal() {
-    document.getElementById('deleteUserModal').style.display = 'none';
-    document.getElementById('addUserModal').style.display = 'none';
+    new bootstrap.Modal(document.getElementById('deleteUserModal')).hide();
+    new bootstrap.Modal(document.getElementById('addUserModal')).hide();
 }
 
-// Подтвердить удаление пользователя
 function confirmDelete() {
     if (currentUserId) {
         fetch(`/staff/${currentUserId}`, {
@@ -42,14 +39,13 @@ function confirmDelete() {
     closeModal();
 }
 
-// Обработка формы добавления пользователя
 document.getElementById('addUserForm').addEventListener('submit', function (event) {
     event.preventDefault();
     const formData = new FormData(this);
     const data = {
         user_id: formData.get('user_id'),
         password: formData.get('password'),
-        permission_lvl: formData.get('permission_lvl')
+        permission: formData.get('permission')
     };
 
     fetch('/staff', {
