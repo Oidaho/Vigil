@@ -5,7 +5,7 @@ from src.context import Context
 from src.keyboards import ButtonColor, EmptyKeyboard, Keyboard
 from src.keyboards.actions import Callback
 
-from db.models import Conversation, Sanction
+from db.models import Peer, Sanction
 
 from config import configs
 
@@ -38,30 +38,30 @@ def exec_punishment(ctx: Context, punishment: str, args: NamedTuple) -> bool:
 def select_conversation(
     ctx: Context, punishment: str, additionals: Dict[str, int | str]
 ) -> Tuple[str, Keyboard]:
-    conversations = Conversation.select().where(Conversation.mark == "CHAT")
+    peers = Peer.select().where(Peer.mark == "CHAT")
 
-    if not conversations:
+    if not peers:
         text = "❗ У вас еще нет бесед, помеченных как 'CHAT'."
         keyboard = EmptyKeyboard()
 
     else:
         text = "❗ Выберите беседу, в которой необходимо произвести действие:"
         keyboard = Keyboard(inline=True, one_time=False, owner_id=ctx.user.id).add_row()
-        for i, conversation in enumerate(conversations):
+        for i, peer in enumerate(peers):
             if i % 2 == 0 and i != 0:
                 keyboard.add_row()
 
             payload = {
                 "punishment": punishment,
-                "peer_id": conversation.peer_id,
-                "peer_name": conversation.name,
+                "peer_id": peer.id,
+                "peer_name": peer.name,
             }
             payload.update(additionals)
 
             keyboard.add_button(
                 "execute_punishment",
                 Callback(
-                    label=conversation.name,
+                    label=peer.name,
                     payload=payload,
                 ),
                 ButtonColor.PRIMARY,
@@ -112,29 +112,28 @@ def execute_delete(ctx: Context, payload: Dict[str, int | str]) -> bool:
 
 
 def execute_unwarn(ctx: Context, payload: Dict[str, int | str]) -> bool:
-    target = payload["target_id"]
+    user_id = payload["target_id"]
     peer_id = payload["peer_id"]
 
-    conversation = Conversation.select().where(Conversation.peer_id == peer_id).get()
     sanction = (
         Sanction.select()
-        .where((Sanction.conversation == conversation) & (Sanction.user_id == target))
+        .join(Peer)
+        .where((Peer.id == peer_id) & (Sanction.user_id == user_id))
         .get_or_none()
     )
 
     if sanction is not None:
-        warns = sanction.warns_count - 1
-        if warns <= 0:
+        sanction.points -= 1
+        if sanction.points <= 0:
             sanction.delete_instance()
 
         else:
-            sanction.warns_count = warns
             sanction.save()
 
         text = (
-            f"[id{target}|Пользователь] реабилитирован.\n"
+            f"[id{user_id}|Пользователь] реабилитирован.\n"
             f"Причина: {payload['reason']}\n"
-            f"Предупреждения: {warns}/{configs.bot.max_warns}\n"
+            f"Предупреждения: {sanction.points}/{configs.bot.max_warns}\n"
         )
         ctx.api.messages.send(
             peer_ids=peer_id,
@@ -155,40 +154,35 @@ def execute_unwarn(ctx: Context, payload: Dict[str, int | str]) -> bool:
 
 
 def execute_warn(ctx: Context, payload: Dict[str, int | str]) -> int:
-    target = payload["target_user"]
+    user_id = payload["target_user"]
     peer_id = payload["peer_id"]
     kick = False
 
-    conversation = Conversation.select().where(Conversation.peer_id == peer_id).get()
-    sanction = (
+    sanction, created = (
         Sanction.select()
-        .where((Sanction.conversation == conversation) & (Sanction.user_id == target))
-        .get_or_none()
+        .join(Peer)
+        .where((Peer.id == peer_id) & (Sanction.user_id == user_id))
+        .get_or_create(
+            defaults={"peer": Peer.get(Peer.id == peer_id), "user_id": user_id}
+        )
     )
 
-    text = f"[id{target}|Пользователь] получил предупреждение.\n"
-    if sanction is None:
-        warns = 1
-        new_sanction = Sanction(
-            conversation=conversation,
-            user_id=target,
-            warns_count=warns,
-        )
-        new_sanction.save()
+    if created:
+        text = f"[id{user_id}|Пользователь] получил предупреждение.\n"
 
     else:
-        sanction.warns_count += 1
-        sanction.save()
-
-        warns = sanction.warns_count
-        if warns >= configs.bot.max_warns:
+        sanction.points += 1
+        if sanction.points >= configs.bot.max_warns:
             sanction.delete_instance()
             kick = True
             text = f"[id{payload['target_user']}|Пользователь] исключен, получив много предупреждений.\n"
 
+        else:
+            sanction.save()
+
     text += (
         f"Причина: {payload['reason']}\n"
-        f"Предупреждения: {warns}/{configs.bot.max_warns}\n"
+        f"Предупреждения: {sanction.points}/{configs.bot.max_warns}\n"
     )
     ctx.api.messages.send(
         peer_ids=peer_id,
@@ -208,17 +202,17 @@ def execute_warn(ctx: Context, payload: Dict[str, int | str]) -> int:
     if kick:
         ctx.api.messages.removeChatUser(
             chat_id=peer_id - int(2e9),
-            user_id=target,
+            user_id=user_id,
         )
 
     return True
 
 
 def execute_kick(ctx: Context, payload: Dict[str, int | str]) -> None:
-    target = payload["target_user"]
+    user_id = payload["target_user"]
     peer_id = payload["peer_id"]
 
-    text = f"[id{target}|Пользователь] исключен.\nПричина: {payload['reason']}\n"
+    text = f"[id{user_id}|Пользователь] исключен.\nПричина: {payload['reason']}\n"
     ctx.api.messages.send(
         peer_ids=peer_id,
         random_id=0,
@@ -236,5 +230,5 @@ def execute_kick(ctx: Context, payload: Dict[str, int | str]) -> None:
 
     ctx.api.messages.removeChatUser(
         chat_id=peer_id - int(2e9),
-        user_id=target,
+        user_id=user_id,
     )

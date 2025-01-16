@@ -6,7 +6,7 @@ from src.keyboards import ButtonColor, Keyboard
 from src.keyboards.actions import Callback
 from src.routers import CommandRouter
 
-from db.models import Conversation
+from db.models import Peer
 from .utils import exec_punishment
 
 router = CommandRouter()
@@ -101,7 +101,7 @@ def punish_command(ctx: Context, args: NamedTuple) -> bool:
     target_user = ctx.message.forward[0].author
     target_msg = ctx.message.forward[0].cmid
     peer_id = ctx.message.forward[0].peer
-    peer_name = Conversation.select().where(Conversation.peer_id == peer_id).get().name
+    peer_name = Peer.get(Peer.id == peer_id).name
 
     text = (
         "❓ Как вы хотите наказать пользователя? \n\n"

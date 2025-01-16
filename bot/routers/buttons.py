@@ -4,7 +4,7 @@ from src.context import Context
 from src.keyboards.answers import ShowSnackbar
 from src.routers import ButtonRouter
 
-from db.models import Conversation
+from db.models import Peer
 
 from .utils import (
     execute_kick,
@@ -36,18 +36,21 @@ def close_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
 
 @router.register(name="set_mark", check_owner=True)
 def set_mark_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
-    conversation = (
-        Conversation.select().where(Conversation.peer_id == ctx.peer.id).get_or_none()
+    mark = payload.get("mark")
+    peer, created = Peer.get_or_create(
+        Peer.id == ctx.peer.id,
+        defaults={
+            "id": ctx.peer.id,
+            "name": ctx.peer.name,
+            "mark": mark,
+        },
     )
 
-    if conversation is None:
-        mark = payload.get("mark")
-        new_marked = Conversation(peer_id=ctx.peer.id, name=ctx.peer.name, mark=mark)
-        new_marked.save()
+    mark = peer.mark
+    if created is None:
         snackbar_message = f'📝 Беседа помечена как "{mark}".'
 
     else:
-        mark = conversation.mark
         snackbar_message = f'❗Беседа уже имеет метку "{mark}".'
 
     ctx.api.messages.sendMessageEventAnswer(
@@ -62,13 +65,11 @@ def set_mark_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
 
 @router.register(name="drop_mark", check_owner=True)
 def drop_mark_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
-    conversation = (
-        Conversation.select().where(Conversation.peer_id == ctx.peer.id).get_or_none()
-    )
+    peer = Peer.get_or_none(Peer.id == ctx.peer.id)
 
-    if conversation is not None:
-        mark = conversation.mark
-        conversation.delete_instance()
+    if peer is not None:
+        mark = peer.mark
+        peer.delete_instance()
         snackbar_message = f'📝 Метка "{mark}" снята с беседы.'
 
     else:
@@ -86,14 +87,12 @@ def drop_mark_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
 
 @router.register(name="update_conversation", check_owner=True)
 def update_conversation_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
-    conversation = (
-        Conversation.select().where(Conversation.peer_id == ctx.peer.id).get_or_none()
-    )
+    peer = Peer.get_or_none(Peer.peer_id == ctx.peer.id)
 
-    if conversation is not None:
-        conversation.peer_id = ctx.peer.id
-        conversation.name = ctx.peer.name
-        conversation.save()
+    if peer is not None:
+        peer.id = ctx.peer.id
+        peer.name = ctx.peer.name
+        peer.save()
         snackbar_message = "📝 Данные беседы обновлены."
 
     else:
