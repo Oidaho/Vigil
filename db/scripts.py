@@ -1,60 +1,48 @@
-# ./VK-Vigil/database/scripts.py
-from .db import db_instance
+from peewee import signals
+from .models import Delay, Setting, Conversation
+
+DEFAULT_SETTINGS = [
+    {"name": "filter_video", "is_enabled": False},
+    {"name": "filter_audio", "is_enabled": False},
+    {"name": "filter_audio_message", "is_enabled": False},
+    {"name": "filter_link", "is_enabled": False},
+    {"name": "filter_poll", "is_enabled": False},
+    {"name": "filter_wall", "is_enabled": False},
+    {"name": "filter_doc", "is_enabled": False},
+    {"name": "filter_app_action", "is_enabled": False},
+    {"name": "filter_graffiti", "is_enabled": False},
+    {"name": "filter_sticker", "is_enabled": False},
+    {"name": "filter_forward", "is_enabled": False},
+    {"name": "filter_reply", "is_enabled": False},
+    {"name": "filter_geo", "is_enabled": False},
+    {"name": "check_curse_words", "is_enabled": False},
+    {"name": "check_account_age", "is_enabled": False},
+    {"name": "check_open_pm", "is_enabled": False},
+    {"name": "check_message_queue", "is_enabled": False},
+    {"name": "check_urls", "is_enabled": False},
+    {"name": "check_urls_hard", "is_enabled": False},
+]
 
 
-def delete_expired_warns():
-    with db_instance.atomic():
-        db_instance.execute_sql("DELETE FROM warns WHERE expired <= NOW();")
+DEFAULT_DELAYS = [
+    {"name": "queue_mode_delay_minutes", "count": 30},
+    {"name": "account_age_days", "count": 7},
+]
 
 
-def delete_expired_queue():
-    with db_instance.atomic():
-        db_instance.execute_sql("DELETE FROM queue WHERE expired <= NOW();")
+@signals.post_save(sender=Conversation)
+def add_default_settings_and_delays(model_class, instance, created):
+    if created:
+        for setting_data in DEFAULT_SETTINGS:
+            Setting.create(
+                conversation=instance,
+                name=setting_data["name"],
+                is_enabled=setting_data["is_enabled"],
+            )
 
-
-# TODO: Edit according to the future structure of the application.
-def set_conversation_default_settings():
-    with db_instance.atomic():
-        db_instance.execute_sql("""
-        CREATE OR REPLACE FUNCTION setup_conversation_settings()
-        RETURNS TRIGGER AS $$
-        BEGIN
-            IF (NEW.mark != 'LOG') THEN
-                INSERT INTO delays(bpid, setting, delay)
-                VALUES (NEW.id, 'slow_mode', 1),
-                    (NEW.id, 'account_age', 7),
-                    (NEW.id, 'menu_session', 5);
-
-                INSERT INTO settings(bpid, name, status, destination, points)
-                VALUES (NEW.id, 'photo', 'active', 'filter', 1),
-                    (NEW.id, 'video', 'active', 'filter', 1),
-                    (NEW.id, 'audio', 'active', 'filter', 1),
-                    (NEW.id, 'audio_message', 'active', 'filter', 1),
-                    (NEW.id, 'link', 'active', 'filter', 1),
-                    (NEW.id, 'poll', 'active', 'filter', 1),
-                    (NEW.id, 'wall', 'active', 'filter', 1),
-                    (NEW.id, 'doc', 'active', 'filter', 1),
-                    (NEW.id, 'app_action', 'active', 'filter', 1),
-                    (NEW.id, 'graffiti', 'active', 'filter', 1),
-                    (NEW.id, 'sticker', 'active', 'filter', 1),
-                    (NEW.id, 'forward', 'active', 'filter', 1),
-                    (NEW.id, 'reply', 'active', 'filter', 1),
-                    (NEW.id, 'geo', 'active', 'filter', 1);
-
-                INSERT INTO settings(bpid, name, status, destination, points)
-                VALUES (NEW.id, 'curse_words', 'inactive', 'system', 1),
-                    (NEW.id, 'account_age', 'inactive', 'system', 10),
-                    (NEW.id, 'slow_mode', 'inactive', 'system', 2),
-                    (NEW.id, 'open_pm', 'inactive', 'system', 2),
-                    (NEW.id, 'link_filter', 'inactive', 'system', 3),
-                    (NEW.id, 'hard_link_filter', 'inactive', 'system', 1);
-            END IF;
-            RETURN NEW;
-        END;
-        $$ LANGUAGE plpgsql;
-
-        CREATE TRIGGER setup_peer_settings
-        AFTER INSERT ON peers
-        FOR EACH ROW
-        EXECUTE FUNCTION setup_peer_settings();
-        """)
+        for delay_data in DEFAULT_DELAYS:
+            Delay.create(
+                conversation=instance,
+                name=delay_data["name"],
+                count=delay_data["count"],
+            )
