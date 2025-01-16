@@ -1,9 +1,134 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="w-50">
-    <div class="text-center">
-        <h1>Чаты</h1>
+<div class="container">
+    <h1>Беседы</h1>
+    
+    {% if not conversations %}
+        <p> Здесь пока ничего нет. Используйте команду `/mark` в беседах.</p>
+    {% endif %}
+
+    <!-- Вкладки для бесед -->
+    <ul class="nav nav-tabs" id="conversationTabs" role="tablist">
+        {% for conversation in conversations %}
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {% if loop.first %}active{% endif %}" 
+                    id="tab-{{ conversation.peer_id }}" 
+                    data-bs-toggle="tab" 
+                    data-bs-target="#conversation-{{ conversation.peer_id }}" 
+                    type="button" 
+                    role="tab" 
+                    aria-controls="conversation-{{ conversation.peer_id }}" 
+                    aria-selected="{% if loop.first %}true{% else %}false{% endif %}">
+                <div class="d-flex flex-column align-items-start">
+                    <span>{{ conversation.peer_id }}</span>
+                    {% if conversation.name %}
+                    <small class="text-muted">{{ conversation.name }}</small>
+                    {% endif %}
+                </div>
+                <span class="badge ms-2 {% if conversation.mark == 'LOG' %}bg-warning{% else %}bg-success{% endif %}">
+                    {{ conversation.mark }}
+                </span>
+            </button>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <!-- Контент вкладок -->
+    <div class="tab-content" id="conversationTabsContent">
+        {% for conversation in conversations %}
+        <div class="tab-pane fade {% if loop.first %}show active{% endif %}" 
+             id="conversation-{{ conversation.peer_id }}" 
+             role="tabpanel" 
+             aria-labelledby="tab-{{ conversation.peer_id }}">
+            <div class="row mt-3">
+                <!-- Основные настройки (Settings) -->
+                <div class="col-md-6">
+                    <h3>Основные настройки</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Ключ</th>
+                                    <th>Значение</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for setting in conversation.settings %}
+                                <tr>
+                                    <td>{{ setting.name }}</td>
+                                    <td>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" 
+                                                type="checkbox" 
+                                                id="setting-{{ setting.id }}" 
+                                                {% if setting.is_enabled == True %}checked{% endif %}>
+                                            <label class="form-check-label" for="setting-{{ setting.id }}">
+                                                {% if setting.is_enabled == True %}Вкл{% else %}Выкл{% endif %}
+                                            </label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Дополнительные настройки (Delays) -->
+                <div class="col-md-6">
+                    <h3>Дополнительные настройки</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Ключ</th>
+                                    <th>Значение</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for delay in conversation.delays %}
+                                <tr>
+                                    <td>{{ delay.name }}</td>
+                                    <td>
+                                        <input type="text" 
+                                            class="form-control" 
+                                            id="delay-{{ delay.id }}" 
+                                            value="{{ delay.count }}">
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- Кнопки внизу справа -->
+            <div class="d-flex justify-content-end mt-3">
+                <button class="btn btn-danger me-2" onclick="openDeleteModal({{ conversation.peer_id }})">
+                    Cнять метку
+                </button>
+                <button class="btn btn-success" onclick="saveSettings({{ conversation.peer_id }})">
+                    Сохранить настройки
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Модальное окно для удаления -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-content bg-light w-50 rounded">
+            <h5>Удалить беседу?</h5>
+            <p>Вы уверены, что хотите снять метку этой беседе? Это действие нельзя отменить.</p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal()">Отмена</button>
+                <button class="btn btn-danger" onclick="confirmDelete()">Снять</button>
+            </div>
+        </div>
     </div>
 </div>
+
+<!-- Подключение JS -->
+<script src="/static/js/conversations.js"></script>
 {% endblock %}
