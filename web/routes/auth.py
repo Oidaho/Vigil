@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Form, Request, Response, status
+from fastapi import APIRouter, Form, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from fastapi.templating import Jinja2Templates
@@ -48,7 +48,7 @@ def login(request: Request, user_id: int = Form(...), password: str = Form(...))
 
 
 @router.get("/logout")
-def logout(response: Response):
+def logout():
     response = RedirectResponse(
         "/login",
         status_code=status.HTTP_307_TEMPORARY_REDIRECT,

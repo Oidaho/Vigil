@@ -1,6 +1,18 @@
-from .auth import router as auth_router
-from .pages import router as pages_router
-from .health import router as health_rouret
+from .auth import router as auth_
+from .health import router as health_
+from .index import router as index_
+from .peers import router as peers_
+from .queue import router as queue_
+from .sanctions import router as sanctions_
+from .staff import router as staff_
 
 
-__all__ = ("auth_router", "pages_router", "health_rouret")
+__all__ = (
+    "auth_",
+    "health_",
+    "index_",
+    "peers_",
+    "queue_",
+    "sanctions_",
+    "staff_",
+)

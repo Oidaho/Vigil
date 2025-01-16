@@ -7,7 +7,15 @@ from fastapi.staticfiles import StaticFiles
 from db import db_instance
 from db.models import Staff
 from config import configs
-from routes import auth_router, pages_router, health_rouret
+from routes import (
+    auth_,
+    health_,
+    index_,
+    peers_,
+    queue_,
+    sanctions_,
+    staff_,
+)
 
 
 def add_admin() -> None:
@@ -39,6 +47,10 @@ app = FastAPI(title="Web-panel", lifespan=lifespan)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-app.include_router(auth_router)
-app.include_router(pages_router)
-app.include_router(health_rouret)
+app.include_router(auth_)
+app.include_router(health_)
+app.include_router(index_)
+app.include_router(peers_)
+app.include_router(queue_)
+app.include_router(sanctions_)
+app.include_router(staff_)
