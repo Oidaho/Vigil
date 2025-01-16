@@ -31,6 +31,7 @@ x-joint-env:  &joint-env
 
 
 
+
 services:
   postgres:
     image: postgres:17.2
@@ -55,9 +56,7 @@ services:
       context: ./bot
       dockerfile: Dockerfile
     environment:
-      <<: *db-env
-      <<: *bot-env
-      <<: *joint-env
+      <<: [*db-env, *bot-env, *joint-env]
     volumes:
       - ./db:/app/db
       - ./config:/app/config
@@ -79,9 +78,7 @@ services:
       context: ./web
       dockerfile: Dockerfile
     environment:
-      <<: *db-env
-      <<: *web-env
-      <<: *joint-env
+      <<: [*db-env, *web-env, *joint-env]
     ports:
       - "7212:7212"
     volumes:
