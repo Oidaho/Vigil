@@ -15,13 +15,13 @@ def peers_page(
     request: Request,
     authenticated: AuthData = Depends(get_current_user),
 ):
-    peers = Peer.select()
+    peers = Peer.select().order_by(Peer.mark)
 
     context = {
         "title": "Чаты",
         "authenticated": authenticated,
         "project": configs.project_name,
-        "conversations": peers,
+        "peers": peers,
         "request": request,
     }
 
@@ -33,7 +33,7 @@ def unmark_peer(
     peer_id: int,
     authenticated: AuthData = Depends(get_current_user),
 ):
-    peer = Peer.get_or_none(Peer.id == peer_id).select()
+    peer = Peer.get_or_none(Peer.id == peer_id)
     if peer:
         peer.delete_instance()
         return {"message": "Peer mark has been removed"}
