@@ -41,7 +41,7 @@ class Staff(Model):
 class Sanction(Model):
     conversation = ForeignKeyField(
         model=Conversation,
-        backref="staff",
+        backref="sanctions",
         on_delete="CASCADE",
         on_update="CASCADE",
     )
@@ -57,7 +57,7 @@ class Sanction(Model):
 class Queue(Model):
     conversation = ForeignKeyField(
         model=Conversation,
-        backref="staff",
+        backref="queue",
         on_delete="CASCADE",
         on_update="CASCADE",
     )
@@ -70,10 +70,10 @@ class Queue(Model):
         database = db_instance
 
 
-class Filter(Model):
+class Setting(Model):
     conversation = ForeignKeyField(
         model=Conversation,
-        backref="staff",
+        backref="settings",
         on_delete="CASCADE",
         on_update="CASCADE",
     )
@@ -81,7 +81,7 @@ class Filter(Model):
     is_enabled = BooleanField(default=False, null=False)
 
     class Meta:
-        table_name = "filters"
+        table_name = "settings"
         database = db_instance
 
 
@@ -89,7 +89,7 @@ class Filter(Model):
 class Delay(Model):
     conversation = ForeignKeyField(
         model=Conversation,
-        backref="staff",
+        backref="delays",
         on_delete="CASCADE",
         on_update="CASCADE",
     )
@@ -105,7 +105,7 @@ class Delay(Model):
 class Word(Model):
     conversation = ForeignKeyField(
         model=Conversation,
-        backref="staff",
+        backref="words",
         on_delete="CASCADE",
         on_update="CASCADE",
     )
@@ -120,7 +120,7 @@ class Word(Model):
 class Link(Model):
     conversation = ForeignKeyField(
         model=Conversation,
-        backref="staff",
+        backref="links",
         on_delete="CASCADE",
         on_update="CASCADE",
     )
@@ -136,7 +136,7 @@ class Link(Model):
 class Host(Model):
     conversation = ForeignKeyField(
         model=Conversation,
-        backref="staff",
+        backref="hosts",
         on_delete="CASCADE",
         on_update="CASCADE",
     )

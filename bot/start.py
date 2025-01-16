@@ -13,7 +13,7 @@ from db.models import (
     Staff,
     Sanction,
     Queue,
-    Filter,
+    Setting,
     Delay,
     Word,
     Link,
@@ -29,7 +29,7 @@ def setup_database() -> None:
             Staff,
             Sanction,
             Queue,
-            Filter,
+            Setting,
             Delay,
             Word,
             Link,
@@ -72,8 +72,8 @@ def main() -> None:
 
     bot.run()
 
-
     db_instance.close()
+
 
 if __name__ == "__main__":
     main()
