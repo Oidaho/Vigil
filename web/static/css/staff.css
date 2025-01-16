@@ -1,0 +1,93 @@
+/* Стили для шапки таблицы */
+.staff-header {
+    border: 1px solid #dee2e6; /* Граница шапки */
+    border-radius: 8px; /* Закругленные углы */
+    background-color: #ffffff; /* Белый фон шапки */
+}
+
+/* Стили для кнопки "+" */
+.btn-add-user {
+    width: 40px; /* Фиксированная ширина */
+    height: 40px; /* Фиксированная высота */
+    border-radius: 8px; /* Скругленные углы */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0; /* Убираем внутренние отступы */
+}
+
+/* Стили для иконки "+" */
+.btn-add-user .bi {
+    font-size: 1.2rem; /* Размер иконки */
+}
+
+/* Стили для подложки с внутренним скроллом */
+.staff-list-container {
+    border: 1px solid #dee2e6; /* Граница подложки */
+    border-radius: 8px; /* Закругленные углы */
+    background-color: #ffffff; /* Белый фон подложки */
+    padding: 1rem; /* Внутренний отступ */
+    max-height: 500px; /* Фиксированная высота подложки */
+    overflow-y: auto; /* Вертикальный скролл */
+}
+
+/* Стили для списка сотрудников */
+.staff-list {
+    padding: 0.5rem; /* Внутренний отступ списка */
+}
+
+/* Стили для плашек */
+.staff-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background-color: #f8f9fa; /* Светло-серый цвет плашки */
+    border: 1px solid #dee2e6; /* Граница плашки */
+    border-radius: 6px; /* Закругленные углы плашки */
+}
+
+.staff-card:hover {
+    transform: translateY(-2px); /* Небольшое смещение при наведении */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Тень при наведении */
+}
+
+/* Стили для текста роли */
+.role-text {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* Стили для кнопки удаления */
+.btn-danger {
+    padding: 0.25rem 0.5rem; /* Размер кнопки */
+}
+
+
+/* Стили для модального окна */
+.modal-overlay {
+    display: none; /* Скрыто по умолчанию */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Полупрозрачный черный фон */
+    backdrop-filter: blur(5px); /* Эффект блюра */
+    z-index: 1000; /* Поверх всех элементов */
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}

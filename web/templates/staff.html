@@ -1,9 +1,95 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="w-50">
-    <div class="text-center">
+<div class="container">
+    <div class="text-center mb-4">
         <h1>Персонал</h1>
     </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <div class="staff-header d-flex justify-content-between align-items-center mb-3 p-3 rounded shadow-sm bg-light">
+                <h5 class="mb-0">Список сотрудников</h5>
+
+                <button class="btn btn-success btn-add-user" onclick="openAddUserModal()">
+                    <i class="bi bi-plus"></i>
+                </button>
+            </div>
+
+            <div class="staff-list-container">
+                <div class="staff-list">
+                    {% for staff_member in staff %}
+                        <div class="staff-card mb-3 p-3 rounded shadow-sm bg-light d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-0">VK ID: {{ staff_member.user_id }}</h5>
+                                <p class="mb-0">Permission Level: {{ staff_member.permission_lvl }}</p>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="role-text me-3
+                                    {% if staff_member.permission_lvl <= 5 %}text-danger
+                                    {% elif staff_member.permission_lvl > 5 and staff_member.permission_lvl <= 8 %}text-success
+                                    {% else %}text-dark
+                                    {% endif %}">
+                                    {% if staff_member.permission_lvl <= 5 %}Moderator
+                                    {% elif staff_member.permission_lvl > 5 and staff_member.permission_lvl <= 8 %}Administrator
+                                    {% else %}Owner
+                                    {% endif %}
+                                </span>
+                                {% if staff_member.permission_lvl != 10 %}
+                                    <button class="btn btn-danger btn-sm delete-btn" data-user-id="{{ staff_member.user_id }}" onclick="openDeleteUserModal({{ staff_member.user_id }})">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Модальное окно для удаления пользователя -->
+<div id="deleteUserModal" class="modal-overlay">
+    <div class="modal-content bg-light w-50 rounded">
+        <h5>Удалить пользователя?</h5>
+        <p>Вы уверены, что хотите удалить этого сотрудника?</p>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeModal()">Отмена</button>
+            <button class="btn btn-danger" onclick="confirmDelete()">Удалить</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для добавления пользователя -->
+<div id="addUserModal" class="modal-overlay">
+    <div class="modal-content bg-light w-50 rounded">
+        <h5>Добавить пользователя</h5>
+        <form id="addUserForm">
+            <div class="mb-3">
+                <label for="user_id" class="form-label">VK ID:</label>
+                <input type="number" id="user_id" name="user_id" class="form-control" required min="1" max="999999999">
+            </div>
+            <div class="mb-3">
+                <label for="permission_lvl" class="form-label">Уровень прав:</label>
+                <input type="number" id="permission_lvl" name="permission_lvl" class="form-control" required min="1" max="9">
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Пароль:</label>
+                <input type="password" id="password" name="password" class="form-control" required minlength="8" maxlength="32" pattern="^(?=.*[A-Za-z])(?=.*\d).+$">
+                <small class="form-text text-muted">
+                    Пароль должен быть от 8 до 32 символов и содержать как минимум одну букву и одну цифру.
+                </small>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Отмена</button>
+                <button type="submit" class="btn btn-success">Добавить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Подключение JS -->
+<script src="/static/js/staff.js"></script>
 {% endblock %}

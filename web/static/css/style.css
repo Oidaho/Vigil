@@ -19,37 +19,3 @@ footer {
     height: 2svh;
     
 }
-
-
-.card {
-    transition: transform 0.2s, box-shadow 0.2s;
-    border: 1px solid rgba(0, 0, 0, 0.125);
-    border-radius: 10px;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.card-title {
-    font-size: 1.25rem;
-    font-weight: 500;
-}
-
-
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-/* Для Firefox */
-input[type="number"] {
-    appearance: unset;
-    -moz-appearance: textfield;
-}
-
-small.form-text {
-    margin-top: 0.25rem; /* Можно настроить значение по вашему усмотрению */
-}
