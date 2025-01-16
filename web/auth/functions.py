@@ -14,7 +14,7 @@ def authenticate_user(user_id: int, password: str) -> bool:
     user = Staff.select().where(Staff.user_id == user_id).get_or_none()
     if user:
         if bcrypt.checkpw(password.encode("utf-8"), user.password_hash.encode("utf-8")):
-            if user.permission_lvl > 5:
+            if user.permission_lvl >= 9:
                 return True, None
 
             return False, "Недостаточно прав"
