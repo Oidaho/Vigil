@@ -32,7 +32,7 @@ DEFAULT_DELAYS = [
 
 @signals.post_save(sender=Conversation)
 def add_default_settings_and_delays(model_class, instance, created):
-    if created:
+    if created and instance.mark != "LOG":
         for setting_data in DEFAULT_SETTINGS:
             Setting.create(
                 conversation=instance,
