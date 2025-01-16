@@ -1,0 +1,91 @@
+{% extends "includes/base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="text-center mb-4">
+        <h1>Чаты</h1>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <div class="peers-header d-flex justify-content-between align-items-center mb-3 p-3 rounded shadow-sm bg-light">
+                <h5 class="mb-0">Список пиров</h5>
+            </div>
+
+            <div class="peers-list-container">
+                <div class="peers-list">
+                    {% for peer in peers %}
+                        <div class="peer-card mb-3 p-3 rounded shadow-sm bg-light d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-0">ID: {{ peer.id }}</h5>
+                                <p class="mb-0">Имя: {{ peer.name }}</p>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="mark-text me-3
+                                    {% if peer.mark == 'CHAT' %}text-success
+                                    {% elif peer.mark == 'LOG' %}text-warning
+                                    {% else %}text-dark
+                                    {% endif %}">
+                                    {{ peer.mark }}
+                                </span>
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton{{ peer.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-gear"></i>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ peer.id }}">
+                                        {% if peer.mark != 'LOG' %}
+                                            <li>
+                                                <a class="dropdown-item" href="/peers/{{ peer.id }}/sanctions">
+                                                    <i class="bi bi-gavel me-2"></i>Санкции
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="/peers/{{ peer.id }}/queue">
+                                                    <i class="bi bi-list-task me-2"></i>Очередь
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="/peers/{{ peer.id }}/settings">
+                                                    <i class="bi bi-gear me-2"></i>Настройки
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                        <li>
+                                            <button class="dropdown-item text-danger" onclick="openRemoveMarkModal({{ peer.id }})">
+                                                <i class="bi bi-trash me-2"></i>Снять маркировку
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для подтверждения удаления маркировки -->
+<div class="modal fade" id="removeMarkModal" tabindex="-1" aria-labelledby="removeMarkModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="removeMarkModalLabel">Снять маркировку</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Вы уверены, что хотите снять метку с этого чата?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-danger" onclick="confirmRemoveMark()">Снять метку</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Подключение JS -->
+<script src="/static/js/peers.js"></script>
+{% endblock %}
