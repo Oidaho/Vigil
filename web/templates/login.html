@@ -13,11 +13,12 @@
 
             <div class="mb-3">
                 <label for="user_id" class="form-label">VK ID:</label>
-                <input type="text" id="user_id" name="user_id" class="form-control" required>
+                <input type="number" id="user_id" name="user_id" class="form-control" required min="1" max="999999999">
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Password:</label>
-                <input type="password" id="password" name="password" class="form-control" required>
+                <input type="password" id="password" name="password" class="form-control" required minlength="8" maxlength="32" pattern="^(?=.*[A-Za-z])(?=.*\d).+$">
+                <small class="form-text text-muted">Пароль назначен администратором.</small>
             </div>
             <div class="text-center">
                 <button type="submit" class="btn btn-primary w-100">Login</button>
