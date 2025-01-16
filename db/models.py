@@ -17,9 +17,9 @@ from .db import db_instance
 
 # For storing moderated conversations
 class Conversation(Model):
-    peer_id = BigIntegerField()
+    peer_id = BigIntegerField(unique=True, null=False)
     name = CharField(max_length=255)
-    mark = CharField(max_length=16)
+    mark = CharField(max_length=16, null=False)
 
     class Meta:
         table_name = "conversations"
@@ -28,9 +28,9 @@ class Conversation(Model):
 
 # For storing moderation staff
 class Staff(Model):
-    user_id = BigIntegerField()
-    permission_lvl = SmallIntegerField()
-    password_hash = TextField()
+    user_id = BigIntegerField(unique=True, null=False)
+    permission_lvl = SmallIntegerField(null=False)
+    password_hash = TextField(unique=True, null=False)
 
     class Meta:
         table_name = "staff"
@@ -45,8 +45,8 @@ class Sanction(Model):
         on_delete="CASCADE",
         on_update="CASCADE",
     )
-    user_id = BigIntegerField()
-    warns_count = SmallIntegerField()
+    user_id = BigIntegerField(null=False)
+    warns_count = SmallIntegerField(default=1, null=False)
 
     class Meta:
         table_name = "sanctions"
@@ -61,16 +61,15 @@ class Queue(Model):
         on_delete="CASCADE",
         on_update="CASCADE",
     )
-    user_id = BigIntegerField()
-    message_id = BigIntegerField()
-    expiration = DateTimeField()
+    user_id = BigIntegerField(null=False)
+    message_id = BigIntegerField(null=False)
+    expiration = DateTimeField(null=False)
 
     class Meta:
         table_name = "queue"
         database = db_instance
 
 
-# To store conversation content filtering settings
 class Filter(Model):
     conversation = ForeignKeyField(
         model=Conversation,
@@ -78,9 +77,8 @@ class Filter(Model):
         on_delete="CASCADE",
         on_update="CASCADE",
     )
-    name = CharField()
-    warns_count = SmallIntegerField()
-    is_enabled = BooleanField()
+    name = CharField(null=False)
+    is_enabled = BooleanField(default=False, null=False)
 
     class Meta:
         table_name = "filters"
@@ -95,8 +93,8 @@ class Delay(Model):
         on_delete="CASCADE",
         on_update="CASCADE",
     )
-    name = CharField()
-    count = IntegerField()
+    name = CharField(null=False)
+    count = IntegerField(null=False)
 
     class Meta:
         table_name = "delays"
@@ -111,7 +109,7 @@ class Word(Model):
         on_delete="CASCADE",
         on_update="CASCADE",
     )
-    value = TextField()
+    value = TextField(null=False)
 
     class Meta:
         table_name = "words"
@@ -126,8 +124,8 @@ class Link(Model):
         on_delete="CASCADE",
         on_update="CASCADE",
     )
-    value = TextField()
-    is_allowed = BooleanField()
+    value = TextField(null=False)
+    is_allowed = BooleanField(default=False, null=False)
 
     class Meta:
         table_name = "links"
@@ -142,8 +140,8 @@ class Host(Model):
         on_delete="CASCADE",
         on_update="CASCADE",
     )
-    value = TextField()
-    is_allowed = BooleanField()
+    value = TextField(null=False)
+    is_allowed = BooleanField(default=False, null=False)
 
     class Meta:
         table_name = "hosts"
