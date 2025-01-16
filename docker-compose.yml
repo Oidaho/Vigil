@@ -1,17 +1,41 @@
 version: "3.8"
 
-x-common-env: &common-env
-  db_user: ...
-  db_password: ...
-  db_hostname: ...
+x-postgres-env: &postgres-env
+  POSTGRES_USER: "..."
+  POSTGRES_PASSWORD: "..."
+  POSTGRES_DB: "..."
+
+x-db-env: &db-env
+  db_user: "..."
+  db_password: "..."
+  db_database: "..."
+  db_hostname: "..."
+  db_port: ...
+
+x-bot-env: &bot-env
+  bot_group_id: ...
+  bot_acces_token: "..."
+  bot_command_prefix: "..."
+
+x-web-env: &web-env
+  web_admin_id: ...
+  web_password: "..."
+  web_jwt_secret: "..." 
+  web_jwt_algorithm: "..."
+  web_jwt_access_token_lifetime: ...
+
+x-joint-env:  &joint-env
+  debug_mode: ...
+  project_name: "..."
+  bot_max_sanction_points: ...
+
+
 
 services:
   postgres:
     image: postgres:17.2
     environment:
-      POSTGRES_USER: ...
-      POSTGRES_PASSWORD: ...
-      POSTGRES_DB: ...
+      <<: *postgres-env
     ports:
       - "5432:5432"
     volumes:
@@ -31,10 +55,9 @@ services:
       context: ./bot
       dockerfile: Dockerfile
     environment:
-      <<: *common-env
-      debug_mode: ...
-      bot_group_id: ...
-      bot_acces_token: ...
+      <<: *db-env
+      <<: *bot-env
+      <<: *joint-env
     volumes:
       - ./db:/app/db
       - ./config:/app/config
@@ -56,10 +79,9 @@ services:
       context: ./web
       dockerfile: Dockerfile
     environment:
-      <<: *common-env
-      web_admin_id: ...
-      web_password: ...
-      web_jwt_secret: ...  
+      <<: *db-env
+      <<: *web-env
+      <<: *joint-env
     ports:
       - "7212:7212"
     volumes:
