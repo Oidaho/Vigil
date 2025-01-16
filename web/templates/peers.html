@@ -10,7 +10,7 @@
         <div class="col-md-8">
 
             <div class="peers-header d-flex justify-content-between align-items-center mb-3 p-3 rounded shadow-sm bg-light">
-                <h5 class="mb-0">Список пиров</h5>
+                <h5 class="mb-0">Список помеченых чатов</h5>
             </div>
 
             <div class="peers-list-container">
@@ -37,7 +37,7 @@
                                         {% if peer.mark != 'LOG' %}
                                             <li>
                                                 <a class="dropdown-item" href="/peers/{{ peer.id }}/sanctions">
-                                                    <i class="bi bi-gavel me-2"></i>Санкции
+                                                    <i class="bi bi-slash-circle me-2"></i>Санкции
                                                 </a>
                                             </li>
                                             <li>
