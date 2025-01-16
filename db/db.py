@@ -4,9 +4,10 @@ from peewee import PostgresqlDatabase
 from config import configs
 
 
-dsn = "postgresql://{username}:{password}@{hostname}:{port}/bot".format(
+dsn = "postgresql://{username}:{password}@{hostname}:{port}/{database}".format(
     username=configs.database.user,
     password=configs.database.password,
+    database=configs.database.database,
     hostname=configs.database.hostname,
     port=configs.database.port,
 )

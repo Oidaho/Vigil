@@ -9,4 +9,5 @@ class DatabaseSettings(BaseSettings):
     user: str = "user"
     password: str = "password"
     hostname: str = "example.com"
+    database: str = "db"
     port: int = 5432
