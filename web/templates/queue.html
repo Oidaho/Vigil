@@ -1,0 +1,64 @@
+{% extends "includes/base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="text-center mb-4">
+        <h1>Очередь сообщений чата {{ peer_id }}</h1>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <div class="queue-header d-flex justify-content-between align-items-center mb-3 p-3 rounded shadow-sm bg-light">
+                <h5 class="mb-0">Список сообщений в очереди</h5>
+            </div>
+
+            <div class="queue-list-container" style="max-height: 500px; overflow-y: auto;">
+                <div class="queue-list">
+                    {% for queue_item in queue %}
+                        <div class="queue-card mb-3 p-3 rounded shadow-sm bg-light d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-0">User ID: <a href="https://vk.com/id{{ queue_item.user_id }}" target="_blank">{{ queue_item.user_id }}</a></h5>
+                                <p class="mb-0 text-muted">Message CMID: {{ queue_item.message_cmid }}</p>
+                            </div>
+                            <div>
+                                <span class="expiration-text me-3">
+                                    Разрешено писать: {{ queue_item.expiration.strftime('%Y-%m-%d %H:%M:%S') }}
+                                </span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <!-- Кнопка для удаления сообщения из очереди -->
+                                <button class="btn btn-danger btn-sm" onclick="openDeleteModal({{ queue_item.user_id }})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для удаления сообщения из очереди -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Удалить сообщение из очереди</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Вы уверены, что хотите удалить это сообщение из очереди?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-danger" onclick="confirmDelete({{ peer_id }})">Удалить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Подключение JS -->
+<script src="/static/js/queue.js"></script>
+{% endblock %}
