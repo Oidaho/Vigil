@@ -38,7 +38,7 @@ def close_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
 def set_mark_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
     mark = payload.get("mark")
     peer, created = Peer.get_or_create(
-        Peer.id == ctx.peer.id,
+        id=ctx.peer.id,
         defaults={
             "id": ctx.peer.id,
             "name": ctx.peer.name,
@@ -47,7 +47,7 @@ def set_mark_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
     )
 
     mark = peer.mark
-    if created is None:
+    if created:
         snackbar_message = f'📝 Беседа помечена как "{mark}".'
 
     else:
