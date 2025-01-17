@@ -45,6 +45,7 @@ services:
     networks:
       vigil_network:
         ipv4_address: 172.20.0.2
+    restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U vigil -d bot"]
       interval: 5s
@@ -67,6 +68,7 @@ services:
     networks:
       vigil_network:
         ipv4_address: 172.20.0.3
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "echo", "hello, world!"]
       interval: 10s
@@ -93,6 +95,7 @@ services:
     networks:
       vigil_network:
         ipv4_address: 172.20.0.4
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:7212/health"]
       interval: 10s
