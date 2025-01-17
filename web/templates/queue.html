@@ -3,14 +3,14 @@
 {% block content %}
 <div class="container">
     <div class="text-center mb-4">
-        <h1>Очередь сообщений чата {{ peer_id }}</h1>
+        <h1>Очередь сообщений чата {%if peer_name %}{{ peer_name }}{% else %}{{ peer_id }}{% endif %}</h1>
     </div>
 
     <div class="row justify-content-center">
         <div class="col-md-8">
 
             <div class="queue-header d-flex justify-content-between align-items-center mb-3 p-3 rounded shadow-sm bg-light">
-                <h5 class="mb-0">Очередь сообщений чата {%if peer_name %}{{ peer_name }}{% else %}{{ peer_id }}{% endif %}</h5>
+                <h5 class="mb-0">Сообщения</h5>
             </div>
 
             <div class="queue-list-container" style="max-height: 500px; overflow-y: auto;">
