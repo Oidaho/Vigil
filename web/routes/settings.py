@@ -1,5 +1,3 @@
-from typing import Dict, List
-
 from fastapi import APIRouter, Body, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -7,6 +5,8 @@ from fastapi.templating import Jinja2Templates
 from auth import AuthData, get_current_user
 from config import configs
 from db.models import ForbiddenHost, ForbiddenLink, ForbiddenWord, Peer, Setting
+
+from loguru import logger
 
 templates = Jinja2Templates(directory="templates")
 router = APIRouter(prefix="/{peer_id}/settings")
@@ -47,6 +47,7 @@ def settings_page(
             "project": configs.project_name,
             "request": request,
             "peer_id": peer_id,
+            "peer_name": peer.name,
             "settings": settings,
             "forbidden_links": forbidden_links,
             "forbidden_hosts": forbidden_hosts,
@@ -64,10 +65,24 @@ def settings_page(
 def update_seetings(
     request: Request,
     peer_id: int,
-    settings: List[Dict[str, str]] = Body(...),
+    updated_settings: list = Body(...),
     authenticated: AuthData = Depends(get_current_user),
 ):
-    return {"message": "Settings updated"}
+    peer = Peer.get_or_none(Peer.id == peer_id)
+    if peer:
+        for setting_data in updated_settings:
+            setting = Setting.get_or_none(
+                (Setting.peer == peer) & (Setting.key == setting_data["key"])
+            )
+            if setting:
+                setting.value = setting_data["value"]
+                setting.save()
+
+        return {"message": "Settings updated"}
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="No such peer was found"
+    )
 
 
 @router.post("/words")

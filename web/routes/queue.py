@@ -29,6 +29,7 @@ def queue_page(
             "queue": queue,
             "request": request,
             "peer_id": peer_id,
+            "peer_name": peer.name,
         }
 
         return templates.TemplateResponse("queue.html", context)

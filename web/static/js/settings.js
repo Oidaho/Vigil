@@ -1,5 +1,5 @@
-function saveSettings() {
-    const settingsData = [];
+function saveSettings(currentPeerId) {
+    const updated_settings = [];
 
     document.querySelectorAll('.setting-input').forEach(element => {
         const key = element.id;
@@ -7,34 +7,46 @@ function saveSettings() {
         const originalValue = element.getAttribute('data-original-value');
 
         if (currentValue !== originalValue) {
-            settingsData.push({ key, value: currentValue });
+            updated_settings.push({ key, value: currentValue });
         }
     });
 
-    if (settingsData.length > 0) {
-        fetch('/settings', {
+    if (updated_settings.length > 0) {
+        fetch(`/peers/${currentPeerId}/settings`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(settingsData),
+            body: JSON.stringify(updated_settings),
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Настройки успешно сохранены!');
-                document.querySelectorAll('.setting-input').forEach(element => {
-                    const currentValue = element.value;
-                    element.setAttribute('data-original-value', currentValue);
-                });
+        .then(response => {
+            if (response.ok) {
+                location.reload();
             } else {
-                alert('Ошибка при сохранении настроек.');
+                alert("Ошибка при сохранении настроек.");
             }
         })
         .catch(error => {
-            console.error('Ошибка:', error);
+            console.error("Ошибка:", error);
         });
-    } else {
-        alert('Нет изменений для сохранения.');
     }
 }
+
+
+
+function updateSelectBorder(selectElement) {
+    selectElement.classList.remove('border-success', 'border-danger');
+    const selectedValue = selectElement.value.toLowerCase();
+
+    if (selectedValue === 'active' || selectedValue === 'allowed') {
+        selectElement.classList.add('border-success');
+    } else if (selectedValue === 'inactive' || selectedValue === 'disallowed') {
+        selectElement.classList.add('border-danger');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.setting-input').forEach(selectElement => {
+        updateSelectBorder(selectElement);
+    });
+});

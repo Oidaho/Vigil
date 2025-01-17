@@ -29,6 +29,7 @@ def sanctions_page(
             "sanctions": sanctions,
             "request": request,
             "peer_id": peer_id,
+            "peer_name": peer.name,
             "max_sanction_points": configs.bot.max_sanction_points,
         }
 
