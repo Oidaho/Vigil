@@ -16,24 +16,27 @@ def sanctions_page(
     peer_id: int,
     authenticated: AuthData = Depends(get_current_user),
 ):
-    sanctions = (
-        Sanction.select()
-        .join(Peer)
-        .where(Peer.id == peer_id)
-        .order_by(Sanction.user_id)
+    peer = Peer.get_or_none(Peer.id == peer_id)
+    if peer:
+        sanctions = (
+            Sanction.select().where(Sanction.peer == peer).order_by(Sanction.user_id)
+        )
+
+        context = {
+            "title": "Санкции",
+            "authenticated": authenticated,
+            "project": configs.project_name,
+            "sanctions": sanctions,
+            "request": request,
+            "peer_id": peer_id,
+            "max_sanction_points": configs.bot.max_sanction_points,
+        }
+
+        return templates.TemplateResponse("sanctions.html", context)
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="No such peer was found"
     )
-
-    context = {
-        "title": "Санкции",
-        "authenticated": authenticated,
-        "project": configs.project_name,
-        "sanctions": sanctions,
-        "request": request,
-        "peer_id": peer_id,
-        "max_sanction_points": configs.bot.max_sanction_points,
-    }
-
-    return templates.TemplateResponse("sanctions.html", context)
 
 
 @router.delete("/{user_id}")

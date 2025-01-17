@@ -16,23 +16,26 @@ def queue_page(
     peer_id: int,
     authenticated: AuthData = Depends(get_current_user),
 ):
-    queue = (
-        Queue.select()
-        .join(Peer)
-        .where(Peer.id == peer_id)
-        .order_by(Queue.expiration.desc())
+    peer = Peer.get_or_none(Peer.id == peer_id)
+    if peer:
+        queue = (
+            Queue.select().where(Queue.peer == peer).order_by(Queue.expiration.desc())
+        )
+
+        context = {
+            "title": "Очередь",
+            "authenticated": authenticated,
+            "project": configs.project_name,
+            "queue": queue,
+            "request": request,
+            "peer_id": peer_id,
+        }
+
+        return templates.TemplateResponse("queue.html", context)
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="No such peer was found"
     )
-
-    context = {
-        "title": "Очередь",
-        "authenticated": authenticated,
-        "project": configs.project_name,
-        "queue": queue,
-        "request": request,
-        "peer_id": peer_id,
-    }
-
-    return templates.TemplateResponse("queue.html", context)
 
 
 @router.delete("/{user_id}")
