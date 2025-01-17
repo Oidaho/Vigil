@@ -27,18 +27,15 @@
                             <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
                                 <tr>
                                     <th>Имя настройки</th>
-                                    <th>Категория</th>
                                     <th>Значение</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for setting in settings %}
+                                    <!-- Строка с настройкой -->
                                     <tr>
                                         <!-- Имя настройки -->
                                         <td>{{ setting.aliase }}</td>
-
-                                        <!-- Категория -->
-                                        <td>{{ setting.category }}</td>
 
                                         <!-- Значение -->
                                         <td>
