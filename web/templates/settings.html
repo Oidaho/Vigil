@@ -1,0 +1,102 @@
+{% extends "includes/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Контейнер для вкладок и контента -->
+    <div class="row">
+        <!-- Блок с вкладками -->
+        <div class="col-md-3">
+            <h1>Настройки</h1>
+            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical" style="position: sticky; top: 20px; height: calc(93svh - 100px); overflow-y: auto;">
+                <a class="nav-link active" id="v-pills-settings-tab" data-bs-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="true">Настройки</a>
+                <a class="nav-link" id="v-pills-links-tab" data-bs-toggle="pill" href="#v-pills-links" role="tab" aria-controls="v-pills-links" aria-selected="false">Ссылки</a>
+                <a class="nav-link" id="v-pills-domains-tab" data-bs-toggle="pill" href="#v-pills-domains" role="tab" aria-controls="v-pills-domains" aria-selected="false">Домены</a>
+                <a class="nav-link" id="v-pills-words-tab" data-bs-toggle="pill" href="#v-pills-words" role="tab" aria-controls="v-pills-words" aria-selected="false">Мат-фильтр</a>
+            </div>
+        </div>
+
+        <!-- Блок с контентом вкладок -->
+        <div class="col-md-9">
+            <div class="tab-content" id="v-pills-tabContent">
+                <!-- Вкладка "Настройки" -->
+                <div class="tab-pane fade show active" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
+                    <h3>Настройки</h3>
+                    <div style="max-height: 75svh; overflow-y: auto; margin-bottom: 20px; position: relative;">
+                        <table class="table table-bordered">
+                            <!-- Фиксированная шапка таблицы -->
+                            <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
+                                <tr>
+                                    <th>Имя настройки</th>
+                                    <th>Категория</th>
+                                    <th>Значение</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for setting in settings %}
+                                    <tr>
+                                        <!-- Имя настройки -->
+                                        <td>{{ setting.aliase }}</td>
+
+                                        <!-- Категория -->
+                                        <td>{{ setting.category }}</td>
+
+                                        <!-- Значение -->
+                                        <td>
+                                            {% if "active" in setting.value.lower() or "inactive" in setting.value.lower() %}
+                                                <!-- Выпадающий список для active/inactive -->
+                                                <select class="form-select setting-input" id="{{ setting.key }}" data-original-value="{{ setting.value }}">
+                                                    <option value="active" {% if "active" in setting.value.lower() %}selected{% endif %}>Фильтровать</option>
+                                                    <option value="inactive" {% if "inactive" in setting.value.lower() %}selected{% endif %}>Не фильтровать</option>
+                                                </select>
+                                            {% else %}
+                                                <!-- Текстовое поле для других значений -->
+                                                <input type="text" class="form-control setting-input" id="{{ setting.key }}" value="{{ setting.value }}" data-original-value="{{ setting.value }}">
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Кнопка сохранения настроек (зеленая и справа) -->
+                    <div class="d-flex justify-content-end">
+                        <button class="btn btn-success" id="save-settings" onclick="saveSettings()">Сохранить настройки</button>
+                    </div>
+                </div>
+
+
+                <!-- Вкладка "Ссылки" -->
+                <div class="tab-pane fade" id="v-pills-links" role="tabpanel" aria-labelledby="v-pills-links-tab">
+                    <h3>Запрещенные ссылки</h3>
+                    <ul class="list-group">
+                        {% for link in forbidden_links %}
+                            <li class="list-group-item">{{ link.value }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Вкладка "Домены" -->
+                <div class="tab-pane fade" id="v-pills-domains" role="tabpanel" aria-labelledby="v-pills-domains-tab">
+                    <h3>Запрещенные домены</h3>
+                    <ul class="list-group">
+                        {% for host in forbidden_hosts %}
+                            <li class="list-group-item">{{ host.value }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Вкладка "Мат-фильтр" -->
+                <div class="tab-pane fade" id="v-pills-words" role="tabpanel" aria-labelledby="v-pills-words-tab">
+                    <h3>Запрещенные слова</h3>
+                    <ul class="list-group">
+                        {% for word in forbidden_words %}
+                            <li class="list-group-item">{{ word.value }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

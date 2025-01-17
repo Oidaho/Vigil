@@ -5,13 +5,16 @@ from fastapi.templating import Jinja2Templates
 from auth import AuthData, get_current_user
 from config import configs
 from db.models import Peer
-from .sanctions import router as sanctions_router
+
 from .queue import router as queue_router
+from .sanctions import router as sanctions_router
+from .settings import router as settings_router
 
 templates = Jinja2Templates(directory="templates")
 router = APIRouter(prefix="/peers")
 router.include_router(sanctions_router)
 router.include_router(queue_router)
+router.include_router(settings_router)
 
 
 @router.get("/", response_class=HTMLResponse)
