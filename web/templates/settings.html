@@ -9,7 +9,7 @@
             <h1>Настройки чата {%if peer_name %}{{ peer_name }}{% else %}{{ peer_id }}{% endif %}</h1>
             <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical" style="position: sticky; top: 20px; height: calc(93svh - 100px); overflow-y: auto;">
                 <a class="nav-link active" id="v-pills-settings-tab" data-bs-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="true">Настройки</a>
-                <a class="nav-link" id="v-pills-links-tab" data-bs-toggle="pill" href="#v-pills-links" role="tab" aria-controls="v-pills-links" aria-selected="false">Запрещенные ссылки</a>
+                <a class="nav-link" id="v-pills-links-tab" data-bs-toggle="pill"  href="#v-pills-links" role="tab" aria-controls="v-pills-links" aria-selected="false">Запрещенные ссылки</a>
                 <a class="nav-link" id="v-pills-domains-tab" data-bs-toggle="pill" href="#v-pills-domains" role="tab" aria-controls="v-pills-domains" aria-selected="false">Запрещенные домены</a>
                 <a class="nav-link" id="v-pills-words-tab" data-bs-toggle="pill" href="#v-pills-words" role="tab" aria-controls="v-pills-words" aria-selected="false">Запрещенные слова</a>
             </div>
@@ -18,6 +18,7 @@
         <!-- Блок с контентом вкладок -->
         <div class="col-md-9">
             <div class="tab-content" id="v-pills-tabContent">
+
                 <!-- Вкладка "Настройки" -->
                 <div class="tab-pane fade show active" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
                     <h3>Настройки</h3>
@@ -70,36 +71,179 @@
                 <!-- Вкладка "Ссылки" -->
                 <div class="tab-pane fade" id="v-pills-links" role="tabpanel" aria-labelledby="v-pills-links-tab">
                     <h3>Запрещенные ссылки</h3>
-                    <ul class="list-group">
-                        {% for link in forbidden_links %}
-                            <li class="list-group-item">{{ link.value }}</li>
-                        {% endfor %}
-                    </ul>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Ссылка</th>
+                                <th>Действие</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for link in forbidden_links %}
+                                <tr id="link-{{ link.id }}">
+                                    <td>{{ link.value }}</td>
+                                    <td>
+                                        <button class="btn btn-danger btn-sm" onclick="openDeleteModal('link', {{ link.id }})">Удалить</button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="d-flex justify-content-end">
+                        <button class="btn btn-success" onclick="openAddLinkModal()">Добавить ссылку</button>
+                    </div>
                 </div>
 
                 <!-- Вкладка "Домены" -->
                 <div class="tab-pane fade" id="v-pills-domains" role="tabpanel" aria-labelledby="v-pills-domains-tab">
                     <h3>Запрещенные домены</h3>
-                    <ul class="list-group">
-                        {% for host in forbidden_hosts %}
-                            <li class="list-group-item">{{ host.value }}</li>
-                        {% endfor %}
-                    </ul>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Домен</th>
+                                <th>Действие</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for host in forbidden_hosts %}
+                                <tr id="host-{{ host.id }}">
+                                    <td>{{ host.value }}</td>
+                                    <td>
+                                        <button class="btn btn-danger btn-sm" onclick="openDeleteModal('host', {{ host.id }})">Удалить</button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="d-flex justify-content-end">
+                        <button class="btn btn-success" onclick="openAddHostModal()">Добавить домен</button>
+                    </div>
                 </div>
 
-                <!-- Вкладка "Мат-фильтр" -->
+                <!-- Вкладка "Слова" -->
                 <div class="tab-pane fade" id="v-pills-words" role="tabpanel" aria-labelledby="v-pills-words-tab">
                     <h3>Запрещенные слова</h3>
-                    <ul class="list-group">
-                        {% for word in forbidden_words %}
-                            <li class="list-group-item">{{ word.value }}</li>
-                        {% endfor %}
-                    </ul>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Слово</th>
+                                <th>Действие</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for word in forbidden_words %}
+                                <tr id="word-{{ word.id }}">
+                                    <td>{{ word.value }}</td>
+                                    <td>
+                                        <button class="btn btn-danger btn-sm" onclick="openDeleteModal('word', {{ word.id }})">Удалить</button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="d-flex justify-content-end">
+                        <button class="btn btn-success" onclick="openAddWordModal()">Добавить слово</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+        
+<!-- Модальное окно для удаления -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Удалить элемент</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Вы уверены, что хотите удалить этот элемент?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-danger" onclick="confirmDelete({{ peer_id }})">Удалить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Модальное окно для добавления ссылки -->
+<div class="modal fade" id="addLinkModal" tabindex="-1" aria-labelledby="addLinkModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addLinkModalLabel">Добавить ссылку</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addLinkForm">
+                    <div class="mb-3">
+                        <label for="linkValue" class="form-label">Ссылка</label>
+                        <input type="text" class="form-control" id="linkValue" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-success" onclick="addLink({{ peer_id }})">Добавить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для добавления домена -->
+<div class="modal fade" id="addHostModal" tabindex="-1" aria-labelledby="addHostModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addHostModalLabel">Добавить домен</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addHostForm">
+                    <div class="mb-3">
+                        <label for="hostValue" class="form-label">Домен</label>
+                        <input type="text" class="form-control" id="hostValue" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-success" onclick="addHost({{ peer_id }})">Добавить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для добавления слова -->
+<div class="modal fade" id="addWordModal" tabindex="-1" aria-labelledby="addWordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addWordModalLabel">Добавить слово</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addWordForm">
+                    <div class="mb-3">
+                        <label for="wordValue" class="form-label">Слово</label>
+                        <input type="text" class="form-control" id="wordValue" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-success" onclick="addWord({{ peer_id }})">Добавить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!-- Подключение JS -->
 <script src="/static/js/settings.js"></script>
 {% endblock %}

@@ -6,8 +6,6 @@ from auth import AuthData, get_current_user
 from config import configs
 from db.models import ForbiddenHost, ForbiddenLink, ForbiddenWord, Peer, Setting
 
-from loguru import logger
-
 templates = Jinja2Templates(directory="templates")
 router = APIRouter(prefix="/{peer_id}/settings")
 
@@ -42,7 +40,7 @@ def settings_page(
         )
 
         context = {
-            "title": "Очередь",
+            "title": "Настройки",
             "authenticated": authenticated,
             "project": configs.project_name,
             "request": request,
@@ -89,51 +87,114 @@ def update_seetings(
 def add_forbidden_word(
     request: Request,
     peer_id: int,
+    item_value: str = Body(...),
     authenticated: AuthData = Depends(get_current_user),
 ):
-    return {"message": "Steeings updated"}
+    peer = Peer.get_or_none(Peer.id == peer_id)
+    if peer:
+        ForbiddenWord.create(peer=peer, value=item_value)
+        return {"message": "Word created"}
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="No such peer was found"
+    )
 
 
-@router.delete("/words")
+@router.delete("/words/{item_id}")
 def delete_forbidden_word(
     request: Request,
     peer_id: int,
+    item_id: int,
     authenticated: AuthData = Depends(get_current_user),
 ):
-    return {"message": "Steeings updated"}
+    word = (
+        ForbiddenWord.select()
+        .join(Peer)
+        .where((Peer.id == peer_id) & (ForbiddenWord.id == item_id))
+        .get_or_none()
+    )
+    if word:
+        word.delete_instance()
+        return {"message": "Word has been removed"}
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="No such word was found"
+    )
 
 
-@router.patch("/links")
+@router.post("/links")
 def add_forbidden_link(
     request: Request,
     peer_id: int,
+    item_value: str = Body(...),
     authenticated: AuthData = Depends(get_current_user),
 ):
-    return {"message": "Steeings updated"}
+    peer = Peer.get_or_none(Peer.id == peer_id)
+    if peer:
+        ForbiddenLink.create(peer=peer, value=item_value)
+        return {"message": "Link created"}
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="No such peer was found"
+    )
 
 
-@router.delete("/links")
+@router.delete("/links/{item_id}")
 def delete_forbidden_link(
     request: Request,
     peer_id: int,
+    item_id: int,
     authenticated: AuthData = Depends(get_current_user),
 ):
-    return {"message": "Steeings updated"}
+    link = (
+        ForbiddenLink.select()
+        .join(Peer)
+        .where((Peer.id == peer_id) & (ForbiddenLink.id == item_id))
+        .get_or_none()
+    )
+    if link:
+        link.delete_instance()
+        return {"message": "Link has been removed"}
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="No such link was found"
+    )
 
 
-@router.patch("/hosts")
+@router.post("/hosts")
 def add_forbidden_host(
     request: Request,
     peer_id: int,
+    item_value: str = Body(...),
     authenticated: AuthData = Depends(get_current_user),
 ):
-    return {"message": "Steeings updated"}
+    peer = Peer.get_or_none(Peer.id == peer_id)
+    if peer:
+        ForbiddenHost.create(peer=peer, value=item_value)
+        return {"message": "Host created"}
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="No such peer was found"
+    )
 
 
-@router.delete("/hosts")
+@router.delete("/hosts/{item_id}")
 def delete_forbidden_host(
     request: Request,
     peer_id: int,
+    item_id: int,
     authenticated: AuthData = Depends(get_current_user),
 ):
-    return {"message": "Steeings updated"}
+    host = (
+        ForbiddenHost.select()
+        .join(Peer)
+        .where((Peer.id == peer_id) & (ForbiddenHost.id == item_id))
+        .get_or_none()
+    )
+    if host:
+        host.delete_instance()
+        return {"message": "Host has been removed"}
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="No such host was found"
+    )

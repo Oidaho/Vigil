@@ -50,3 +50,154 @@ document.addEventListener('DOMContentLoaded', function () {
         updateSelectBorder(selectElement);
     });
 });
+
+
+
+
+let currentId = null;
+let currentType = null;
+
+function openDeleteModal(type, id) {
+    currentId = id;
+    currentType = type;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+
+
+function openAddLinkModal() {
+    new bootstrap.Modal(document.getElementById('addLinkModal')).show();
+}
+
+
+function openAddHostModal() {
+    new bootstrap.Modal(document.getElementById('addHostModal')).show();
+}
+
+
+function openAddWordModal() {
+    new bootstrap.Modal(document.getElementById('addWordModal')).show();
+}
+
+
+function closeModal() {
+    new bootstrap.Modal(document.getElementById('deleteModal')).hide();
+    new bootstrap.Modal(document.getElementById('addLinkModal')).hide();
+    new bootstrap.Modal(document.getElementById('addHostModal')).hide();
+    new bootstrap.Modal(document.getElementById('addWordModal')).hide();
+}
+
+
+function confirmDelete(currentPeerId) {
+    const endpoints = {
+        "word": `/peers/${currentPeerId}/settings/words`,
+        "link": `/peers/${currentPeerId}/settings/links`,
+        "host": `/peers/${currentPeerId}/settings/hosts`,
+    };
+
+    if (currentId && currentType) {
+        const endpoint = `${endpoints[currentType]}/${currentId}`;
+
+        fetch(endpoint, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Ошибка при удалении элемента');
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+        });
+    }
+
+    closeModal();
+}
+
+
+function addLink(currentPeerId) {
+    const item_value = document.getElementById('linkValue').value;
+    const endpoint = `/peers/${currentPeerId}/settings/links`;
+
+    if (item_value) {
+        fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(item_value),
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Ошибка при добавлении ссылки');
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+        });
+    }
+
+    closeModal();
+}
+
+
+function addHost(currentPeerId) {
+    const item_value = document.getElementById('hostValue').value;
+    const endpoint = `/peers/${currentPeerId}/settings/hosts`;
+
+    if (item_value) {
+        fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(item_value),
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Ошибка при добавлении домена');
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+        });
+    }
+
+    closeModal();
+}
+
+
+function addWord(currentPeerId) {
+    const item_value = document.getElementById('wordValue').value;
+    const endpoint = `/peers/${currentPeerId}/settings/words`;
+
+    if (item_value) {
+        fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(item_value),
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Ошибка при добавлении слова');
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+        });
+    }
+
+    closeModal();
+}
