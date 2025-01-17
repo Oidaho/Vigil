@@ -112,7 +112,7 @@ class Setting(BaseModel):
         on_delete="CASCADE",
         on_update="CASCADE",
     )
-    key = CharField(unique=True, null=False)
+    key = CharField(null=False)
     value = CharField(null=False)
     category = CharField(null=True)
     aliase = CharField(null=True)
