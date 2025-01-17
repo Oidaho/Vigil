@@ -35,6 +35,7 @@ x-joint-env:  &joint-env
 services:
   postgres:
     image: postgres:17.2
+    container_name: db
     environment:
       <<: *postgres-env
     ports:
