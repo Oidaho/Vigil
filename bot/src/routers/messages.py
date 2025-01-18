@@ -40,19 +40,25 @@ class MessageRouter(Router):
         """
         self.check_rules(context)
 
+        passed = True
         for name, handler in self.handlers.items():
             try:
                 triggered = handler(context)
                 if triggered:
-                    logger.info(
-                        f"The triggering of the handler '{name}' has stopped the execution of other handlers."
-                    )
+                    passed = False
                     break
 
             except Exception as error:
                 logger.error(
                     f"An error occurred while executing the message handler: {error}."
                 )
+        else:
+            logger.info(
+                f"The triggering of the handler '{name}' has stopped the execution of other handlers."
+            )
+
+        if passed:
+            logger.info("The message has passed all checks.")
 
     def register(
         self,
