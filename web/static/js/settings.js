@@ -1,3 +1,6 @@
+let currentId = null;
+let currentType = null;
+
 function saveSettings(currentPeerId) {
     const updated_settings = [];
 
@@ -23,15 +26,14 @@ function saveSettings(currentPeerId) {
             if (response.ok) {
                 location.reload();
             } else {
-                alert("Ошибка при сохранении настроек.");
+                alert("An error occurred while saving the settings.");
             }
         })
         .catch(error => {
-            console.error("Ошибка:", error);
+            console.error("Error:", error);
         });
     }
 }
-
 
 
 function updateSelectBorder(selectElement) {
@@ -51,11 +53,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-
-
-
-let currentId = null;
-let currentType = null;
 
 function openDeleteModal(type, id) {
     currentId = id;
@@ -107,11 +104,11 @@ function confirmDelete(currentPeerId) {
             if (response.ok) {
                 location.reload();
             } else {
-                alert('Ошибка при удалении элемента');
+                alert("An error occurred while deleting the item.");
             }
         })
         .catch(error => {
-            console.error('Ошибка:', error);
+            console.error('Error:', error);
         });
     }
 
@@ -135,11 +132,11 @@ function addLink(currentPeerId) {
             if (response.ok) {
                 location.reload();
             } else {
-                alert('Ошибка при добавлении ссылки');
+                alert("An error occurred while adding the link.");
             }
         })
         .catch(error => {
-            console.error('Ошибка:', error);
+            console.error('Error:', error);
         });
     }
 
@@ -163,11 +160,11 @@ function addHost(currentPeerId) {
             if (response.ok) {
                 location.reload();
             } else {
-                alert('Ошибка при добавлении домена');
+                alert("An error occurred while adding the domain.");
             }
         })
         .catch(error => {
-            console.error('Ошибка:', error);
+            console.error('Error:', error);
         });
     }
 
@@ -191,11 +188,11 @@ function addWord(currentPeerId) {
             if (response.ok) {
                 location.reload();
             } else {
-                alert('Ошибка при добавлении слова');
+                alert("An error occurred while adding the word.");
             }
         })
         .catch(error => {
-            console.error('Ошибка:', error);
+            console.error('Error:', error);
         });
     }
 

@@ -22,11 +22,11 @@ function confirmRemoveMark() {
             if (response.ok) {
                 location.reload();
             } else {
-                alert("Ошибка при удалении метки чата.");
+                alert("An error occurred while deleting the chat label.");
             }
         })
         .catch(error => {
-            console.error("Ошибка:", error);
+            console.error("Error:", error);
         });
     }
     closeModal()

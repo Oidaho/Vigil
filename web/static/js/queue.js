@@ -21,11 +21,11 @@ function confirmDelete(currentPeerId) {
             if (response.ok) {
                 location.reload();
             } else {
-                alert('Ошибка при удалении сообщения');
+                alert("An error occurred while deleting the message.");
             }
         })
         .catch(error => {
-            console.error('Ошибка:', error);
+            console.error('Error:', error);
         });
     }
     closeModal()

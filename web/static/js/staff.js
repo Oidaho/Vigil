@@ -7,7 +7,6 @@ function openDeleteUserModal(userId) {
     new bootstrap.Modal(document.getElementById('deleteUserModal')).show();
 }
 
-
 function openAddUserModal() {
     new bootstrap.Modal(document.getElementById('addUserModal')).show();
 }
@@ -27,13 +26,13 @@ function confirmDelete() {
         })
         .then(response => {
             if (response.ok) {
-                location.reload(); // Перезагрузить страницу после удаления
+                location.reload();
             } else {
-                alert("Ошибка при удалении сотрудника.");
+                alert("An error occurred while deleting the staff member.");
             }
         })
         .catch(error => {
-            console.error("Ошибка:", error);
+            console.error("Error:", error);
         });
     }
     closeModal();
@@ -59,10 +58,10 @@ document.getElementById('addUserForm').addEventListener('submit', function (even
         if (response.ok) {
             location.reload();
         } else {
-            alert("Ошибка при добавлении сотрудника.");
+            alert("An error occurred while adding the staff member.");
         }
     })
     .catch(error => {
-        console.error("Ошибка:", error);
+        console.error("Error:", error);
     });
 });

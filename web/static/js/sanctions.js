@@ -10,7 +10,7 @@ function openDeleteModal(userId) {
     new bootstrap.Modal(document.getElementById('deleteModal')).show();
 }
 
-function closeModal(userId) {
+function closeModal() {
     new bootstrap.Modal(document.getElementById('deleteModal')).hide();
     new bootstrap.Modal(document.getElementById('decrementModal')).hide();
 }
@@ -27,17 +27,17 @@ function confirmDecrement(currentPeerId) {
             if (response.ok) {
                 location.reload();
             } else {
-                alert('Ошибка при уменьшении санкции');
+                alert("An error occurred while reducing the sanction points.");
             }
         })
         .catch(error => {
-            console.error('Ошибка:', error);
+            console.error('Error:', error);
         });
     }
     closeModal()
 }
 
-// Подтверждение удаления санкции
+
 function confirmDelete(currentPeerId) {
     if (selectedUserId) {
         fetch(`/peers/${currentPeerId}/sanctions/${selectedUserId}`, {
@@ -50,11 +50,11 @@ function confirmDelete(currentPeerId) {
             if (response.ok) {
                 location.reload();
             } else {
-                alert('Ошибка при удалении санкции');
+                alert("An error occurred while removing the sanction.");
             }
         })
         .catch(error => {
-            console.error('Ошибка:', error);
+            console.error('Error:', error);
         });
     }
     closeModal()
