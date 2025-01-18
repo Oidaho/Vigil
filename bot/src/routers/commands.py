@@ -27,7 +27,7 @@ class CommandRouter(Router):
         self.bounded_type = EventType.COMMAND
         self.handlers = {}
 
-    def route(self, context: Context) -> None:
+    def route(self, context: Context) -> bool:
         """Extracts the name of the executed command from the context of a COMMAND-type event,
         which is used for routing and initiating specific response actions by calling
         the corresponding command handler.

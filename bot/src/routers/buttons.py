@@ -44,7 +44,7 @@ class ButtonRouter(Router):
         self.handlers["rejected"] = error_factory("⚠️ Действие отклонено.")
         self.handlers["lack_permission"] = error_factory("⚠️ Недостаточно прав.")
 
-    def route(self, context: Context) -> None:
+    def route(self, context: Context) -> bool:
         """Extracts the button name from the context of BUTTON-type events,
         which is used for routing and initiating specific response actions
         by calling the corresponding button handler.

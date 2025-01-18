@@ -27,7 +27,7 @@ class MessageRouter(Router):
         self.bounded_type = EventType.MESSAGE
         self.handlers = {}
 
-    def route(self, context: Context) -> None:
+    def route(self, context: Context) -> bool:
         """Extracts the name of the executed command from the context of a COMMAND-type event,
         which is used for routing and initiating specific response actions by calling
         the corresponding command handler.
@@ -46,19 +46,22 @@ class MessageRouter(Router):
                 triggered = handler(context)
                 if triggered:
                     passed = False
+                    logger.info(
+                        f"The event triggered the execution of the message handler '{name}'. "
+                        "The execution of other handlers has been stopped."
+                    )
                     break
 
             except Exception as error:
                 logger.error(
                     f"An error occurred while executing the message handler: {error}."
                 )
-        else:
-            logger.info(
-                f"The triggering of the handler '{name}' has stopped the execution of other handlers."
-            )
+                return False
 
         if passed:
             logger.info("The message has passed all checks.")
+
+        return True
 
     def register(
         self,
@@ -97,9 +100,6 @@ class MessageRouter(Router):
                 message = context.message
 
                 result = func(ctx=context, msg=message)
-                logger.info(
-                    f"The event triggered the execution of the message handler '{name}'."
-                )
 
                 return result
 
