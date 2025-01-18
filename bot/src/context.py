@@ -200,6 +200,12 @@ class Message(ContextObject):
             if message_info.get("geo", False):
                 self.__attachments.append("geo")
 
+            if message_info.get("fwd_messages"):
+                self.__attachments.append("forward")
+
+            if message_info.get("reply_message"):
+                self.__attachments.append("reply")
+
         return self.__attachments
 
     @property
