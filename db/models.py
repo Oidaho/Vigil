@@ -119,7 +119,7 @@ class Setting(BaseModel):
 
     class Meta:
         table_name = "settings"
-        indexes = ((("peer", "keykey"), True),)
+        indexes = ((("peer", "key"), True),)
 
 
 DEFAULT_SETTINGS = [
