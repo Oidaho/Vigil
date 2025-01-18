@@ -217,7 +217,7 @@ DEFAULT_SETTINGS = [
         "key": "check_forbidden_domains",
         "value": "inactive",
         "category": "Системы защиты",
-        "alias": "Обнаружение запрещенных ссылок",
+        "alias": "Обнаружение запрещенных доменов",
     },
     {
         "key": "check_forbidden_words",
@@ -241,7 +241,7 @@ DEFAULT_SETTINGS = [
         "key": "message_queue_interval",
         "value": "30",
         "category": "Временные интервалы",
-        "alias": "Интервал медленного режима",
+        "alias": "Интервал медленного режима (мин.)",
     },
 ]
 
