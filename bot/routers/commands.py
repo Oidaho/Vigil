@@ -1,6 +1,6 @@
 from typing import NamedTuple
 
-from rules.commands import FromMarkedOnly, ForwardRequired
+from rules.commands import FromMarkedOnly, ForwardRequired, PermissionRequired
 from src.context import Context
 from src.keyboards import ButtonColor, Keyboard
 from src.keyboards.actions import Callback
@@ -12,7 +12,13 @@ from .utils import exec_punishment
 router = CommandRouter()
 
 
-@router.register(name="mark", args=(), execution_ruleset=[])
+@router.register(
+    name="mark",
+    args=(),
+    execution_ruleset=[
+        PermissionRequired(min_permission=2),
+    ],
+)
 def mark_command(ctx: Context, args: NamedTuple) -> bool:
     text = (
         "⚠️ Вы хотите задать метку беседе? \n\n"
@@ -64,7 +70,10 @@ def mark_command(ctx: Context, args: NamedTuple) -> bool:
 @router.register(
     name="kick",
     args=("user_tag", "reason"),
-    execution_ruleset=[FromMarkedOnly(mark="LOG")],
+    execution_ruleset=[
+        PermissionRequired(min_permission=1),
+        FromMarkedOnly(mark="LOG"),
+    ],
 )
 def kick_command(ctx: Context, args: NamedTuple) -> bool:
     return exec_punishment(ctx=ctx, punishment="kick", args=args)
@@ -73,7 +82,10 @@ def kick_command(ctx: Context, args: NamedTuple) -> bool:
 @router.register(
     name="warn",
     args=("user_tag", "reason"),
-    execution_ruleset=[FromMarkedOnly(mark="LOG")],
+    execution_ruleset=[
+        PermissionRequired(min_permission=1),
+        FromMarkedOnly(mark="LOG"),
+    ],
 )
 def warn_command(ctx: Context, args: NamedTuple) -> bool:
     return exec_punishment(ctx=ctx, punishment="warn", args=args)
@@ -82,7 +94,10 @@ def warn_command(ctx: Context, args: NamedTuple) -> bool:
 @router.register(
     name="unwarn",
     args=("user_tag", "reason"),
-    execution_ruleset=[FromMarkedOnly(mark="LOG")],
+    execution_ruleset=[
+        PermissionRequired(min_permission=1),
+        FromMarkedOnly(mark="LOG"),
+    ],
 )
 def unwarn_command(ctx: Context, args: NamedTuple) -> bool:
     return exec_punishment(ctx=ctx, punishment="unwarn", args=args)
@@ -92,6 +107,7 @@ def unwarn_command(ctx: Context, args: NamedTuple) -> bool:
     name="punish",
     args=(),
     execution_ruleset=[
+        PermissionRequired(min_permission=1),
         FromMarkedOnly(mark="LOG"),
         ForwardRequired(msg_count=1),
     ],

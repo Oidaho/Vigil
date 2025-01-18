@@ -1,7 +1,7 @@
 from src.routers import Rule
 from src.context import Context
 
-from db.models import Peer
+from db.models import Peer, Staff
 
 
 class FromMarkedOnly(Rule):
@@ -37,5 +37,19 @@ class ForwardRequired(Rule):
     def check(self, ctx: Context) -> bool:
         if len(ctx.message.forward) == self.count:
             return True
+
+        return False
+
+
+class PermissionRequired(Rule):
+    """Checks if the user who invoked the command has the required permission level."""
+
+    def __init__(self, min_permission: int) -> None:
+        self.permission = min_permission
+
+    def check(self, ctx: Context) -> bool:
+        user = Staff.get_or_none(Staff.id == ctx.user.id)
+        if user:
+            return user.permission >= self.min_permission
 
         return False
