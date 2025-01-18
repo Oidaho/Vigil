@@ -44,7 +44,7 @@ class CommandRouter(Router):
 
         try:
             if handler is None:
-                raise NameError(f"Couldn't find a command named '{name}'.")
+                raise NameError(f"Could not find a command named '{name}'")
 
             return handler(context)
 
@@ -52,7 +52,7 @@ class CommandRouter(Router):
             logger.warning(f"Command execution canceled: {error}")
 
         except Exception as error:
-            logger.error(f"Error when executing command: {error}")
+            logger.error(f"An error occurred while executing the command: {error}.")
 
     def register(
         self,
@@ -82,6 +82,8 @@ class CommandRouter(Router):
             delete_src (bool, optional): Enables automatic deletion of the message
                                         that triggered the command.
                                         Defaults to True.
+            execution_ruleset (List[Rule], optional): A list of rules that must be validated
+                                                    before executing the message handler.
 
         Example:
             ```python
@@ -110,12 +112,12 @@ class CommandRouter(Router):
                     packed = tuple()
                 else:
                     raise ValueError(
-                        f"There are not enough arguments in command '{name}'."
+                        f"Insufficient arguments provided for the command '{name}'."
                     )
 
                 result = func(ctx=context, args=packed)
                 logger.info(
-                    f"Event triggered command '{name}' execution with args {packed}."
+                    f"The event triggered the execution of the command '{name}' with arguments: {packed}."
                 )
 
                 if delete_src:

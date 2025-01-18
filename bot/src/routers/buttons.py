@@ -96,10 +96,12 @@ class ButtonRouter(Router):
                                         who pressed the button is the owner of the
                                         keyboard attached to the message.
                                         Defaults to True.
+            execution_ruleset (List[Rule], optional): A list of rules that must be validated
+                                        before executing the message handler.
 
         Example:
             ```python
-            router = Buttons()
+            router = ButtonRouter()
 
             @router.register(name='close')
             def close_button(ctx, payload) -> bool:
@@ -119,11 +121,13 @@ class ButtonRouter(Router):
 
                 if check_owner and (context.user.id != payload["owner"]):
                     raise PermissionError(
-                        f"User <{context.user.id}> is not button '{name}' owner."
+                        f"User <{context.user.id}> is not the owner of the button '{name}'."
                     )
 
                 result = func(ctx=context, payload=payload)
-                logger.info(f"Event triggered button handler '{name}' execution.")
+                logger.info(
+                    f"The event triggered the execution of the button handler '{name}'."
+                )
 
                 return result
 
