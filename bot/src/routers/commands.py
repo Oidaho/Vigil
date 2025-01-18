@@ -23,8 +23,9 @@ class CommandRouter(Router):
     """
 
     def __init__(self, routing_ruleset: List[Rule] = []) -> None:
-        super().__init__(ruleset=routing_ruleset)
+        self.ruleset = routing_ruleset
         self.bounded_type = EventType.COMMAND
+        self.handlers = {}
 
     def route(self, context: Context) -> None:
         """Extracts the name of the executed command from the context of a COMMAND-type event,

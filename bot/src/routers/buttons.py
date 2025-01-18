@@ -37,8 +37,9 @@ class ButtonRouter(Router):
     """
 
     def __init__(self, routing_ruleset: List[Rule] = []) -> None:
-        super().__init__(ruleset=routing_ruleset)
+        self.ruleset = routing_ruleset
         self.bounded_type = EventType.BUTTON
+        self.handlers = {}
         self.handlers["error"] = error_factory("⚠️ Что-то пошло не так.")
         self.handlers["rejected"] = error_factory("⚠️ Действие отклонено.")
         self.handlers["lack_permission"] = error_factory("⚠️ Недостаточно прав.")

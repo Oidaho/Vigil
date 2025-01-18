@@ -19,5 +19,6 @@ class ReactionRouter(Router):
     """
 
     def __init__(self, routing_ruleset: List[Rule] = []) -> None:
-        super().__init__(ruleset=routing_ruleset)
-        self.bounded_type = EventType.REACTION
+        self.ruleset = routing_ruleset
+        self.bounded_type = EventType.Reaction
+        self.handlers = {}

@@ -13,7 +13,7 @@ from .rules import Rule
 class Router:
     """Base router class."""
 
-    handlers: Dict[str, Callable] = {}
+    handlers: Dict[str, Callable]
     bounded_type: EventType = None
 
     def __init__(self, ruleset: List[Rule]) -> None:

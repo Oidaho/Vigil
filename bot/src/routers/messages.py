@@ -23,8 +23,9 @@ class MessageRouter(Router):
     """
 
     def __init__(self, routing_ruleset: List[Rule] = []) -> None:
-        super().__init__(ruleset=routing_ruleset)
+        self.ruleset = routing_ruleset
         self.bounded_type = EventType.MESSAGE
+        self.handlers = {}
 
     def route(self, context: Context) -> None:
         """Extracts the name of the executed command from the context of a COMMAND-type event,
@@ -39,7 +40,7 @@ class MessageRouter(Router):
         """
         self.check_rules(context)
 
-        for name, handler in self.handlers:
+        for name, handler in self.handlers.items():
             try:
                 triggered = handler(context)
                 if triggered:
@@ -49,7 +50,9 @@ class MessageRouter(Router):
                     break
 
             except Exception as error:
-                logger.error(f"Error when executing command: {error}")
+                logger.error(
+                    f"An error occurred while executing the message handler: {error}."
+                )
 
     def register(
         self,
