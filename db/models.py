@@ -119,6 +119,7 @@ class Setting(BaseModel):
 
     class Meta:
         table_name = "settings"
+        indexes = ((("peer", "keykey"), True),)
 
 
 DEFAULT_SETTINGS = [
@@ -135,10 +136,16 @@ DEFAULT_SETTINGS = [
         "alias": "Аудио",
     },
     {
-        "key": "audio_in_attachemnts",
+        "key": "audio_message_in_attachemnts",
         "value": "allowed",
         "category": "Фильтрация вложений сообщеня",
         "alias": "Голосовые сообщения",
+    },
+    {
+        "key": "photo_in_attachemnts",
+        "value": "allowed",
+        "category": "Фильтрация вложений сообщеня",
+        "alias": "Фотографии",
     },
     {
         "key": "link_in_attachemnts",
