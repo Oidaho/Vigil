@@ -12,7 +12,7 @@ from loguru import logger
 
 from src import Bot
 from config import configs
-from routers import command_router, button_router
+from routers import command_router, button_router, message_router
 from db import connect_and_prepare, disconnect
 
 
@@ -50,7 +50,7 @@ def main() -> None:
 
     bot.include_router(router=command_router)
     bot.include_router(router=button_router)
-
+    bot.include_router(router=message_router)
     bot.run()
 
     # db
