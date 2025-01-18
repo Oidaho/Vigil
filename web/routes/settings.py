@@ -1,12 +1,13 @@
+from auth import AuthData, get_current_user
 from fastapi import APIRouter, Body, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from auth import AuthData, get_current_user
 from config import configs
 from db.models import ForbiddenHost, ForbiddenLink, ForbiddenWord, Peer, Setting
 
 templates = Jinja2Templates(directory="templates")
+
 router = APIRouter(prefix="/{peer_id}/settings")
 
 
@@ -55,7 +56,8 @@ def settings_page(
         return templates.TemplateResponse("settings.html", context)
 
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="No such peer was found"
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="No peer with this ID was found.",
     )
 
 
@@ -76,10 +78,11 @@ def update_seetings(
                 setting.value = setting_data["value"]
                 setting.save()
 
-        return {"message": "Settings updated"}
+        return {"message": "The settings have been updated."}
 
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="No such peer was found"
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="No peer with this ID was found.",
     )
 
 
@@ -93,10 +96,11 @@ def add_forbidden_word(
     peer = Peer.get_or_none(Peer.id == peer_id)
     if peer:
         ForbiddenWord.create(peer=peer, value=item_value)
-        return {"message": "Word created"}
+        return {"message": "The word has been added."}
 
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="No such peer was found"
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="No peer with this ID was found.",
     )
 
 
@@ -115,10 +119,11 @@ def delete_forbidden_word(
     )
     if word:
         word.delete_instance()
-        return {"message": "Word has been removed"}
+        return {"message": "The word has been removed."}
 
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="No such word was found"
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="No word or peer with this ID was found.",
     )
 
 
@@ -132,10 +137,11 @@ def add_forbidden_link(
     peer = Peer.get_or_none(Peer.id == peer_id)
     if peer:
         ForbiddenLink.create(peer=peer, value=item_value)
-        return {"message": "Link created"}
+        return {"message": "The link has been added."}
 
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="No such peer was found"
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="No peer with this ID was found.",
     )
 
 
@@ -157,7 +163,8 @@ def delete_forbidden_link(
         return {"message": "Link has been removed"}
 
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="No such link was found"
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="No link or peer with this ID was found.",
     )
 
 
@@ -171,10 +178,11 @@ def add_forbidden_host(
     peer = Peer.get_or_none(Peer.id == peer_id)
     if peer:
         ForbiddenHost.create(peer=peer, value=item_value)
-        return {"message": "Host created"}
+        return {"message": "The host has been added."}
 
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="No such peer was found"
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="No peer with this ID was found.",
     )
 
 
@@ -193,8 +201,9 @@ def delete_forbidden_host(
     )
     if host:
         host.delete_instance()
-        return {"message": "Host has been removed"}
+        return {"message": "The host has been removed."}
 
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="No such host was found"
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="No host or peer with this ID was found.",
     )

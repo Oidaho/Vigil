@@ -35,7 +35,8 @@ def queue_page(
         return templates.TemplateResponse("queue.html", context)
 
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="No such peer was found"
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="No peer with this ID was found.",
     )
 
 
@@ -53,8 +54,9 @@ def delete_queue_item(
     )
     if queue_item:
         queue_item.delete_instance()
-        return {"message": "Queue item has been removed"}
+        return {"message": "The queue item has been removed."}
 
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="No such queue item was found"
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="No peer with this ID was found.",
     )

@@ -43,8 +43,9 @@ def unmark_peer(
     peer = Peer.get_or_none(Peer.id == peer_id)
     if peer:
         peer.delete_instance()
-        return {"message": "Peer mark has been removed"}
+        return {"message": "The peer mark has been removed."}
 
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="No such peer was found"
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="No peer with this ID was found.",
     )

@@ -42,7 +42,8 @@ def login(request: Request, user_id: int = Form(...), password: str = Form(...))
 @router.get("/logout")
 def logout():
     response = RedirectResponse(
-        "/login", status_code=status.HTTP_307_TEMPORARY_REDIRECT
+        url="/login",
+        status_code=status.HTTP_307_TEMPORARY_REDIRECT,
     )
     response.delete_cookie(AUTH_COOKIE_NAME)
     return response

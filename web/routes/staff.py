@@ -1,13 +1,14 @@
+import bcrypt
+from auth import AuthData, get_current_user
 from fastapi import APIRouter, Body, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from auth import get_current_user, AuthData
 from config import configs
 from db.models import Staff
-import bcrypt
 
 templates = Jinja2Templates(directory="templates")
+
 router = APIRouter(prefix="/staff")
 
 
@@ -39,7 +40,7 @@ def create_staff(
     if permission >= authenticated.permission:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Unable to add staff member",
+            detail="Unable to add the staff member.",
         )
 
     password_hash = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
@@ -55,10 +56,10 @@ def create_staff(
     if not created:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Staff member with this ID already exists",
+            detail="A staff member with this ID already exists.",
         )
 
-    return {"message": "Staff member successful added"}
+    return {"message": "The staff member has been successfully added."}
 
 
 @router.delete("/{user_id}")
@@ -70,8 +71,9 @@ def delete_staff(
         staff = Staff.get_or_none(Staff.id == user_id)
         if staff and (authenticated.permission > staff.permission):
             staff.delete_instance()
-            return {"message": "Staff member deleted"}
+            return {"message": "The staff member has been deleted."}
 
     raise HTTPException(
-        status_code=status.HTTP_400_BAD_REQUEST, detail="Unable to delete staff member"
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail="Unable to delete the staff member.",
     )

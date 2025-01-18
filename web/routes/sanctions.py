@@ -1,12 +1,13 @@
+from auth import AuthData, get_current_user
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from auth import AuthData, get_current_user
 from config import configs
-from db.models import Sanction, Peer
+from db.models import Peer, Sanction
 
 templates = Jinja2Templates(directory="templates")
+
 router = APIRouter(prefix="/{peer_id}/sanctions")
 
 
@@ -36,7 +37,8 @@ def sanctions_page(
         return templates.TemplateResponse("sanctions.html", context)
 
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="No such peer was found"
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="No peer with this ID was found.",
     )
 
 
@@ -54,10 +56,11 @@ def delete_sanction(
     )
     if sanction:
         sanction.delete_instance()
-        return {"message": "Sanction has been removed"}
+        return {"message": "The sanction has been removed."}
 
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="No such sanction was found"
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="No sanction or peer with this ID was found.",
     )
 
 
@@ -77,11 +80,12 @@ def decrement_sanction(
         sanction.points -= 1
         if sanction.points <= 0:
             sanction.delete_instance()
-            return {"message": "Sanction has been removed"}
+            return {"message": "The sanction has been removed."}
 
         sanction.save()
-        return {"message": "Sanction has been decremented"}
+        return {"message": "The sanction has been decremented."}
 
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="No such peer was found"
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="No sanction or peer with this ID was found.",
     )
