@@ -50,6 +50,6 @@ class PermissionRequired(Rule):
     def check(self, ctx: Context) -> bool:
         user = Staff.get_or_none(Staff.id == ctx.user.id)
         if user:
-            return user.permission >= self.min_permission
+            return user.permission >= self.permission
 
         return False
