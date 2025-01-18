@@ -1,6 +1,5 @@
-# ./Vigil/bot/bot.py
-
 from concurrent.futures import ThreadPoolExecutor
+
 from typing import Dict, Any
 
 from loguru import logger
@@ -13,13 +12,21 @@ from .context import Context, get_context, EventType
 from .routers.base import Router
 
 
-STD_COMMAND_PREFIX = "/"
-
-
 class Bot:
+    """VK bot class."""
+
     routing_map: Dict[EventType, Any] = {}
 
     def __init__(self, acces_token: str, api_version: str, group_id: int) -> None:
+        """Initializes the bot.
+        Creates a VK session, connects to the LongPoll server (LPS),
+        and sets up a thread pool for event processing.
+
+        Args:
+            access_token (str): The VK community access token.
+            api_version (str): The API version.
+            group_id (int): The VK community ID.
+        """
         self._make_session(acces_token, api_version)
         self._get_longpoll(group_id)
         self.thread_pool = ThreadPoolExecutor(max_workers=10)
@@ -67,30 +74,27 @@ class Bot:
 
     @property
     def api(self):
-        """Returns the Vkontakte API object for implementation
-        retaliatory actions from the bot.
+        """Returns the VKontakte API object to facilitate responsive actions from the bot.
 
         Returns:
-            VkApi: The VKontakte API object.
+            VkApi: An instance of the VKontakte API object.
         """
         return self.session.get_api()
 
     def include_router(self, router: Router) -> None:
-        """Binds the router to a specific type of event,
-        which is specified for it as 'bounded'. In case of binding
-        router to a certain type of event - these events will start
-        processed by handlers registered in the router.
+        """Binds the router to a specific event type, which is defined as its 'bound' type.
+        Once the router is bound to a particular event type, all events of that type will be
+        processed by the handlers registered within the router.
 
         Args:
-            router (Router): Event router.
+            router (Router): The event router instance.
         """
         self.routing_map[router.bounded_type] = router.route
 
     def run(self):
-        """Launches the Bot. Starts sending requests to LPS,
-        receiving and processing the latest events.
+        """Initializes and starts the bot. Begins sending requests to the LongPoll server (LPS),
+        receives incoming events, and processes them accordingly.
         """
-
         logger.info("Starting listening longpoll server.")
         recived_events = self.longpoll.listen
 

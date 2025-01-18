@@ -1,5 +1,3 @@
-# ./Vigil/bot/context.py
-
 from enum import Enum
 from typing import Dict, List
 
@@ -12,18 +10,45 @@ Payload = Dict[str, int | str | dict]
 
 
 class LangType(Enum):
+    """The language type of the client from which the event was initiated."""
+
     RUSSIAN = 0
     # TODO: Add more if possible
 
 
 class EventType(Enum):
+    """The type of the initiated event"""
+
     MESSAGE = "message_new"
     BUTTON = "message_event"
     REACTION = "message_reaction_event"
     COMMAND = "message_command"
 
 
-class Peer:
+class ContextObject:
+    def __init__(self, data: Payload, api: VkApi) -> None:
+        """Initializes the class and extracts all necessary data from the payload.
+
+        Args:
+            data (Payload): The payload from which data extraction will be attempted.
+            api (VkApi): The VK API object.
+
+        Raises:
+            AttributeError: An error occurred while extracting an attribute.
+        """
+
+    def __repr__(self) -> str:
+        """Returns a string representation of the context object.
+
+        Returns:
+            str: The string representation.
+        """
+        return "ContextObject()"
+
+
+class Peer(ContextObject):
+    """A context object providing information about the peer (chat/dialog) where the event occurred."""
+
     def __init__(self, data: Payload, api: VkApi) -> None:
         if (attempt := data.get("peer_id")) is None:
             if (attempt := data["message"].get("peer_id")) is None:
@@ -36,6 +61,7 @@ class Peer:
 
     @property
     def name(self) -> str:
+        """Retrieves the peer name."""
         if not hasattr(self, "__name"):
             peer_info = self.__api.messages.getConversationsById(peer_ids=self.id)
             peer_info = peer_info["items"][0]["chat_settings"]
@@ -47,7 +73,9 @@ class Peer:
         return f"Peer(id={self.id})"
 
 
-class User:
+class User(ContextObject):
+    """A context object providing information about the user authorized in the VK client."""
+
     def __init__(self, data: Payload, api: VkApi) -> None:
         if (attempt := data.get("reacted_id")) is None:
             if (attempt := data.get("user_id")) is None:
@@ -59,6 +87,7 @@ class User:
 
     @property
     def full_name(self) -> str:
+        """Retrieves the user's full name."""
         if not hasattr(self, "__full_name"):
             user_info = self.__api.users.get(user_ids=self.id)
             user_info = user_info[0]
@@ -70,6 +99,7 @@ class User:
 
     @property
     def first_name(self) -> str:
+        """Retrieves the user's first name."""
         if not hasattr(self, "__first_name"):
             user_info = self.__api.users.get(user_ids=self.id)
             user_info = user_info[0]
@@ -79,6 +109,7 @@ class User:
 
     @property
     def last_name(self) -> str:
+        """Retrieves the user's last name."""
         if not hasattr(self, "__last_name"):
             user_info = self.__api.users.get(user_ids=self.id)
             user_info = user_info[0]
@@ -88,6 +119,7 @@ class User:
 
     @property
     def nick(self) -> str | None:
+        """Retrieves the user's last name."""
         if not hasattr(self, "__nick"):
             user_info = self.__api.users.get(user_ids=self.id, fields=["domain"])
             user_info = user_info[0]
@@ -99,10 +131,9 @@ class User:
         return f"User(id={self.id})"
 
 
-# At the moment, we are not interested in having nested reply and fwd inside Reply.
-# As is peer_id accounting. If the message is a reply - peer, the id matches the parent message.
-# And we are not interested in fwd messages. There's nothing to do with them.
-class Reply:
+class Reply(ContextObject):
+    """A sub-object of the `Message` object, providing information about the message that was replied to or forwarded."""
+
     def __init__(self, data: Payload, api: VkApi) -> None:
         if (attempt := data.get("conversation_message_id")) is None:
             raise AttributeError("Error when getting the reply message cmID")
@@ -119,7 +150,9 @@ class Reply:
         return f"Reply(id={self.cmid})"
 
 
-class Command:
+class Command(ContextObject):
+    """A context object providing information about the invoked command, if the event is a message and meets certain conditions."""
+
     def __init__(self, data: Payload, api: VkApi) -> None:
         if (attempt := data["message"].get("text")) is None:
             raise AttributeError("Error when getting the command data")
@@ -136,7 +169,9 @@ class Command:
         return f"Command(name={self.name})"
 
 
-class Message:
+class Message(ContextObject):
+    """A context object providing information about the message, if the event is message-related."""
+
     def __init__(self, data: Payload, api: VkApi) -> None:
         if (attempt := data.get("conversation_message_id")) is None:
             raise AttributeError("Error when getting the message data")
@@ -150,6 +185,7 @@ class Message:
 
     @property
     def attachments(self) -> List[str]:
+        """Retrieves the message attachments."""
         if not hasattr(self, "__attachments"):
             message_info = self.__api.messages.getByConversationMessageId(
                 peer_id=self.__peer_id,
@@ -168,6 +204,7 @@ class Message:
 
     @property
     def reply(self) -> Reply | None:
+        """Retrieves the message reply."""
         if not hasattr(self, "__reply"):
             message_info = self.__api.messages.getByConversationMessageId(
                 peer_id=self.__peer_id,
@@ -182,6 +219,7 @@ class Message:
 
     @property
     def forward(self) -> List[Reply]:
+        """Retrieves the message forwarded messages."""
         if not hasattr(self, "__forward"):
             message_info = self.__api.messages.getByConversationMessageId(
                 peer_id=self.__peer_id,
@@ -199,7 +237,9 @@ class Message:
         return f"Message(cmid={self.cmid})"
 
 
-class Reaction:
+class Reaction(ContextObject):
+    """A context object providing information about the reaction to a message, if the event is reaction-related."""
+
     def __init__(self, data: Payload, api: VkApi) -> None:
         self.id: int = data.get("reaction_id", 0)
         self.is_removed: bool = not bool(self.id)
@@ -208,7 +248,9 @@ class Reaction:
         return f"Reaction(id={self.id})"
 
 
-class Button:
+class Button(ContextObject):
+    """A context object providing information about a button press, if the event is button-related."""
+
     def __init__(self, data: Payload, api: VkApi) -> None:
         if (attempt := data.get("event_id")) is None:
             raise AttributeError("Error when getting the button data")
@@ -222,6 +264,8 @@ class Button:
 
 
 class ClientInfo:
+    """A context object providing information about the client that initiated the event"""
+
     def __init__(self, data: Payload, api: VkApi) -> None:
         if (attempt := data.get("client_info")) is None:
             raise AttributeError("Error when getting the client info.")
@@ -236,6 +280,8 @@ class ClientInfo:
 
 
 class Context:
+    """The context of the initiated event"""
+
     __attribute_class = {
         "client": ClientInfo,
         "peer": Peer,
@@ -247,6 +293,13 @@ class Context:
     }
 
     def __init__(self, raw: Payload, api: VkApi) -> None:
+        """Takes a raw VK event as a payload, determines the event type,
+        and attempts to parse the necessary attributes (context objects) accordingly.
+
+        Args:
+            raw (Payload): The raw VK event in the form of a payload.
+            api (VkApi): The VK API object.
+        """
         self.api = api
 
         self.event_type: EventType = EventType(raw["type"])
@@ -282,28 +335,30 @@ class Context:
 
 
 def get_context(event: VkBotEvent, api: VkApi) -> Context:
-    """Extracts all the necessary information from the VK event, and also,
-    if necessary, makes additional requests to the VK api, specifying
-    some necessary information.
+    """Extracts all required information from the VK event and,
+    if necessary, performs additional requests to the VK API to
+    retrieve supplementary data.
 
     Args:
-        event (VkBotEvent): VK Event.
-        api (VkApi): VkApi object.
-        command_prefix (str): Command prefix used by the bot.
+        event (VkBotEvent): The VK event object.
+        api (VkApi): An instance of the VkApi class for interacting with the VK API.
+        command_prefix (str): The prefix used by the bot to identify commands.
 
     Returns:
-        Context: Event context.
+        Context: An object representing the event context.
     """
     try:
         ctx = Context(event.raw, api)
 
     except ValueError as error:
-        logger.warning("Unable to load event context. Recived event with unknown type.")
-        logger.debug(f"Details about error: {error}")
+        logger.warning(
+            "Unable to load event context. Received an event with an unknown type."
+        )
+        logger.debug(f"Error details: {error}")
 
     except AttributeError as error:
         logger.error(
-            f"Something went wrong while receiving the message context: {error}."
+            f"An error occurred while retrieving the message context: {error}."
         )
 
     else:

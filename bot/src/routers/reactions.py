@@ -1,3 +1,9 @@
+"""The `reactions` module provides tools for routing events of type REACTION.
+
+Classes:
+    - `ReactionRouter`: A router class.
+"""
+
 from typing import List
 
 from ..context import EventType
@@ -6,9 +12,9 @@ from .rules import Rule
 
 
 class ReactionRouter(Router):
-    """The router class for REACTION type events.
+    """A router class for handling events of type REACTION.
 
-    Bounded type:
+    Bounded Event Type:
         EventType.REACTION
     """
 

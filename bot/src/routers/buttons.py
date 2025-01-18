@@ -1,3 +1,9 @@
+"""The `buttons` module provides tools for routing events of type BUTTONS.
+
+Classes:
+    - `ButtonRouter`: A router class.
+"""
+
 from functools import wraps
 from typing import List, Callable
 
@@ -24,9 +30,9 @@ def error_factory(text: str) -> Callable:
 
 
 class ButtonRouter(Router):
-    """The router class for BUTTON type events.
+    """A router class for handling events of type BUTTON.
 
-    Bounded type:
+    Bounded Event Type:
         EventType.BUTTON
     """
 
@@ -38,12 +44,12 @@ class ButtonRouter(Router):
         self.handlers["lack_permission"] = error_factory("⚠️ Недостаточно прав.")
 
     def route(self, context: Context) -> None:
-        """The function extracts the button name from the context
-        BUTTON type events, according to which it performs routing
-        and initiates certain response actions to call the button handler.
+        """Extracts the button name from the context of BUTTON-type events,
+        which is used for routing and initiating specific response actions
+        by calling the corresponding button handler.
 
         Args:
-            context (Context):  The context of the event.
+            context (Context): The event context.
 
         Raises:
             RuntimeError: Routing deadlock. The button handler was not found.
@@ -79,27 +85,27 @@ class ButtonRouter(Router):
         execution_ruleset: List[Rule] = [],
     ) -> None:
         """A decorator that registers a new button handler and assigns it a name.
-        Handler functions, marked with this decorator, must have required arguments:
-        `ctx`, `payload`
+        Handler functions marked with this decorator must include the required arguments:
+        `ctx` and `payload`.
 
         Args:
             name (str, optional): The name of the button. If not specified,
-                            the name of the handler function will be taken.
-                            Defaults to None.
-            check_owner (bool, oprional): Indicates whether there is a need
-                            to check whether the user who pressed the button
-                            is the owner of the keyboard under the message.
-                            Defaults to True.
+                                the name of the handler function will be used.
+                                Defaults to None.
+            check_owner (bool, optional): Indicates whether to verify that the user
+                                        who pressed the button is the owner of the
+                                        keyboard attached to the message.
+                                        Defaults to True.
 
         Example:
-        ```
+            ```python
             router = Buttons()
 
             @router.register(name='close')
             def close_button(ctx, payload) -> bool:
-               # response actions here
-               return True
-        ```
+                # Response actions here
+                return True
+            ```
         """
 
         def decorator(func):

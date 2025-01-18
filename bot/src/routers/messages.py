@@ -1,3 +1,9 @@
+"""The `messages` module provides tools for routing events of type MESSAGE.
+
+Classes:
+    - `MessageRouter`: A router class.
+"""
+
 from typing import List
 
 from ..context import EventType
@@ -7,9 +13,9 @@ from .rules import Rule
 
 # TODO: write me
 class MessageRouter(Router):
-    """The router class for MESSAGE type events.
+    """A router class for handling events of type MESSAGE.
 
-    Bounded type:
+    Bounded Event Type:
         EventType.MESSAGE
     """
 

@@ -1,3 +1,5 @@
+"""The `routers` package provides tools for event routing."""
+
 from .rules import Rule
 from .commands import CommandRouter
 from .buttons import ButtonRouter

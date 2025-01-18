@@ -1,3 +1,9 @@
+"""The `commands` module provides tools for routing events of type COMMAND.
+
+Classes:
+    - `CommandRouter`: A router class.
+"""
+
 from collections import namedtuple
 from functools import wraps
 from typing import Collection, List
@@ -10,9 +16,9 @@ from .rules import Rule
 
 
 class CommandRouter(Router):
-    """The router class for COMMAND type events.
+    """A router class for handling events of type COMMAND.
 
-    Bounded type:
+    Bounded Event Type:
         EventType.COMMAND
     """
 
@@ -21,12 +27,12 @@ class CommandRouter(Router):
         self.bounded_type = EventType.COMMAND
 
     def route(self, context: Context) -> None:
-        """The function extracts the name of the executed command from the context
-        of an event of the COMMAND type, according to which it performs routing
-        and initiates certain responses actions for calling a command.
+        """Extracts the name of the executed command from the context of a COMMAND-type event,
+        which is used for routing and initiating specific response actions by calling
+        the corresponding command handler.
 
         Args:
-            context (Context):  The context of the event.
+            context (Context): The event context.
 
         Raises:
             RuntimeError: Routing deadlock. The command handler was not found.
@@ -56,54 +62,41 @@ class CommandRouter(Router):
         delete_src: bool = True,
         execution_ruleset: List[Rule] = [],
     ) -> None:
-        """A decorator that registers a new command handler and assigns it a name
-        and by setting additional parameters. Handler functions, marked
-        with this decorator, must have required arguments: `ctx`, `args`
+        """A decorator that registers a new command handler, assigns it a name,
+        and configures additional parameters. Handler functions marked with this
+        decorator must include the required arguments: `ctx` and `args`.
 
         Args:
             name (str, optional): The name of the command. If not specified,
-                            the name of the handler function will be taken.
-                            Defaults to None.
-            args (Collection[str], optional): Positional list of argument names,
-                            which the command accepts.
-                            Defaults to ().
-            args_necessary (bool, optional): Specifies whether submitting arguments to the
-                            command is a prerequisite. This means that the command
-                            can be called without arguments. However, if you try to
-                            call a command with fewer arguments than necessary,
-                            it will not be executed.
-                            Defaults to True.
-            delete_src (bool, optional): Automatic message deletion,
-                            which triggered the command.
-                            Defaults to True.
+                                the name of the handler function will be used.
+                                Defaults to None.
+            args (Collection[str], optional): A positional list of argument names
+                                            that the command accepts.
+                                            Defaults to ().
+            args_necessary (bool, optional): Specifies whether providing arguments
+                                            is mandatory for the command. If False,
+                                            the command can be called without arguments.
+                                            However, if called with fewer arguments
+                                            than required, it will not execute.
+                                            Defaults to True.
+            delete_src (bool, optional): Enables automatic deletion of the message
+                                        that triggered the command.
+                                        Defaults to True.
 
         Example:
-        ```
+            ```python
             router = CommandRouter()
 
             @router.register(name='test', args=("arg_1", "arg_2"))
             def test_command(ctx, args) -> bool:
-               # response actions here
-               return True
-        ```
+                # Response actions here
+                return True
+            ```
         """
 
         def decorator(func):
             @wraps(func)
             def wrapper(context: Context):
-                """The wrapp of the function executing the invoked command.
-                She is responsible for logging the progress of the command, as well as
-                for converting some ctx.command.args object into a NamedTuple instance.
-
-                Args:
-                    context (Context): The context of the event.
-
-                Raises:
-                    ValueError: The number of arguments is less than stated when declaring the command.
-
-                Returns:
-                    Callble: The wrapped executor function.
-                """
                 for rule in execution_ruleset:
                     rule(context)
 

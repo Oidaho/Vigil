@@ -5,6 +5,8 @@ from db.models import Peer
 
 
 class FromMarkedOnly(Rule):
+    """Checks if the peer is marked with a specific label."""
+
     def __init__(self, mark: str) -> None:
         self.mark = mark
 
@@ -17,6 +19,8 @@ class FromMarkedOnly(Rule):
 
 
 class ReplyRequired(Rule):
+    """Makes the presence of a reply message in the event mandatory."""
+
     def check(self, ctx: Context) -> bool:
         if ctx.message.reply:
             return True
@@ -25,6 +29,8 @@ class ReplyRequired(Rule):
 
 
 class ForwardRequired(Rule):
+    """Makes the presence of a forwarded messages in the event mandatory."""
+
     def __init__(self, msg_count: int) -> None:
         self.count = msg_count
 

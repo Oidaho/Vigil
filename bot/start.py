@@ -1,4 +1,10 @@
-# ./VK-Vigil/main.py
+"""Startup script for the 'bot' container.
+
+Performs the following actions:
+    - Configures the logger using the `loguru` module.
+    - Establishes a connection to the database.
+    - Initializes the bot and starts its operation.
+"""
 
 import sys
 
@@ -11,6 +17,7 @@ from db import connect_and_prepare, disconnect
 
 
 def setup_logger() -> None:
+    """Configuration of the loguru logger"""
     log_level = "DEBUG" if configs.debug_mode else "INFO"
     logger.remove()
     logger.add(
@@ -29,7 +36,7 @@ def setup_logger() -> None:
 
 
 def main() -> None:
-    """Entry point"""
+    """Program entry point"""
     setup_logger()
 
     # db

@@ -1,15 +1,15 @@
 from typing import Optional
 
-from .button_part import ButtonPart, Payload
+from .button_part import ButtonComponent, Payload
 
 
-class Action(ButtonPart):
+class Action(ButtonComponent):
     payload: Payload = None
     label: str = None
 
 
 class Callback(Action):
-    """Sends a click notification to the server."""
+    """Sends a click notification to the server upon button press."""
 
     def __init__(self, label: str, payload: Optional[Payload] = None):
         super().__init__("callback")
@@ -19,7 +19,7 @@ class Callback(Action):
 
 
 class Text(Action):
-    """Sends the text of the clicked button to the dialog."""
+    """Sends the text associated with the clicked button to the dialog."""
 
     def __init__(self, label: str, payload: Optional[Payload] = None):
         super().__init__("text")
@@ -29,7 +29,7 @@ class Text(Action):
 
 
 class OpenLink(Action):
-    """Follows a link."""
+    """Navigates to a specified link."""
 
     def __init__(self, url: str, label: str, payload: Optional[Payload] = None):
         super().__init__("open_link")
@@ -40,7 +40,7 @@ class OpenLink(Action):
 
 
 class Location(Action):
-    """Sends geolocation to the dialog."""
+    """Sends the current geolocation to the dialog."""
 
     def __init__(self, url: str, label: str, payload: Optional[Payload] = None):
         super().__init__("location")
@@ -51,7 +51,7 @@ class Location(Action):
 
 
 class VKPay(Action):
-    """Opens the VKPay payment window."""
+    """Opens the VKPay payment window for transactions."""
 
     def __init__(
         self, payment_hash: str, label: str, payload: Optional[Payload] = None
@@ -64,7 +64,7 @@ class VKPay(Action):
 
 
 class OpenApp(Action):
-    """Opens the VK Mini App."""
+    """Launches the VK Mini App."""
 
     def __init__(
         self,
