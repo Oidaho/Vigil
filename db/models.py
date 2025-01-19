@@ -49,6 +49,7 @@ class Sanction(BaseModel):
 
     class Meta:
         table_name = "sanctions"
+        indexes = ((("peer", "user_id"), True),)
 
 
 class Queue(BaseModel):
@@ -64,6 +65,7 @@ class Queue(BaseModel):
 
     class Meta:
         table_name = "queue"
+        indexes = ((("peer", "user_id"), True),)
 
 
 class ForbiddenWord(BaseModel):
@@ -77,6 +79,7 @@ class ForbiddenWord(BaseModel):
 
     class Meta:
         table_name = "words"
+        indexes = ((("peer", "value"), True),)
 
 
 class ForbiddenLink(BaseModel):
@@ -90,6 +93,7 @@ class ForbiddenLink(BaseModel):
 
     class Meta:
         table_name = "forbidden_links"
+        indexes = ((("peer", "value"), True),)
 
 
 class ForbiddenHost(BaseModel):
@@ -103,6 +107,7 @@ class ForbiddenHost(BaseModel):
 
     class Meta:
         table_name = "forbidden_hosts"
+        indexes = ((("peer", "value"), True),)
 
 
 class Setting(BaseModel):
