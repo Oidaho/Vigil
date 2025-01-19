@@ -1,11 +1,23 @@
+import re
+from datetime import datetime, timedelta
+
+import tldextract
+from loguru import logger
+from rules.messages import FromChatOnly, IgnorePermitted
 from src.context import Context, Message
 from src.routers import MessageRouter
-from db.models import Setting, Peer, ForbiddenLink, ForbiddenHost, ForbiddenWord
-from loguru import logger
 from urlextract import URLExtract
-import tldextract
 
-router = MessageRouter()
+from db.models import ForbiddenHost, ForbiddenLink, ForbiddenWord, Peer, Queue, Setting
+
+from .utils import execute_conditional_warning, quiet_delete
+
+router = MessageRouter(
+    routing_ruleset=[
+        FromChatOnly(),
+        IgnorePermitted(),
+    ]
+)
 
 
 attechments_map = {
@@ -28,15 +40,29 @@ attechments_map = {
 
 @router.register(name="pm_check")
 def check_private_messages(ctx: Context, msg: Message) -> bool:
-    is_opened = ctx.api.users.get(
-        user_ids=ctx.user.id,
-        fields=["can_write_private_message"],
-    )[0].get("can_write_private_message")
-    logger.debug(f"{is_opened=}")
-    if is_opened:
-        return False
+    setting = (
+        Setting.select()
+        .join(Peer)
+        .where((Setting.key == "check_closed_pm") & (Peer.id == ctx.peer.id))
+        .get_or_none()
+    )
+    if setting and setting.value != "inactive":
+        is_opened = ctx.api.users.get(
+            user_ids=ctx.user.id,
+            fields=["can_write_private_message"],
+        )[0].get("can_write_private_message")
+        logger.debug(f"{is_opened=}")
+        if not is_opened:
+            if setting.value == "active_quiet_delete":
+                quiet_delete(ctx)
 
-    return True
+            else:
+                execute_conditional_warning(
+                    ctx, "Личные сообщения пользователя закрыты."
+                )
+            return True
+
+    return False
 
 
 @router.register(name="attachments_check")
@@ -49,8 +75,13 @@ def check_forbidden_attachments(ctx: Context, msg: Message) -> bool:
         .where((Setting.key.in_(to_check)) & (Peer.id == ctx.peer.id))
     )
     for setting in settings:
-        if setting.value == "disallowed":
-            # TODO: exec delete
+        if setting.value != "allowed":
+            if setting.value == "disallowed_quiet_delete":
+                quiet_delete(ctx)
+
+            else:
+                execute_conditional_warning(ctx, "Обнаружен запрещенный контент.")
+
             return True
 
     return False
@@ -64,9 +95,7 @@ def check_forbidden_links(ctx: Context, msg: Message) -> bool:
         .where((Setting.key == "check_forbidden_links") & (Peer.id == ctx.peer.id))
         .get_or_none()
     )
-    logger.debug(f"{setting=}")
-    logger.debug(f"{setting.value=}")
-    if setting and setting.value == "active":
+    if setting and setting.value != "inactive":
         extractor = URLExtract()
         links = extractor.find_urls(msg.text, only_unique=True)
 
@@ -76,7 +105,12 @@ def check_forbidden_links(ctx: Context, msg: Message) -> bool:
             .where((ForbiddenLink.value.in_(links)) & (Peer.id == ctx.peer.id))
         )
         if forbidden:
-            # TODO: exec delete
+            if setting.value == "active_quiet_delete":
+                quiet_delete(ctx)
+
+            else:
+                execute_conditional_warning(ctx, "Обнаружена запрещенная ссылка.")
+
             return True
 
     return False
@@ -90,9 +124,7 @@ def check_forbidden_domains(ctx: Context, msg: Message) -> bool:
         .where((Setting.key == "check_forbidden_domains") & (Peer.id == ctx.peer.id))
         .get_or_none()
     )
-    logger.debug(f"{setting=}")
-    logger.debug(f"{setting.value=}")
-    if setting and setting.value == "active":
+    if setting and setting.value != "inactive":
         extractor = URLExtract()
         links = extractor.find_urls(msg.text, only_unique=True)
 
@@ -107,17 +139,88 @@ def check_forbidden_domains(ctx: Context, msg: Message) -> bool:
             .where((ForbiddenHost.value.in_(hosts)) & (Peer.id == ctx.peer.id))
         )
         if forbidden:
-            # TODO: exec delete
+            if setting.value == "active_quiet_delete":
+                quiet_delete(ctx)
+
+            else:
+                execute_conditional_warning(
+                    ctx, "Обнаружена ссылка на запрещенный домен."
+                )
+
             return True
 
     return False
 
 
-# @router.register(name="words_check")
-# def check_forbidden_words(ctx: Context, msg: Message) -> bool:
-#     return True
+@router.register(name="words_check")
+def check_forbidden_words(ctx: Context, msg: Message) -> bool:
+    setting = (
+        Setting.select()
+        .join(Peer)
+        .where((Setting.key == "check_forbidden_words") & (Peer.id == ctx.peer.id))
+        .get_or_none()
+    )
+    if setting and setting.value != "inactive":
+        patterns = ForbiddenWord.select().join(Peer).where(Peer.id == ctx.peer.id)
+        text = msg.text.lower()
+        for pattern in patterns:
+            if re.search(pattern, text):
+                if setting.value == "active_quiet_delete":
+                    quiet_delete(ctx)
+
+                else:
+                    execute_conditional_warning(ctx, "Обнаружено запрещенное слово.")
+
+                return True
+
+    return False
 
 
-# @router.register(name="queue_check")
-# def check_message_queue(ctx: Context, msg: Message) -> bool:
-#     return True
+@router.register(name="queue_check")
+def check_message_queue(ctx: Context, msg: Message) -> bool:
+    setting = (
+        Setting.select()
+        .join(Peer)
+        .where((Setting.key == "check_message_queue") & (Peer.id == ctx.peer.id))
+        .get_or_none()
+    )
+    if setting and setting.value != "inactive":
+        peer = Peer.get_or_none(Peer.id == ctx.peer.id)
+        item = (
+            Queue.select()
+            .where((Queue.user_id == ctx.user.id) & (Queue.peer == peer))
+            .get_or_none()
+        )
+
+        interval = (
+            Setting.select()
+            .where((Setting.key == "message_queue_interval") & (Setting.peer == peer))
+            .get_or_none()
+        )
+
+        now = datetime.utcnow()
+        exp = now + timedelta(minutes=int(interval.value))
+        if item:
+            if item.expiration > now:
+                if setting.value == "active_quiet_delete":
+                    quiet_delete(ctx)
+
+                else:
+                    execute_conditional_warning(ctx, "Нарушен интервал сообщений.")
+
+                return True
+
+            else:
+                item.expiration = exp
+                item.save()
+
+        else:
+            new_item = Queue(
+                peer=peer,
+                user_id=ctx.user.id,
+                message_cmid=msg.cmid,
+                expiration=exp,
+            )
+            new_item.save()
+
+    return False

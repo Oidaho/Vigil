@@ -158,21 +158,17 @@ def execute_warn(ctx: Context, payload: Dict[str, int | str]) -> int:
     peer_id = payload["peer_id"]
     kick = False
 
-    sanction, created = (
-        Sanction.select()
-        .join(Peer)
-        .where((Peer.id == peer_id) & (Sanction.user_id == user_id))
-        .get_or_create(
-            defaults={"peer": Peer.get(Peer.id == peer_id), "user_id": user_id}
-        )
+    peer = Peer.get_or_none(Peer.id == peer_id)
+    sanction, created = Sanction.get_or_create(
+        peer=peer,
+        user_id=user_id,
+        defaults={"peer": Peer.get(Peer.id == peer_id), "user_id": user_id},
     )
 
-    if created:
-        text = f"[id{user_id}|Пользователь] получил предупреждение.\n"
-
-    else:
+    text = f"[id{user_id}|Пользователь] получил предупреждение.\n"
+    if not created:
         sanction.points += 1
-        if sanction.points >= configs.bot.max_warns:
+        if sanction.points >= configs.bot.max_sanction_points:
             sanction.delete_instance()
             kick = True
             text = f"[id{payload['target_user']}|Пользователь] исключен, получив много предупреждений.\n"
@@ -182,7 +178,7 @@ def execute_warn(ctx: Context, payload: Dict[str, int | str]) -> int:
 
     text += (
         f"Причина: {payload['reason']}\n"
-        f"Предупреждения: {sanction.points}/{configs.bot.max_warns}\n"
+        f"Предупреждения: {sanction.points}/{configs.bot.max_sanction_points}\n"
     )
     ctx.api.messages.send(
         peer_ids=peer_id,
@@ -231,4 +227,87 @@ def execute_kick(ctx: Context, payload: Dict[str, int | str]) -> None:
     ctx.api.messages.removeChatUser(
         chat_id=peer_id - int(2e9),
         user_id=user_id,
+    )
+
+
+def execute_conditional_warning(ctx: Context, reason: str) -> None:
+    user_id = ctx.user.id
+    peer_id = ctx.peer.id
+    cmid = ctx.message.cmid
+
+    peer = Peer.get_or_none(Peer.id == peer_id)
+    sanction, created = Sanction.get_or_create(
+        peer=peer,
+        user_id=user_id,
+        defaults={
+            "peer": Peer.get(Peer.id == peer_id),
+            "user_id": user_id,
+            "points": 0,
+        },
+    )
+
+    kick = False
+    if created:
+        text = (
+            f"[id{user_id}|Пользователь] получил условное предупреждение.\n"
+            f"Причина: {reason}\n"
+        )
+
+    else:
+        sanction.points += 1
+        text = (
+            f"[id{user_id}|Пользователь] получил предупреждение.\n"
+            f"Причина: {reason}\n"
+            f"Предупреждения: {sanction.points}/{configs.bot.max_sanction_points}\n"
+        )
+
+        if sanction.points >= configs.bot.max_sanction_points:
+            sanction.delete_instance()
+            kick = True
+            text = (
+                f"[id{user_id}|Пользователь] исключен, получив много предупреждений.\n"
+                f"Причина: {reason}\n"
+                f"Предупреждения: {sanction.points}/{configs.bot.max_sanction_points}\n"
+            )
+
+        else:
+            sanction.save()
+
+    ctx.api.messages.delete(
+        cmids=cmid,
+        peer_id=peer_id,
+        delete_for_all=1,
+    )
+
+    ctx.api.messages.send(
+        peer_ids=peer_id,
+        random_id=0,
+        message=text,
+    )
+
+    log_chats = Peer.select().where(Peer.mark == "LOG")
+    log_peer_ids = [item.id for item in log_chats]
+
+    text += f"Беседа: {ctx.peer.name}\n"
+    ctx.api.messages.send(
+        peer_ids=log_peer_ids,
+        random_id=0,
+        message=text,
+    )
+
+    if kick:
+        ctx.api.messages.removeChatUser(
+            chat_id=peer_id - int(2e9),
+            user_id=user_id,
+        )
+
+
+def quiet_delete(ctx: Context) -> None:
+    peer_id = ctx.peer.id
+    cmid = ctx.message.cmid
+
+    ctx.api.messages.delete(
+        cmids=cmid,
+        peer_id=peer_id,
+        delete_for_all=1,
     )
