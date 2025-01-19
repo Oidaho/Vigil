@@ -115,7 +115,7 @@ class Setting(BaseModel):
     key = CharField(null=False)
     value = CharField(null=False)
     category = CharField(null=True)
-    aliase = CharField(null=True)
+    alias_ = CharField(null=True)
 
     class Meta:
         table_name = "settings"
