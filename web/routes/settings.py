@@ -22,22 +22,22 @@ def settings_page(
         settings = (
             Setting.select()
             .where(Setting.peer == peer)
-            .order_by(Setting.category.desc())
+            .order_by(Setting.category.desc(), Setting.alias_)
         )
         forbidden_links = (
             ForbiddenLink.select()
             .where(ForbiddenLink.peer == peer)
-            .order_by(ForbiddenLink.id)
+            .order_by(ForbiddenLink.id.desc())
         )
         forbidden_hosts = (
             ForbiddenHost.select()
             .where(ForbiddenHost.peer == peer)
-            .order_by(ForbiddenHost.id)
+            .order_by(ForbiddenHost.id.desc())
         )
         forbidden_words = (
             ForbiddenWord.select()
             .where(ForbiddenWord.peer == peer)
-            .order_by(ForbiddenWord.id)
+            .order_by(ForbiddenWord.id.desc())
         )
 
         context = {
