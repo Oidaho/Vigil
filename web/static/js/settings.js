@@ -44,6 +44,8 @@ function updateSelectBorder(selectElement) {
         selectElement.classList.add('border-success');
     } else if (selectedValue === 'inactive' || selectedValue === 'disallowed') {
         selectElement.classList.add('border-danger');
+    } else if (selectedValue === 'disallowed_quiet_delete' || selectedValue === 'active_quiet_delete') {
+        selectElement.classList.add('border-warning');
     }
 }
 

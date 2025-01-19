@@ -22,9 +22,11 @@
                                 <p class="mb-0 text-muted">Message CMID: {{ queue_item.message_cmid }}</p>
                             </div>
                             <div>
-                                <span class="expiration-text me-3">
-                                    Разрешено писать: {{ queue_item.expiration.strftime('%Y-%m-%d %H:%M:%S') }}
-                                </span>
+                                {% if queue_item.expiration < now %}
+                                    <span class="text-success">Писать разрешено</span>
+                                {% else %}
+                                    <span class="text-danger">Запрещено писать до: {{ queue_item.expiration.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                                {% endif %}
                             </div>
                             <div class="d-flex align-items-center">
                                 <!-- Кнопка для удаления сообщения из очереди -->

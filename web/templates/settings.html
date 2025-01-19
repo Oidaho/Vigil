@@ -40,17 +40,19 @@
                                     </tr>
                                     {% for setting in group %}
                                         <tr>
-                                            <td>{{ setting.aliase }}</td>
+                                            <td>{{ setting.alias_ }}</td>
                                             <td>
-                                                {% if "active" in setting.value.lower() or "inactive" in setting.value.lower() %}
+                                                {% if "active" in setting.value.lower() or "inactive" in setting.value.lower() or "active_quiet_delete" in setting.value.lower() %}
                                                     <select class="form-select setting-input" id="{{ setting.key }}" data-original-value="{{ setting.value }}" onchange="updateSelectBorder(this)">
                                                         <option value="active" {% if "active" in setting.value.lower() %}selected{% endif %}>Активно</option>
                                                         <option value="inactive" {% if "inactive" in setting.value.lower() %}selected{% endif %}>Неактивно</option>
+                                                        <option value="active_quiet_delete" {% if "active_quiet_delete" in setting.value.lower() %}selected{% endif %}>Только удалять</option>
                                                     </select>
-                                                {% elif "allowed" in setting.value.lower() or "disallowed" in setting.value.lower() %}
+                                                {% elif "allowed" in setting.value.lower() or "disallowed" in setting.value.lower() or "disallowed_quiet_delete" in setting.value.lower() %}
                                                     <select class="form-select setting-input" id="{{ setting.key }}" data-original-value="{{ setting.value }}" onchange="updateSelectBorder(this)">
                                                         <option value="allowed" {% if "allowed" in setting.value.lower() %}selected{% endif %}>Разрешено</option>
                                                         <option value="disallowed" {% if "disallowed" in setting.value.lower() %}selected{% endif %}>Запрещено</option>
+                                                        <option value="disallowed_quiet_delete" {% if "disallowed_quiet_delete" in setting.value.lower() %}selected{% endif %}>Только удалять</option>
                                                     </select>
                                                 {% else %}
                                                     <input type="text" class="form-control setting-input" id="{{ setting.key }}" value="{{ setting.value }}" data-original-value="{{ setting.value }}">
@@ -126,7 +128,7 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Слово</th>
+                                <th>Шаблон</th>
                                 <th>Действие</th>
                             </tr>
                         </thead>
@@ -143,6 +145,12 @@
                     </table>
                     <div class="d-flex justify-content-end">
                         <button class="btn btn-success" onclick="openAddWordModal()">Добавить слово</button>
+                    </div>
+                    <!-- Сноска о регулярных выражениях -->
+                    <div class="text-muted mt-3">
+                        <small>
+                            Вы можете использовать регулярные выражения для создания шаблонов.
+                        </small>
                     </div>
                 </div>
             </div>
