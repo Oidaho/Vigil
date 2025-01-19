@@ -5,6 +5,7 @@ from fastapi.templating import Jinja2Templates
 from auth import AuthData, get_current_user
 from config import configs
 from db.models import Queue, Peer
+from datetime import datetime
 
 templates = Jinja2Templates(directory="templates")
 router = APIRouter(prefix="/{peer_id}/queue")
@@ -30,6 +31,7 @@ def queue_page(
             "request": request,
             "peer_id": peer_id,
             "peer_name": peer.name,
+            "now": datetime.utcnow(),
         }
 
         return templates.TemplateResponse("queue.html", context)
