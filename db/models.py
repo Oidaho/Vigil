@@ -255,5 +255,5 @@ def on_save_handler(model_class, instance, created):
                 key=payload["key"],
                 value=payload["value"],
                 category=payload["category"],
-                aliase=payload["alias"],
+                alias_=payload["alias"],
             )
