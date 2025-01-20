@@ -1,16 +1,16 @@
 version: "3.8"
 
 x-postgres-env: &postgres-env
-  POSTGRES_USER: "..."
+  POSTGRES_USER: "vigil"
   POSTGRES_PASSWORD: "..."
-  POSTGRES_DB: "..."
+  POSTGRES_DB: "bot"
 
 x-db-env: &db-env
-  db_user: "..."
+  db_user: "vigil"
   db_password: "..."
-  db_database: "..."
+  db_database: "bot"
   db_hostname: "172.20.0.2"
-  db_port: ...
+  db_port: 5432
 
 x-bot-env: &bot-env
   bot_group_id: ...
