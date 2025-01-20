@@ -212,6 +212,7 @@ def check_message_queue(ctx: Context, msg: Message) -> bool:
 
             else:
                 item.expiration = exp
+                item.message_cmid = msg.cmid
                 item.save()
 
         else:
