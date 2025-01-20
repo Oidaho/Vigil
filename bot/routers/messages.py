@@ -2,7 +2,6 @@ import re
 from datetime import datetime, timedelta
 
 import tldextract
-from loguru import logger
 from rules.messages import FromChatOnly, IgnorePermitted
 from src.context import Context, Message
 from src.routers import MessageRouter
@@ -51,7 +50,6 @@ def check_private_messages(ctx: Context, msg: Message) -> bool:
             user_ids=ctx.user.id,
             fields=["can_write_private_message"],
         )[0].get("can_write_private_message")
-        logger.debug(f"{is_opened=}")
         if not is_opened:
             if setting.value == "active_quiet_delete":
                 quiet_delete(ctx)
