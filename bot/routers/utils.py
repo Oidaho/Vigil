@@ -133,7 +133,7 @@ def execute_unwarn(ctx: Context, payload: Dict[str, int | str]) -> bool:
         text = (
             f"[id{user_id}|Пользователь] реабилитирован.\n"
             f"Причина: {payload['reason']}\n"
-            f"Предупреждения: {sanction.points}/{configs.bot.max_warns}\n"
+            f"Предупреждения: {sanction.points}/{configs.bot.max_sanction_points}\n"
         )
         ctx.api.messages.send(
             peer_ids=peer_id,
