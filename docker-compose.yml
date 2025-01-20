@@ -15,19 +15,19 @@ x-db-env: &db-env
 x-bot-env: &bot-env
   bot_group_id: ...
   bot_acces_token: "..."
-  bot_command_prefix: "..."
+  bot_command_prefix: "/"
 
 x-web-env: &web-env
   web_admin_id: ...
   web_password: "..."
   web_jwt_secret: "..." 
-  web_jwt_algorithm: "..."
-  web_jwt_access_token_lifetime: ...
+  web_jwt_algorithm: "HS256"
+  web_jwt_access_token_lifetime: 60
 
 x-joint-env:  &joint-env
-  debug_mode: ...
-  project_name: "..."
-  bot_max_sanction_points: ...
+  debug_mode: False
+  project_name: "Vigil"
+  bot_max_sanction_points: 5
 
 
 
