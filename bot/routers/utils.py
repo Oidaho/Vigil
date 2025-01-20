@@ -112,7 +112,7 @@ def execute_delete(ctx: Context, payload: Dict[str, int | str]) -> bool:
 
 
 def execute_unwarn(ctx: Context, payload: Dict[str, int | str]) -> bool:
-    user_id = payload["target_id"]
+    user_id = payload["target_user"]
     peer_id = payload["peer_id"]
 
     sanction = (
