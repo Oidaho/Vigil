@@ -164,7 +164,7 @@ def check_forbidden_words(ctx: Context, msg: Message) -> bool:
         patterns = ForbiddenWord.select().join(Peer).where(Peer.id == ctx.peer.id)
         text = msg.text.lower()
         for pattern in patterns:
-            if re.search(pattern, text):
+            if re.search(pattern.value, text):
                 if setting.value == "active_quiet_delete":
                     quiet_delete(ctx)
 
