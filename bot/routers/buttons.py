@@ -87,7 +87,7 @@ def drop_mark_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
 
 @router.register(name="update_conversation", check_owner=True)
 def update_conversation_button(ctx: Context, payload: Dict[str, int | str]) -> bool:
-    peer = Peer.get_or_none(Peer.peer_id == ctx.peer.id)
+    peer = Peer.get_or_none(Peer.id == ctx.peer.id)
 
     if peer is not None:
         peer.id = ctx.peer.id
