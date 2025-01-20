@@ -37,7 +37,7 @@ function saveSettings(currentPeerId) {
 
 
 function updateSelectBorder(selectElement) {
-    selectElement.classList.remove('border-success', 'border-danger');
+    selectElement.classList.remove('border-success', 'border-danger', 'border-warning');
     const selectedValue = selectElement.value.toLowerCase();
 
     if (selectedValue === 'active' || selectedValue === 'allowed') {
