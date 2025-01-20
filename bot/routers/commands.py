@@ -1,12 +1,14 @@
 from typing import NamedTuple
 
-from rules.commands import FromMarkedOnly, ForwardRequired, PermissionRequired
+from loguru import logger
+from rules.commands import ForwardRequired, FromMarkedOnly, PermissionRequired
 from src.context import Context
 from src.keyboards import ButtonColor, Keyboard
 from src.keyboards.actions import Callback
 from src.routers import CommandRouter
 
 from db.models import Peer
+
 from .utils import exec_punishment
 
 router = CommandRouter()
@@ -114,9 +116,13 @@ def unwarn_command(ctx: Context, args: NamedTuple) -> bool:
     delete_src=False,
 )
 def punish_command(ctx: Context, args: NamedTuple) -> bool:
+    logger.debug(f"{ctx.message.forward=}")
     target_user = ctx.message.forward[0].author
     target_msg = ctx.message.forward[0].cmid
     peer_id = ctx.message.forward[0].peer
+    logger.debug(f"{target_user=}")
+    logger.debug(f"{target_msg=}")
+    logger.debug(f"{peer_id=}")
     peer_name = Peer.get(Peer.id == peer_id).name
 
     text = (
