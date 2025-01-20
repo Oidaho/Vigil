@@ -9,7 +9,7 @@ x-db-env: &db-env
   db_user: "..."
   db_password: "..."
   db_database: "..."
-  db_hostname: "..."
+  db_hostname: "172.20.0.2"
   db_port: ...
 
 x-bot-env: &bot-env
