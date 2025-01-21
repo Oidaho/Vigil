@@ -14,6 +14,22 @@ router = CommandRouter()
 
 
 @router.register(
+    name="health",
+    args=(),
+    execution_ruleset=[
+        PermissionRequired(min_permission=1),
+        FromMarkedOnly(mark="LOG"),
+    ],
+)
+def health_command(ctx: Context, args: NamedTuple) -> bool:
+    ctx.api.messages.send(
+        peer_ids=ctx.peer.id,
+        random_id=0,
+        message="Я в порядке!",
+    )
+
+
+@router.register(
     name="mark",
     args=(),
     execution_ruleset=[
