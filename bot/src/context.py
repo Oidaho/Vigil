@@ -62,7 +62,7 @@ class Peer(ContextObject):
     @property
     def name(self) -> str:
         """Retrieves the peer name."""
-        if not hasattr(self, "__name"):
+        if not hasattr(self, "_Peer__name"):
             peer_info = self.__api.messages.getConversationsById(peer_ids=self.id)
             peer_info = peer_info["items"][0]["chat_settings"]
             self.__name = peer_info.get("title")
@@ -88,7 +88,7 @@ class User(ContextObject):
     @property
     def full_name(self) -> str:
         """Retrieves the user's full name."""
-        if not hasattr(self, "__full_name"):
+        if not hasattr(self, "_User__full_name"):
             user_info = self.__api.users.get(user_ids=self.id)
             user_info = user_info[0]
             self.__full_name = " ".join(
@@ -100,7 +100,7 @@ class User(ContextObject):
     @property
     def first_name(self) -> str:
         """Retrieves the user's first name."""
-        if not hasattr(self, "__first_name"):
+        if not hasattr(self, "_User__first_name"):
             user_info = self.__api.users.get(user_ids=self.id)
             user_info = user_info[0]
             self.__first_name = user_info.get("first_name")
@@ -110,7 +110,7 @@ class User(ContextObject):
     @property
     def last_name(self) -> str:
         """Retrieves the user's last name."""
-        if not hasattr(self, "__last_name"):
+        if not hasattr(self, "_User__last_name"):
             user_info = self.__api.users.get(user_ids=self.id)
             user_info = user_info[0]
             self.__last_name = user_info.get("last_name")
@@ -120,7 +120,7 @@ class User(ContextObject):
     @property
     def nick(self) -> str | None:
         """Retrieves the user's last name."""
-        if not hasattr(self, "__nick"):
+        if not hasattr(self, "_User__nick"):
             user_info = self.__api.users.get(user_ids=self.id, fields=["domain"])
             user_info = user_info[0]
             self.__nick = user_info.get("domain")
@@ -186,7 +186,7 @@ class Message(ContextObject):
     @property
     def attachments(self) -> List[str]:
         """Retrieves the message attachments."""
-        if not hasattr(self, "__attachments"):
+        if not hasattr(self, "_Message__attachments"):
             message_info = self.__api.messages.getByConversationMessageId(
                 peer_id=self.__peer_id,
                 conversation_message_ids=self.cmid,
@@ -211,7 +211,7 @@ class Message(ContextObject):
     @property
     def reply(self) -> Reply | None:
         """Retrieves the message reply."""
-        if not hasattr(self, "__reply"):
+        if not hasattr(self, "_Message__reply"):
             message_info = self.__api.messages.getByConversationMessageId(
                 peer_id=self.__peer_id,
                 conversation_message_ids=self.cmid,
@@ -219,6 +219,7 @@ class Message(ContextObject):
             message_info = message_info["items"][0]
 
             reply = message_info.get("reply_message")
+            logger.debug(f"{reply=}")
             self.__reply = reply if reply is None else Reply(reply, self.__api)
 
         return self.__reply
@@ -226,7 +227,7 @@ class Message(ContextObject):
     @property
     def forward(self) -> List[Reply]:
         """Retrieves the message forwarded messages."""
-        if not hasattr(self, "__forward"):
+        if not hasattr(self, "_Message__forward"):
             message_info = self.__api.messages.getByConversationMessageId(
                 peer_id=self.__peer_id,
                 conversation_message_ids=self.cmid,
