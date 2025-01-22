@@ -38,16 +38,17 @@ function confirmDelete() {
     closeModal();
 }
 
-document.getElementById('addUserForm').addEventListener('submit', function (event) {
-    event.preventDefault();
-    const formData = new FormData(this);
+function addUser() {
+    const form = document.getElementById('addUserForm');
+    const formData = new FormData(form);
+
     const data = {
         user_id: formData.get('user_id'),
         password: formData.get('password'),
         permission: formData.get('permission')
     };
 
-    fetch('/staff', {
+    fetch(`/staff`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -64,4 +65,5 @@ document.getElementById('addUserForm').addEventListener('submit', function (even
     .catch(error => {
         console.error("Error:", error);
     });
-});
+}
+
