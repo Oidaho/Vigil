@@ -110,7 +110,7 @@ def warn_command(ctx: Context, args: NamedTuple) -> bool:
 
 @router.register(
     name="unwarn",
-    args=("user_tag", "reason"),
+    args=("user_tag",),
     execution_ruleset=[
         PermissionRequired(min_permission=1),
         FromMarkedOnly(mark="LOG"),

@@ -16,13 +16,17 @@ def exec_punishment(ctx: Context, punishment: str, args: NamedTuple) -> bool:
     if target_user is None:
         return False
 
+    additionals = {
+        "target_user": target_user,
+    }
+
+    if punishment != "unwarn":
+        additionals.update({"reason": args.reason})
+
     text, keyboard = select_conversation(
         ctx=ctx,
         punishment=punishment,
-        additionals={
-            "target_user": target_user,
-            "reason": args.reason,
-        },
+        additionals=additionals,
     )
 
     ctx.api.messages.send(
@@ -132,7 +136,6 @@ def execute_unwarn(ctx: Context, payload: Dict[str, int | str]) -> bool:
 
         text = (
             f"[id{user_id}|Пользователь] реабилитирован.\n"
-            f"Причина: {payload['reason']}\n"
             f"Предупреждения: {sanction.points}/{configs.bot.max_sanction_points}\n"
         )
         ctx.api.messages.send(
