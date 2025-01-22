@@ -1,9 +1,7 @@
 version: "3.8"
 
 x-postgres-env: &postgres-env
-  POSTGRES_USER: "admin"
   POSTGRES_PASSWORD: "..."
-  POSTGRES_DB: "postgres"
 
 x-npm-env: &npm-env
   DB_POSTGRES_USER: "nginx"
