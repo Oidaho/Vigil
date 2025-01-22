@@ -1,15 +1,17 @@
 version: "3.8"
 
-x-postgres-env: &postgres-env
-  POSTGRES_USER: "vigil"
-  POSTGRES_PASSWORD: "..."
-  POSTGRES_DB: "bot"
+x-postgres-env: &npm-env
+  DB_POSTGRES_USER: "nginx"
+  DB_POSTGRES_PASSWORD: "..."
+  DB_POSTGRES_NAME: "npm"
+  DB_POSTGRES_HOST: "172.20.0.2"
+  DB_POSTGRES_PORT: 5432
 
 x-db-env: &db-env
   db_user: "vigil"
   db_password: "..."
   db_database: "bot"
-  db_hostname: "172.20.0.3"
+  db_hostname: "172.20.0.2"
   db_port: 5432
 
 x-bot-env: &bot-env
@@ -33,6 +35,24 @@ x-joint-env:  &joint-env
 
 
 services:
+  postgres:
+    image: postgres:17.2
+    container_name: db
+    ports:
+      - "5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      vigil_network:
+        ipv4_address: 172.20.0.2
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vigil -d bot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   nginx:
     image: 'jc21/nginx-proxy-manager:latest'
     container_name: db
@@ -40,32 +60,18 @@ services:
       - '80:80'
       - '81:81'
       - '443:443'
+    environment:
+
     volumes:
       - ./data:/data
       - ./letsencrypt:/etc/letsencrypt
-    networks:
-      vigil_network:
-        ipv4_address: 172.20.0.2
-    restart: unless-stopped
-
-  postgres:
-    image: postgres:17.2
-    container_name: db
-    environment:
-      <<: *postgres-env
-    ports:
-      - "5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       vigil_network:
         ipv4_address: 172.20.0.3
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U vigil -d bot"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
 
   bot:
     container_name: bot
