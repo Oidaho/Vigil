@@ -38,7 +38,7 @@ function confirmDelete() {
     closeModal();
 }
 
-function addUser() {
+function confirmAddUser() {
     const form = document.getElementById('addUserForm');
     const formData = new FormData(form);
 
