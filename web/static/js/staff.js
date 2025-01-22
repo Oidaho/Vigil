@@ -65,5 +65,7 @@ function confirmAddUser() {
     .catch(error => {
         console.error("Error:", error);
     });
+
+    closeModal();
 }
 
