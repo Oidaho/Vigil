@@ -55,7 +55,7 @@ services:
 
   nginx:
     image: 'jc21/nginx-proxy-manager:latest'
-    container_name: db
+    container_name: npm
     ports:
       - '80:80'
       - '81:81'
