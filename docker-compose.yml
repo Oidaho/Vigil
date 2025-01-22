@@ -9,7 +9,7 @@ x-db-env: &db-env
   db_user: "vigil"
   db_password: "..."
   db_database: "bot"
-  db_hostname: "172.20.0.2"
+  db_hostname: "172.20.0.3"
   db_port: 5432
 
 x-bot-env: &bot-env
@@ -33,6 +33,21 @@ x-joint-env:  &joint-env
 
 
 services:
+  nginx:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: db
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+    networks:
+      vigil_network:
+        ipv4_address: 172.20.0.2
+    restart: unless-stopped
+
   postgres:
     image: postgres:17.2
     container_name: db
@@ -44,7 +59,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       vigil_network:
-        ipv4_address: 172.20.0.2
+        ipv4_address: 172.20.0.3
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U vigil -d bot"]
@@ -67,7 +82,7 @@ services:
         condition: service_healthy
     networks:
       vigil_network:
-        ipv4_address: 172.20.0.3
+        ipv4_address: 172.20.0.4
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "echo", "hello, world!"]
@@ -94,13 +109,14 @@ services:
         condition: service_healthy
     networks:
       vigil_network:
-        ipv4_address: 172.20.0.4
+        ipv4_address: 172.20.0.5
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:7212/health"]
       interval: 10s
       timeout: 5s
       retries: 10
+
 
 networks:
   vigil_network:
