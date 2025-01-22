@@ -9,6 +9,7 @@ def main() -> None:
         port=7212,
         reload=configs.debug_mode,
         use_colors=True,
+        proxy_headers=True,
     )
 
 
