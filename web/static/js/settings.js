@@ -1,3 +1,34 @@
+// Функция для сохранения выбранной вкладки в localStorage
+function saveActiveTab(tabId) {
+    localStorage.setItem('activeTab', tabId);
+}
+
+// Функция для загрузки и активации последней выбранной вкладки
+function loadActiveTab() {
+    const activeTabId = localStorage.getItem('activeTab');
+    if (activeTabId) {
+        const tabTrigger = document.querySelector(`[href="${activeTabId}"]`);
+        if (tabTrigger) {
+            new bootstrap.Tab(tabTrigger).show(); // Активируем вкладку
+        }
+    }
+}
+
+// Обработчик события для сохранения вкладки при клике
+document.addEventListener('DOMContentLoaded', function () {
+    // Загружаем последнюю активную вкладку
+    loadActiveTab();
+
+    // Сохраняем вкладку при клике
+    const tabLinks = document.querySelectorAll('.nav-pills .nav-link');
+    tabLinks.forEach(link => {
+        link.addEventListener('click', function (event) {
+            const tabId = event.target.getAttribute('href');
+            saveActiveTab(tabId);
+        });
+    });
+});
+
 let currentId = null;
 let currentType = null;
 
