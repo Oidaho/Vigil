@@ -48,7 +48,7 @@ function confirmAddUser() {
         permission: formData.get('permission')
     };
 
-    fetch(`/staff`, {
+    fetch(`/staff/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
