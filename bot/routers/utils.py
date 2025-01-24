@@ -158,6 +158,7 @@ def execute_unwarn(ctx: Context, payload: Dict[str, int | str]) -> bool:
 
 def execute_warn(ctx: Context, payload: Dict[str, int | str]) -> int:
     user_id = payload["target_user"]
+    target_msg = payload["target_msg"]
     peer_id = payload["peer_id"]
     kick = False
 
@@ -198,6 +199,12 @@ def execute_warn(ctx: Context, payload: Dict[str, int | str]) -> int:
         keyboard=keyboard.json_str(),
     )
 
+    ctx.api.messages.delete(
+        cmids=target_msg,
+        peer_id=peer_id,
+        delete_for_all=1,
+    )
+
     if kick:
         ctx.api.messages.removeChatUser(
             chat_id=peer_id - int(2e9),
@@ -209,6 +216,7 @@ def execute_warn(ctx: Context, payload: Dict[str, int | str]) -> int:
 
 def execute_kick(ctx: Context, payload: Dict[str, int | str]) -> None:
     user_id = payload["target_user"]
+    target_msg = payload["target_msg"]
     peer_id = payload["peer_id"]
 
     text = f"[id{user_id}|Пользователь] исключен.\nПричина: {payload['reason']}\n"
@@ -225,6 +233,12 @@ def execute_kick(ctx: Context, payload: Dict[str, int | str]) -> None:
         cmid=ctx.button.cmid,
         message=text,
         keyboard=keyboard.json_str(),
+    )
+
+    ctx.api.messages.delete(
+        cmids=target_msg,
+        peer_id=peer_id,
+        delete_for_all=1,
     )
 
     ctx.api.messages.removeChatUser(
