@@ -37,6 +37,20 @@ x-joint-env:  &joint-env
 
 
 
+networks:
+  internal:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+
+volumes:
+  postgres_data:
+    driver: local
+  nginx_data:
+    driver: local
+
+
 services:
   postgres:
     image: postgres:17.2
@@ -60,7 +74,7 @@ services:
 
   nginx:
     image: 'jc21/nginx-proxy-manager:latest'
-    container_name: npm
+    container_name: proxy
     ports:
       - '80:80'
       - '81:81'
@@ -68,15 +82,15 @@ services:
     environment:
       <<: *npm-env
     volumes:
-      - ./data:/data
-      - ./letsencrypt:/etc/letsencrypt
+      - nginx_data/data:/data
+      - nginx_data/letsencrypt:/etc/letsencrypt
     depends_on:
       postgres:
         condition: service_healthy
     networks:
       vigil_network:
         ipv4_address: 172.20.0.3
-    restart: unless-stopped
+    restart: unless-stopped=
 
   bot:
     container_name: bot
@@ -127,15 +141,3 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-
-
-networks:
-  vigil_network:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/24
-
-volumes:
-  postgres_data:
-    driver: local
