@@ -41,7 +41,7 @@ function saveSettings(currentPeerId) {
     });
 
     if (updated_settings.length > 0) {
-        fetch(`/peers/${currentPeerId}/settings`, {
+        fetch(`/peers/${currentPeerId}/settings/`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
