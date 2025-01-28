@@ -1,5 +1,7 @@
 version: "3.8"
 
+
+#/APPLICATION SETTINGS/
 x-postgres-env: &postgres-env
   POSTGRES_PASSWORD: "..."
 
@@ -33,7 +35,7 @@ x-joint-env:  &joint-env
   debug_mode: False
   project_name: "Vigil"
   bot_max_sanction_points: 5
-
+#/APPLICATION SETTINGS END/
 
 
 
