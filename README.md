@@ -2,6 +2,12 @@
 
 ![Banner](https://github.com/user-attachments/assets/bceeb209-7503-4c45-9192-0de351710ba3)
 
+![GitHub Release](https://img.shields.io/github/v/release/Oidaho/Vigil)
+![GitHub Downloads](https://img.shields.io/github/downloads/Oidaho/Vigil/total)
+
+![GitHub watchers](https://img.shields.io/github/watchers/oidaho/Vigil)
+![GitHub Repo stars](https://img.shields.io/github/stars/Oidaho/Vigil)
+
 **Vigil** — это бот для модерации бесед, созданных в вашем сообществе ВКонтакте.
 Основная задача Vigil — обеспечить "тихую" и незаметную модерацию, что позволяет администраторам и модераторам
 оставаться в тени, не привлекая излишнего внимания участников бесед. Бот автоматизирует и\или упрощает рутинные задачи, такие как контроль
