@@ -109,7 +109,7 @@ class EventType(Enum):
     MESSAGE = "message_new"
     BUTTON = "message_event"
     REACTION = "message_reaction_event"
-    COMMAND = "message_command"
+    COMMAND = "command_new"
 
 
 class ContextObject:
@@ -376,7 +376,7 @@ class ClientInfo:
 class Context:
     """The context of the initiated event"""
 
-    __attribute_class = {
+    __attribute_classes = {
         "client": ClientInfo,
         "peer": Peer,
         "user": User,
@@ -410,7 +410,7 @@ class Context:
             self.__extract_attribute("message", event_object)
 
             if self.message.text.startswith(configs.bot.command_prefix):
-                self.event_type = EventType("message_command")
+                self.event_type = EventType("command_new")
                 self.__extract_attribute("command", event_object)
 
         elif self.event_type == EventType.BUTTON:
@@ -421,7 +421,7 @@ class Context:
 
     def __extract_attribute(self, attr_name: str, event_object: Payload) -> None:
         value = event_object.get(attr_name, event_object)
-        setattr(self, attr_name, self.__attribute_class[attr_name](value, self.api))
+        setattr(self, attr_name, self.__attribute_classes[attr_name](value, self.api))
         logger.debug(f"Attribute '{attr_name}' extracted: {getattr(self, attr_name)}.")
 
     def __repr__(self) -> str:
