@@ -240,7 +240,7 @@ DEFAULT_SETTINGS = [
         "key": "check_message_queue",
         "value": "inactive",
         "category": "Критерии пользователей",
-        "alias": "Медленный режим сообещний",
+        "alias": "Медленный режим сообщений",
     },
     {
         "key": "message_queue_interval",
