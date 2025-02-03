@@ -8,6 +8,7 @@ from src.keyboards.actions import Callback
 
 from config import configs
 from db.models import Peer, Sanction
+from loguru import logger
 
 
 def exec_punishment(ctx: Context, punishment: str, args: NamedTuple) -> bool:
@@ -313,6 +314,8 @@ def execute_conditional_warning(
         if forward
         else ""
     )
+
+    logger.debug(fwd_message)
 
     ctx.api.messages.send(
         peer_ids=log_peer_ids,
