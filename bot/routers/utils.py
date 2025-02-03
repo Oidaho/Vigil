@@ -315,8 +315,6 @@ def execute_conditional_warning(
         else ""
     )
 
-    logger.debug(fwd_message)
-
     ctx.api.messages.send(
         peer_ids=log_peer_ids,
         random_id=0,
