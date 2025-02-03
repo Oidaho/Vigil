@@ -306,8 +306,8 @@ def execute_conditional_warning(
     fwd_message = (
         json.dumps(
             {
-                "peer_id ": peer_id,
-                "conversation_message_ids ": [cmid],
+                "peer_id": peer_id,
+                "conversation_message_ids": [cmid],
             }
         )
         if forward
