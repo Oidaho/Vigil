@@ -25,7 +25,7 @@ def health_command(ctx: Context, args: NamedTuple) -> bool:
     user = Staff.get_or_none(Staff.id == ctx.user.id)
     if user:
         permission = user.permission
-        text = f"[id{ctx.user.id}|{ctx.user.first_name}], я в порядке!\n Ваш уровень прав: {permission}\n"
+        text = f"[id{ctx.user.id}|{ctx.user.first_name}], я в порядке!\nВаш уровень прав: {permission}\n"
         if permission >= 2:
             text += "Вам доступен вход в веб-панель: https://stalcraft-funcka.ru/"
 
