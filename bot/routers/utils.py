@@ -1,13 +1,13 @@
+import json
 import re
-from typing import Dict, Tuple, NamedTuple
+from typing import Dict, NamedTuple, Tuple
 
 from src.context import Context
 from src.keyboards import ButtonColor, EmptyKeyboard, Keyboard
 from src.keyboards.actions import Callback
 
-from db.models import Peer, Sanction
-
 from config import configs
+from db.models import Peer, Sanction
 
 
 def exec_punishment(ctx: Context, punishment: str, args: NamedTuple) -> bool:
@@ -247,7 +247,9 @@ def execute_kick(ctx: Context, payload: Dict[str, int | str]) -> None:
     )
 
 
-def execute_conditional_warning(ctx: Context, reason: str) -> None:
+def execute_conditional_warning(
+    ctx: Context, reason: str, forward: bool = False
+) -> None:
     user_id = ctx.user.id
     peer_id = ctx.peer.id
     cmid = ctx.message.cmid
@@ -306,10 +308,23 @@ def execute_conditional_warning(ctx: Context, reason: str) -> None:
     log_peer_ids = [item.id for item in log_chats]
 
     text += f"Беседа: {ctx.peer.name}\n"
+
+    fwd_message = (
+        json.dumps(
+            {
+                "peer_id ": peer_id,
+                "conversation_message_ids ": [cmid],
+            }
+        )
+        if forward
+        else ""
+    )
+
     ctx.api.messages.send(
         peer_ids=log_peer_ids,
         random_id=0,
         message=text,
+        forward=fwd_message,
     )
 
     if kick:

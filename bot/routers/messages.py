@@ -78,7 +78,9 @@ def check_forbidden_attachments(ctx: Context, msg: Message) -> bool:
                 quiet_delete(ctx)
 
             else:
-                execute_conditional_warning(ctx, "Обнаружен запрещенный контент.")
+                execute_conditional_warning(
+                    ctx, "Обнаружен запрещенный контент.", forward=True
+                )
 
             return True
 
@@ -107,7 +109,9 @@ def check_forbidden_links(ctx: Context, msg: Message) -> bool:
                 quiet_delete(ctx)
 
             else:
-                execute_conditional_warning(ctx, "Обнаружена запрещенная ссылка.")
+                execute_conditional_warning(
+                    ctx, "Обнаружена запрещенная ссылка.", forward=True
+                )
 
             return True
 
@@ -142,7 +146,7 @@ def check_forbidden_domains(ctx: Context, msg: Message) -> bool:
 
             else:
                 execute_conditional_warning(
-                    ctx, "Обнаружена ссылка на запрещенный домен."
+                    ctx, "Обнаружена ссылка на запрещенный домен.", forward=True
                 )
 
             return True
@@ -167,7 +171,9 @@ def check_forbidden_words(ctx: Context, msg: Message) -> bool:
                     quiet_delete(ctx)
 
                 else:
-                    execute_conditional_warning(ctx, "Обнаружено запрещенное слово.")
+                    execute_conditional_warning(
+                        ctx, "Обнаружено запрещенное слово.", forward=True
+                    )
 
                 return True
 
