@@ -122,14 +122,22 @@ class CommandRouter(Router):
                 )
 
                 if delete_src:
-                    context.api.messages.delete(
-                        cmids=context.message.cmid,
-                        peer_id=context.peer.id,
-                        delete_for_all=1,
-                    )
-                    logger.info(
-                        "The message that triggered the command has been deleted."
-                    )
+                    try:
+                        context.api.messages.delete(
+                            cmids=context.message.cmid,
+                            peer_id=context.peer.id,
+                            delete_for_all=1,
+                        )
+
+                    except Exception as error:
+                        logger.warning(
+                            f"The message that caused the command execution cannot be deleted: {error}"
+                        )
+
+                    else:
+                        logger.info(
+                            "The message that triggered the command has been deleted."
+                        )
 
                 return result
 
