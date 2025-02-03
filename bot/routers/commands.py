@@ -6,7 +6,7 @@ from src.keyboards import ButtonColor, Keyboard
 from src.keyboards.actions import Callback
 from src.routers import CommandRouter
 
-from db.models import Peer
+from db.models import Peer, Staff
 
 from .utils import exec_punishment
 
@@ -22,11 +22,22 @@ router = CommandRouter()
     ],
 )
 def health_command(ctx: Context, args: NamedTuple) -> bool:
-    ctx.api.messages.send(
-        peer_ids=ctx.peer.id,
-        random_id=0,
-        message="Я в порядке!",
-    )
+    user = Staff.get_or_none(Staff.id == ctx.user.id)
+    if user:
+        permission = user.permission
+        text = f"[id{ctx.user.id}|{ctx.user.first_name}], я в порядке!\n Ваш уровень прав: {permission}\n"
+        if permission >= 2:
+            text += "Вам доступен вход в веб-панель: https://stalcraft-funcka.ru/"
+
+        ctx.api.messages.send(
+            peer_ids=ctx.peer.id,
+            random_id=0,
+            message=text,
+        )
+
+        return True
+
+    return False
 
 
 @router.register(
