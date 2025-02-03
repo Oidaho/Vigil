@@ -12,7 +12,7 @@
             <div class="staff-header d-flex justify-content-between align-items-center mb-3 p-3 rounded shadow-sm bg-light">
                 <h5 class="mb-0">Список сотрудников</h5>
 
-                <button class="btn btn-success btn-add-user" onclick="openAddUserModal()">
+                <button class="btn btn-success btn-add-user" onclick="openAddUserModal()" title="Добавить">
                     <i class="bi bi-plus"></i>
                 </button>
             </div>
@@ -37,7 +37,7 @@
                                     {% endif %}
                                 </span>
                                 {% if staff_member.permission < authenticated.permission and staff_member.id != authenticated.id%}
-                                    <button class="btn btn-danger btn-sm delete-btn" onclick="openDeleteUserModal({{ staff_member.id }})">
+                                    <button class="btn btn-danger btn-sm delete-btn" onclick="openDeleteUserModal({{ staff_member.id }})" title="Удалить">
                                         <i class="bi bi-x"></i>
                                     </button>
                                 {% endif %}

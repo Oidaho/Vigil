@@ -31,11 +31,11 @@
                             </div>
                             <div class="d-flex align-items-center">
                                 <!-- Кнопка для уменьшения санкции -->
-                                <button class="btn btn-success btn-sm me-2" onclick="openDecrementModal({{ sanction.user_id }})">
+                                <button class="btn btn-success btn-sm me-2" onclick="openDecrementModal({{ sanction.user_id }})" title="Реабилитировать">
                                     <i class="bi bi-arrow-down"></i>
                                 </button>
                                 <!-- Кнопка для удаления санкции -->
-                                <button class="btn btn-danger btn-sm" onclick="openDeleteModal({{ sanction.user_id }})">
+                                <button class="btn btn-danger btn-sm" onclick="openDeleteModal({{ sanction.user_id }})" title="Реабилиторовать полностью">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </div>
