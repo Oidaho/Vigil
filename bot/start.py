@@ -13,7 +13,7 @@ from loguru import logger
 from src import Bot
 from config import configs
 from routers import command_router, button_router, message_router
-from db import connect_and_prepare, disconnect
+import db
 
 
 def setup_logger() -> None:
@@ -39,8 +39,7 @@ def main() -> None:
     """Program entry point"""
     setup_logger()
 
-    # db
-    connect_and_prepare()
+    db.connect_and_prepare()
 
     bot = Bot(
         acces_token=configs.bot.acces_token,
@@ -53,8 +52,7 @@ def main() -> None:
     bot.include_router(router=message_router)
     bot.run()
 
-    # db
-    disconnect()
+    db.disconnect()
 
 
 if __name__ == "__main__":
