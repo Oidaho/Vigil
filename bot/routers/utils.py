@@ -292,12 +292,6 @@ def execute_conditional_warning(
         else:
             sanction.save()
 
-    ctx.api.messages.delete(
-        cmids=cmid,
-        peer_id=peer_id,
-        delete_for_all=1,
-    )
-
     ctx.api.messages.send(
         peer_ids=peer_id,
         random_id=0,
@@ -325,6 +319,12 @@ def execute_conditional_warning(
         random_id=0,
         message=text,
         forward=fwd_message,
+    )
+
+    ctx.api.messages.delete(
+        cmids=cmid,
+        peer_id=peer_id,
+        delete_for_all=1,
     )
 
     if kick:
