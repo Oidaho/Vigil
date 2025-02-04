@@ -12,13 +12,6 @@ x-npm-env: &npm-env
   DB_POSTGRES_HOST: "172.20.0.2"
   DB_POSTGRES_PORT: 5432
 
-x-db-env: &db-env
-  db_user: "vigil"
-  db_password: "..."
-  db_database: "bot"
-  db_hostname: "172.20.0.2"
-  db_port: 5432
-
 x-bot-env: &bot-env
   bot_group_id: ...
   bot_acces_token: "..."
@@ -35,6 +28,11 @@ x-joint-env:  &joint-env
   debug_mode: False
   project_name: "Vigil"
   bot_max_sanction_points: 5
+  db_user: "vigil"
+  db_password: "..."
+  db_database: "bot"
+  db_hostname: "172.20.0.2"
+  db_port: 5432
 #/APPLICATION SETTINGS END/
 
 
@@ -100,7 +98,7 @@ services:
       context: ./bot
       dockerfile: Dockerfile
     environment:
-      <<: [*db-env, *bot-env, *joint-env]
+      <<: [*bot-env, *joint-env]
     volumes:
       - ./db:/app/db
       - ./config:/app/config
@@ -123,7 +121,7 @@ services:
       context: ./web
       dockerfile: Dockerfile
     environment:
-      <<: [*db-env, *web-env, *joint-env]
+      <<: [*web-env, *joint-env]
     ports:
       - "7212:7212"
     volumes:
