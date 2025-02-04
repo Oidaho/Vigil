@@ -42,7 +42,7 @@ def main() -> None:
     db.connect_and_prepare()
 
     bot = Bot(
-        acces_token=configs.bot.acces_token,
+        acces_token=configs.bot.access_token,
         api_version=configs.bot.api_version,
         group_id=configs.bot.group_id,
     )

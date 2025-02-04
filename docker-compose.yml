@@ -14,7 +14,7 @@ x-npm-env: &npm-env
 
 x-bot-env: &bot-env
   bot_group_id: ...
-  bot_acces_token: "..."
+  bot_access_token: "..."
   bot_command_prefix: "/"
 
 x-web-env: &web-env
