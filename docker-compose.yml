@@ -31,8 +31,8 @@ services:
     env_file:
       - .env
     volumes:
-      - nginx_data/data:/data
-      - nginx_data/letsencrypt:/etc/letsencrypt
+      - nginx_data:/data
+      - letsencrypt_data:/etc/letsencrypt
     depends_on:
       postgres:
         condition: service_healthy
@@ -103,4 +103,6 @@ volumes:
   postgres_data:
     driver: local
   nginx_data:
+    driver: local
+  letsencrypt_data:
     driver: local
