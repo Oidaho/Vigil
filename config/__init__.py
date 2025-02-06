@@ -1,19 +1,22 @@
 # ./VK-Vigil/config/__init__.py
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from .database import DatabaseSettings
-from .chache import CacheSettings
 from .bot import BotSettings
 from .webpanel import WebpanelSettings
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="VIGIL_")
+
+    # Подгруппы
     database: DatabaseSettings = DatabaseSettings()
-    cahce: CacheSettings = CacheSettings()
     bot: BotSettings = BotSettings()
     web: WebpanelSettings = WebpanelSettings()
-    debug_mode: bool = False
-    project_name: str = "Vigil"
+
+    # Опциональные переменные
+    DEBUG_MODE: bool = False
+    PROJECT_NAME: str = "Vigil"
 
 
 configs = Settings()

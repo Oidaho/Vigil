@@ -4,10 +4,13 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class BotSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="bot_")
+    model_config = SettingsConfigDict(env_prefix="BOT_")
 
-    group_id: int = 0
-    access_token: str = "token"
-    api_version: str = "5.199"
-    command_prefix: str = "/"
-    max_sanction_points: int = 5
+    # Обязательные переменные
+    GROUP_ID: int
+    GROUP_TOKEN: str
+
+    # Опциональные переменные
+    API_VERSION: str = "5.199"
+    COMMAND_PREFIX: str = "/"
+    MAX_SANCTION_POINTS: int = 5

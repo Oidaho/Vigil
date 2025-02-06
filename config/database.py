@@ -4,10 +4,13 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class DatabaseSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="db_")
+    model_config = SettingsConfigDict(env_prefix="DB_")
 
-    user: str = "user"
-    password: str = "password"
-    hostname: str = "example.com"
-    database: str = "db"
-    port: int = 5432
+    # Обязательные переменные
+    POSGRES_PASSWORD: str
+    POSGRES_HOST: str
+
+    # Опциональные переменные
+    POSGRES_USER: str = "vigil"
+    POSGRES_NAME: str = "bot"
+    POSGRES_PORT: int = 5432
