@@ -49,7 +49,7 @@ jobs:
             
             # Настройки Nginx Proxy Manager
             DB_POSTGRES_USER=nginx
-            DB_POSTGRES_PASSWORD=${{ secrets.DB_POSTGRES_PASSWORD }}
+            DB_POSTGRES_PASSWORD=${{ secrets.NPM_DB_POSTGRES_PASSWORD }}
             DB_POSTGRES_NAME=npm
             DB_POSTGRES_HOST=172.20.0.2
             DB_POSTGRES_PORT=5432
