@@ -12,7 +12,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      vigil_network:
+      internal:
         ipv4_address: 172.20.0.2
     restart: unless-stopped
     healthcheck:
@@ -37,7 +37,7 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      vigil_network:
+      internal:
         ipv4_address: 172.20.0.3
     restart: unless-stopped
 
@@ -55,7 +55,7 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      vigil_network:
+      internal:
         ipv4_address: 172.20.0.4
     restart: unless-stopped
     healthcheck:
@@ -82,7 +82,7 @@ services:
       bot:
         condition: service_healthy
     networks:
-      vigil_network:
+      internal:
         ipv4_address: 172.20.0.5
     restart: unless-stopped
     healthcheck:
