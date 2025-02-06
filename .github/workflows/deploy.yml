@@ -40,7 +40,7 @@ jobs:
       - name: Create env file
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            PROJECT_DIR="/dev/Vigil"
+            PROJECT_DIR="/opt/Vigil"
 
             echo "Создаём .env файл..."
             cat << EOT > $PROJECT_DIR/.env
@@ -74,14 +74,11 @@ jobs:
     needs: prepare
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
       - name: Check Project Directory & Update Code
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            PROJECT_DIR="/path/to/your/app"
-            REPO_URL="git@github.com:yourusername/yourrepo.git"
+            PROJECT_DIR="/opt/Vigil"
+            REPO_URL="git@github.com:Oidaho/Vigil.git"
 
             if [ ! -d "$PROJECT_DIR" ]; then
               echo "Директория $PROJECT_DIR не найдена. Клонируем репозиторий..."
@@ -96,7 +93,7 @@ jobs:
       - name: Stop Containers & Clean Up
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            PROJECT_DIR="/path/to/your/app"
+            PROJECT_DIR="/opt/Vigil"
             cd $PROJECT_DIR
 
             echo "Останавливаем запущенные контейнеры..."
@@ -112,7 +109,7 @@ jobs:
       - name: Deploy with Docker Compose
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            PROJECT_DIR="/path/to/your/app"
+            PROJECT_DIR="/opt/Vigil"
             cd $PROJECT_DIR
 
             echo "Запускаем контейнеры с обновлёнными настройками..."
