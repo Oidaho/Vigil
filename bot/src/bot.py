@@ -30,7 +30,7 @@ class Bot:
         self._make_session(acces_token, api_version)
         self._get_longpoll(group_id)
         self.thread_pool = ThreadPoolExecutor(max_workers=10)
-        logger.info(f"{configs.project_name} ready to work.")
+        logger.info(f"{configs.PROJECT_NAME} ready to work.")
 
     def _make_session(self, acces_token: str, api_version: str):
         logger.info("Making HTTP session...")

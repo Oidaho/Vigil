@@ -7,7 +7,7 @@ def main() -> None:
         "app:app",
         host="0.0.0.0",
         port=7212,
-        reload=configs.debug_mode,
+        reload=configs.DEBUG_MODE,
         use_colors=True,
         proxy_headers=True,
     )

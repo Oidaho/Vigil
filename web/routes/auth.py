@@ -1,8 +1,8 @@
+from auth import AUTH_COOKIE_NAME, authenticate_user, set_current_user
 from fastapi import APIRouter, Form, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
-
 from fastapi.templating import Jinja2Templates
-from auth import AUTH_COOKIE_NAME, set_current_user, authenticate_user
+
 from config import configs
 
 templates = Jinja2Templates(directory="templates")
@@ -12,7 +12,7 @@ router = APIRouter()
 def render_login_page(request: Request, error: str | None) -> HTMLResponse:
     context = {
         "request": request,
-        "project": configs.project_name,
+        "project": configs.PROJECT_NAME,
         "title": "Вход",
         "authenticated": False,
         "error": error,

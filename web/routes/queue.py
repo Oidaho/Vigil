@@ -1,11 +1,12 @@
+from datetime import datetime
+
+from auth import AuthData, get_current_user
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from auth import AuthData, get_current_user
 from config import configs
-from db.models import Queue, Peer
-from datetime import datetime
+from db.models import Peer, Queue
 
 templates = Jinja2Templates(directory="templates")
 router = APIRouter(prefix="/{peer_id}/queue")
@@ -26,7 +27,7 @@ def queue_page(
         context = {
             "title": "Очередь",
             "authenticated": authenticated,
-            "project": configs.project_name,
+            "project": configs.PROJECT_NAME,
             "queue": queue,
             "request": request,
             "peer_id": peer_id,

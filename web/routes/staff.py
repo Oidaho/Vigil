@@ -23,7 +23,7 @@ def staff_page(
         "title": "Персонал",
         "authenticated": authenticated,
         "request": request,
-        "project": configs.project_name,
+        "project": configs.PROJECT_NAME,
         "staff": staff,
     }
 

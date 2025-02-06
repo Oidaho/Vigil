@@ -43,7 +43,7 @@ def settings_page(
         context = {
             "title": "Настройки",
             "authenticated": authenticated,
-            "project": configs.project_name,
+            "project": configs.PROJECT_NAME,
             "request": request,
             "peer_id": peer_id,
             "peer_name": peer.name,

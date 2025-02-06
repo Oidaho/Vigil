@@ -1,8 +1,8 @@
+from auth import AuthData, get_current_user
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from auth import AuthData, get_current_user
 from config import configs
 from db.models import Peer
 
@@ -27,7 +27,7 @@ def peers_page(
     context = {
         "title": "Чаты",
         "authenticated": authenticated,
-        "project": configs.project_name,
+        "project": configs.PROJECT_NAME,
         "peers": peers,
         "request": request,
     }

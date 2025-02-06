@@ -26,12 +26,12 @@ def sanctions_page(
         context = {
             "title": "Санкции",
             "authenticated": authenticated,
-            "project": configs.project_name,
+            "project": configs.PROJECT_NAME,
             "sanctions": sanctions,
             "request": request,
             "peer_id": peer_id,
             "peer_name": peer.name,
-            "max_sanction_points": configs.bot.max_sanction_points,
+            "max_sanction_points": configs.bot.MAX_SANCTION_POINTS,
         }
 
         return templates.TemplateResponse("sanctions.html", context)

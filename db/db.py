@@ -5,11 +5,11 @@ from config import configs
 
 
 dsn = "postgresql://{username}:{password}@{hostname}:{port}/{database}".format(
-    username=configs.database.user,
-    password=configs.database.password,
-    database=configs.database.database,
-    hostname=configs.database.hostname,
-    port=configs.database.port,
+    username=configs.database.POSGRES_USER,
+    password=configs.database.POSGRES_PASSWORD,
+    database=configs.database.POSGRES_NAME,
+    hostname=configs.database.POSGRES_HOST,
+    port=configs.database.POSGRES_PORT,
 )
 
 instance = PostgresqlDatabase(database=dsn)

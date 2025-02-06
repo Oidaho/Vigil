@@ -1,8 +1,8 @@
+from auth import AuthData, get_current_user
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-from auth import get_current_user, AuthData
 from config import configs
 
 templates = Jinja2Templates(directory="templates")
@@ -18,7 +18,7 @@ def index(
         "title": "Главная",
         "authenticated": authenticated,
         "request": request,
-        "project": configs.project_name,
+        "project": configs.PROJECT_NAME,
     }
 
     return templates.TemplateResponse("index.html", context)

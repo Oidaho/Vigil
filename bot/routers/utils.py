@@ -8,7 +8,6 @@ from src.keyboards.actions import Callback
 
 from config import configs
 from db.models import Peer, Sanction
-from loguru import logger
 
 
 def exec_punishment(ctx: Context, punishment: str, args: NamedTuple) -> bool:
@@ -137,7 +136,7 @@ def execute_unwarn(ctx: Context, payload: Dict[str, int | str]) -> bool:
 
         text = (
             f"[id{user_id}|Пользователь] реабилитирован.\n"
-            f"Предупреждения: {sanction.points}/{configs.bot.max_sanction_points}\n"
+            f"Предупреждения: {sanction.points}/{configs.bot.MAX_SANCTION_POINTS}\n"
         )
         ctx.api.messages.send(
             peer_ids=peer_id,
@@ -173,7 +172,7 @@ def execute_warn(ctx: Context, payload: Dict[str, int | str]) -> int:
     text = f"[id{user_id}|Пользователь] получил предупреждение.\n"
     if not created:
         sanction.points += 1
-        if sanction.points >= configs.bot.max_sanction_points:
+        if sanction.points >= configs.bot.MAX_SANCTION_POINTS:
             sanction.delete_instance()
             kick = True
             text = f"[id{payload['target_user']}|Пользователь] исключен, получив много предупреждений.\n"
@@ -183,7 +182,7 @@ def execute_warn(ctx: Context, payload: Dict[str, int | str]) -> int:
 
     text += (
         f"Причина: {payload['reason']}\n"
-        f"Предупреждения: {sanction.points}/{configs.bot.max_sanction_points}\n"
+        f"Предупреждения: {sanction.points}/{configs.bot.MAX_SANCTION_POINTS}\n"
     )
     ctx.api.messages.send(
         peer_ids=peer_id,
@@ -278,16 +277,16 @@ def execute_conditional_warning(
         text = (
             f"[id{user_id}|Пользователь] получил предупреждение.\n"
             f"Причина: {reason}\n"
-            f"Предупреждения: {sanction.points}/{configs.bot.max_sanction_points}\n"
+            f"Предупреждения: {sanction.points}/{configs.bot.MAX_SANCTION_POINTS}\n"
         )
 
-        if sanction.points >= configs.bot.max_sanction_points:
+        if sanction.points >= configs.bot.MAX_SANCTION_POINTS:
             sanction.delete_instance()
             kick = True
             text = (
                 f"[id{user_id}|Пользователь] исключен, получив много предупреждений.\n"
                 f"Причина: {reason}\n"
-                f"Предупреждения: {sanction.points}/{configs.bot.max_sanction_points}\n"
+                f"Предупреждения: {sanction.points}/{configs.bot.MAX_SANCTION_POINTS}\n"
             )
 
         else:

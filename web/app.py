@@ -3,10 +3,6 @@ from contextlib import asynccontextmanager
 import bcrypt
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-
-from db import connect_and_prepare, disconnect
-from db.models import Staff
-from config import configs
 from routes import (
     auth_router,
     health_router,
@@ -15,11 +11,15 @@ from routes import (
     staff_router,
 )
 
+import db
+from config import configs
+from db.models import Staff
+
 
 def add_admin() -> None:
-    user_id = configs.web.admin_id
+    user_id = configs.web.ADMIN_ID
     hashed_password = bcrypt.hashpw(
-        configs.web.password.encode("utf-8"), bcrypt.gensalt()
+        configs.web.ADMIN_PASSWORD.encode("utf-8"), bcrypt.gensalt()
     )
 
     new_admin, created = Staff.get_or_create(
@@ -33,14 +33,12 @@ def add_admin() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # db
-    connect_and_prepare()
+    db.connect_and_prepare()
     add_admin()
 
     yield
 
-    # db
-    disconnect()
+    db.disconnect()
 
 
 app = FastAPI(title="Web-panel", lifespan=lifespan)

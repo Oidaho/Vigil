@@ -409,7 +409,7 @@ class Context:
             self.__extract_attribute("client", event_object)
             self.__extract_attribute("message", event_object)
 
-            if self.message.text.startswith(configs.bot.command_prefix):
+            if self.message.text.startswith(configs.bot.COMMAND_PREFIX):
                 self.event_type = EventType("command_new")
                 self.__extract_attribute("command", event_object)
 

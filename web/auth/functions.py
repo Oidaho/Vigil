@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from config import configs
 from db.models import Staff
 
-AUTH_COOKIE_NAME = f"{configs.project_name}_auth_token"
+AUTH_COOKIE_NAME = f"{configs.PROJECT_NAME.lower()}_auth_token"
 
 
 class AuthData(BaseModel):
@@ -30,7 +30,7 @@ def authenticate_user(user_id: int, password: str) -> bool:
 
 
 def set_current_user(response: Response, user_id: int) -> None:
-    lifetime = timedelta(minutes=configs.web.jwt.access_token_lifetime)
+    lifetime = timedelta(minutes=configs.web.jwt.TOKEN_LIFETIME)
     payload = {
         "sub": str(user_id),
         "exp": datetime.utcnow() + lifetime,
@@ -39,8 +39,8 @@ def set_current_user(response: Response, user_id: int) -> None:
 
     access_token = jwt.encode(
         payload,
-        key=configs.web.jwt.secret,
-        algorithm=configs.web.jwt.algorithm,
+        key=configs.web.jwt.SECRET,
+        algorithm=configs.web.jwt.ALGORITHM,
     )
 
     response.set_cookie(
@@ -66,8 +66,8 @@ def get_current_user(request: Request) -> AuthData:
     try:
         payload = jwt.decode(
             jwt=token,
-            key=configs.web.jwt.secret,
-            algorithms=[configs.web.jwt.algorithm],
+            key=configs.web.jwt.SECRET,
+            algorithms=[configs.web.jwt.ALGORITHM],
         )
         user_id = int(payload["sub"])
 
