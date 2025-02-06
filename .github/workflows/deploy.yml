@@ -37,35 +37,35 @@ jobs:
             fi
           EOF
 
-      - name: Create env
+      - name: Create env file
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            PROJECT_DIR="/path/to/your/app"
+            PROJECT_DIR="/dev/Vigil"
 
             echo "Создаём .env файл..."
-            cat <<EOT > $PROJECT_DIR/.env
+            cat << EOT > $PROJECT_DIR/.env
+            # Мастер-пароль PostresSQL
             POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            
+            # Настройки Nginx Proxy Manager
             DB_POSTGRES_USER=nginx
             DB_POSTGRES_PASSWORD=${{ secrets.DB_POSTGRES_PASSWORD }}
             DB_POSTGRES_NAME=npm
             DB_POSTGRES_HOST=172.20.0.2
             DB_POSTGRES_PORT=5432
-            bot_group_id=${{ secrets.BOT_GROUP_ID }}
-            bot_access_token=${{ secrets.BOT_ACCESS_TOKEN }}
-            bot_command_prefix=/
-            web_admin_id=${{ secrets.WEB_ADMIN_ID }}
-            web_password=${{ secrets.WEB_PASSWORD }}
-            web_jwt_secret=${{ secrets.WEB_JWT_SECRET }}
-            web_jwt_algorithm=HS256
-            web_jwt_access_token_lifetime=60
-            debug_mode=False
-            project_name=Vigil
-            bot_max_sanction_points=5
-            db_user=vigil
-            db_password=${{ secrets.DB_PASSWORD }}
-            db_database=bot
-            db_hostname=172.20.0.2
-            db_port=5432
+
+            # Настройки Vigil-bot
+            VIGIL_BOT_GROUP_ID=${{ secrets.VIGIL_BOT_GROUP_ID }}
+            VIGIL_BOT_GROUP_TOKEN=${{ secrets.VIGIL_BOT_GROUP_TOKEN }}
+
+            # Настройки Vigil-web
+            VIGIL_WEB_ADMIN_ID=${{ secrets.VIGIL_WEB_ADMIN_ID }}
+            VIGIL_WEB_ADMIN_PASSWORD=${{ secrets.VIGIL_WEB_ADMIN_PASSWORD }}
+            VIGIL_WEB_JWT_SECRET=${{ secrets.VIGIL_WEB_JWT_SECRET }}
+
+            # Настройки подключения Vigil к БД
+            VIGIL_DB_POSGRES_PASSWORD=${{ secrets.VIGIL_DB_POSGRES_PASSWORD }}
+            VIGIL_DB_POSGRES_HOST=172.20.0.2
             EOT
           EOF
 
