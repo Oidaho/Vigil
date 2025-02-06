@@ -37,7 +37,34 @@ jobs:
             fi
           EOF
 
-      - name: Create env file
+  deploy:
+    runs-on: ubuntu-latest
+    needs: prepare
+
+    steps:
+    - name: Check Project Directory & Update Code
+      run: |
+        ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          PROJECT_DIR="/opt/Vigil"
+          REPO_URL="git@github.com:Oidaho/Vigil.git"
+          GITHUB_API_URL="https://api.github.com/repos/Oidaho/Vigil/releases/latest"
+
+          # Получаем информацию о последнем релизе и извлекаем тег
+          LATEST_RELEASE_TAG=$(curl -s $GITHUB_API_URL | jq -r .tag_name)
+
+          if [ ! -d "$PROJECT_DIR" ]; then
+            echo "Директория $PROJECT_DIR не найдена. Клонируем репозиторий..."
+            git clone $REPO_URL $PROJECT_DIR
+          else
+            echo "Директория $PROJECT_DIR найдена. Обновляем код..."
+            cd $PROJECT_DIR
+            git fetch --tags
+            git checkout $LATEST_RELEASE_TAG
+            git pull origin $LATEST_RELEASE_TAG  # Pull для последнего релиза
+          fi
+        EOF
+      
+      - name: Create .env File
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             PROJECT_DIR="/opt/Vigil"
@@ -68,33 +95,6 @@ jobs:
             VIGIL_DB_POSGRES_HOST=172.20.0.2
             EOT
           EOF
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: prepare
-
-    steps:
-    - name: Check Project Directory & Update Code
-      run: |
-        ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-          PROJECT_DIR="/opt/Vigil"
-          REPO_URL="git@github.com:Oidaho/Vigil.git"
-          GITHUB_API_URL="https://api.github.com/repos/Oidaho/Vigil/releases/latest"
-
-          # Получаем информацию о последнем релизе и извлекаем тег
-          LATEST_RELEASE_TAG=$(curl -s $GITHUB_API_URL | jq -r .tag_name)
-
-          if [ ! -d "$PROJECT_DIR" ]; then
-            echo "Директория $PROJECT_DIR не найдена. Клонируем репозиторий..."
-            git clone $REPO_URL $PROJECT_DIR
-          else
-            echo "Директория $PROJECT_DIR найдена. Обновляем код..."
-            cd $PROJECT_DIR
-            git fetch --tags
-            git checkout $LATEST_RELEASE_TAG
-            git pull origin $LATEST_RELEASE_TAG  # Pull для последнего релиза
-          fi
-        EOF
 
       - name: Stop Containers & Clean Up
         run: |
