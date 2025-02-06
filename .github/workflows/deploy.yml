@@ -1,0 +1,120 @@
+name: Deploy Vigil
+
+on:
+  release:
+    types: [released]
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Check and Install Docker & Docker Compose
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            if ! command -v docker &> /dev/null; then
+              echo "Docker не найден. Устанавливаем..."
+              curl -fsSL https://get.docker.com | sh
+              sudo systemctl start docker
+              sudo systemctl enable docker
+            else
+              echo "Docker уже установлен"
+            fi
+            
+            if ! command -v docker-compose &> /dev/null; then
+              echo "Docker Compose не найден. Устанавливаем..."
+              sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+              sudo chmod +x /usr/local/bin/docker-compose
+            else
+              echo "Docker Compose уже установлен"
+            fi
+          EOF
+
+      - name: Create env
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            PROJECT_DIR="/path/to/your/app"
+
+            echo "Создаём .env файл..."
+            cat <<EOT > $PROJECT_DIR/.env
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            DB_POSTGRES_USER=nginx
+            DB_POSTGRES_PASSWORD=${{ secrets.DB_POSTGRES_PASSWORD }}
+            DB_POSTGRES_NAME=npm
+            DB_POSTGRES_HOST=172.20.0.2
+            DB_POSTGRES_PORT=5432
+            bot_group_id=${{ secrets.BOT_GROUP_ID }}
+            bot_access_token=${{ secrets.BOT_ACCESS_TOKEN }}
+            bot_command_prefix=/
+            web_admin_id=${{ secrets.WEB_ADMIN_ID }}
+            web_password=${{ secrets.WEB_PASSWORD }}
+            web_jwt_secret=${{ secrets.WEB_JWT_SECRET }}
+            web_jwt_algorithm=HS256
+            web_jwt_access_token_lifetime=60
+            debug_mode=False
+            project_name=Vigil
+            bot_max_sanction_points=5
+            db_user=vigil
+            db_password=${{ secrets.DB_PASSWORD }}
+            db_database=bot
+            db_hostname=172.20.0.2
+            db_port=5432
+            EOT
+          EOF
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: prepare
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Check Project Directory & Update Code
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            PROJECT_DIR="/path/to/your/app"
+            REPO_URL="git@github.com:yourusername/yourrepo.git"
+
+            if [ ! -d "$PROJECT_DIR" ]; then
+              echo "Директория $PROJECT_DIR не найдена. Клонируем репозиторий..."
+              git clone $REPO_URL $PROJECT_DIR
+            else
+              echo "Директория $PROJECT_DIR найдена. Обновляем код..."
+              cd $PROJECT_DIR
+              git pull origin main
+            fi
+          EOF
+
+      - name: Stop Containers & Clean Up
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            PROJECT_DIR="/path/to/your/app"
+            cd $PROJECT_DIR
+
+            echo "Останавливаем запущенные контейнеры..."
+            docker-compose down
+            
+            echo "Очищаем кеши контейнеров..."
+            docker builder prune -f
+
+            echo "Удаляем неиспользуемые образы..."
+            docker image prune -a -f
+          EOF
+
+      - name: Deploy with Docker Compose
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            PROJECT_DIR="/path/to/your/app"
+            cd $PROJECT_DIR
+
+            echo "Запускаем контейнеры с обновлёнными настройками..."
+            docker-compose up -d --build
+          EOF
