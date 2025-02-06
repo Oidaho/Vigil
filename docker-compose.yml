@@ -1,64 +1,13 @@
 version: "3.8"
 
-
-#/APPLICATION SETTINGS/
-x-postgres-env: &postgres-env
-  POSTGRES_PASSWORD: "..."
-
-x-npm-env: &npm-env
-  DB_POSTGRES_USER: "nginx"
-  DB_POSTGRES_PASSWORD: "..."
-  DB_POSTGRES_NAME: "npm"
-  DB_POSTGRES_HOST: "172.20.0.2"
-  DB_POSTGRES_PORT: 5432
-
-x-bot-env: &bot-env
-  bot_group_id: ...
-  bot_access_token: "..."
-  bot_command_prefix: "/"
-
-x-web-env: &web-env
-  web_admin_id: ...
-  web_password: "..."
-  web_jwt_secret: "..." 
-  web_jwt_algorithm: "HS256"
-  web_jwt_access_token_lifetime: 60
-
-x-joint-env:  &joint-env
-  debug_mode: False
-  project_name: "Vigil"
-  bot_max_sanction_points: 5
-  db_user: "vigil"
-  db_password: "..."
-  db_database: "bot"
-  db_hostname: "172.20.0.2"
-  db_port: 5432
-#/APPLICATION SETTINGS END/
-
-
-
-networks:
-  internal:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/24
-
-volumes:
-  postgres_data:
-    driver: local
-  nginx_data:
-    driver: local
-
-
 services:
   postgres:
     image: postgres:17.2
     container_name: db
     ports:
       - "5432"
-    environment:
-      <<: *postgres-env
+    env_file:
+      - .env
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -79,8 +28,8 @@ services:
       - '80:80'
       - '81:81'
       - '443:443'
-    environment:
-      <<: *npm-env
+    env_file:
+      - .env
     volumes:
       - nginx_data/data:/data
       - nginx_data/letsencrypt:/etc/letsencrypt
@@ -97,8 +46,8 @@ services:
     build:
       context: ./bot
       dockerfile: Dockerfile
-    environment:
-      <<: [*bot-env, *joint-env]
+    env_file:
+      - .env
     volumes:
       - ./db:/app/db
       - ./config:/app/config
@@ -120,10 +69,10 @@ services:
     build: 
       context: ./web
       dockerfile: Dockerfile
-    environment:
-      <<: [*web-env, *joint-env]
     ports:
       - "7212:7212"
+    env_file:
+      - .env
     volumes:
       - ./db:/app/db
       - ./config:/app/config
@@ -141,3 +90,17 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+
+
+networks:
+  internal:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+
+volumes:
+  postgres_data:
+    driver: local
+  nginx_data:
+    driver: local
