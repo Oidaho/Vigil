@@ -18,7 +18,7 @@ import db
 
 def setup_logger() -> None:
     """Configuration of the loguru logger"""
-    log_level = "DEBUG" if configs.debug_mode else "INFO"
+    log_level = "DEBUG" if configs.DEBUG_MODE else "INFO"
     logger.remove()
     logger.add(
         sys.stdout,
