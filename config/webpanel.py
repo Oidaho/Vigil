@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class JWTSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="JWT_")
+    model_config = SettingsConfigDict(env_prefix="VIGIL_WEB_JWT_")
 
     # Обязательные переменные
     SECRET: str
@@ -15,10 +15,10 @@ class JWTSettings(BaseSettings):
 
 
 class WebpanelSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="WEB_")
+    model_config = SettingsConfigDict(env_prefix="VIGIL_WEB_")
 
     # Подгруппы
-    jwt: JWTSettings
+    jwt: JWTSettings = JWTSettings()
 
     # Обязательные переменные
     ADMIN_ID: int

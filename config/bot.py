@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class BotSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="BOT_")
+    model_config = SettingsConfigDict(env_prefix="VIGIL_BOT_")
 
     # Обязательные переменные
     GROUP_ID: int
