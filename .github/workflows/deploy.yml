@@ -103,6 +103,23 @@ jobs:
             EOT
           EOF
 
+      - name: Create init.sql File
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            PROJECT_DIR="/opt/Vigil"
+
+            echo "Создаём init.sql файл..."
+            cat << EOT > $PROJECT_DIR/init.sql
+            CREATE USER vigil WITH PASSWORD '${{ secrets.VIGIL_DB_POSTGRES_PASSWORD }}';
+            CREATE DATABASE bot;
+            ALTER DATABASE bot OWNER TO vigil;
+
+            CREATE USER nginx WITH PASSWORD '${{ secrets.NPM_DB_POSTGRES_PASSWORD }}';
+            CREATE DATABASE npm;
+            ALTER DATABASE npm OWNER TO nginx;
+            EOT
+          EOF
+
       - name: Stop Containers & Clean Up
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
