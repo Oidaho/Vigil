@@ -10,9 +10,9 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="VIGIL_")
 
     # Подгруппы
-    database: DatabaseSettings = DatabaseSettings()
-    bot: BotSettings = BotSettings()
-    web: WebpanelSettings = WebpanelSettings()
+    database: DatabaseSettings
+    bot: BotSettings
+    web: WebpanelSettings
 
     # Опциональные переменные
     DEBUG_MODE: bool = False

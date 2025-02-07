@@ -18,7 +18,7 @@ class WebpanelSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="WEB_")
 
     # Подгруппы
-    jwt: JWTSettings = JWTSettings()
+    jwt: JWTSettings
 
     # Обязательные переменные
     ADMIN_ID: int
