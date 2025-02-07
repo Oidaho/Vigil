@@ -53,7 +53,7 @@ jobs:
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             PROJECT_DIR="/opt/Vigil"
-            REPO_URL="git@github.com:Oidaho/Vigil.git"
+            REPO_URL="https://github.com/Oidaho/Vigil.git"
             GITHUB_API_URL="https://api.github.com/repos/Oidaho/Vigil/releases/latest"
 
             # Получаем информацию о последнем релизе и извлекаем тег
