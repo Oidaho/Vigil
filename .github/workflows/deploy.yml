@@ -42,6 +42,13 @@ jobs:
     needs: prepare
 
     steps:
+      - name: Set up SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
       - name: Check Project Directory & Update Code
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
@@ -60,7 +67,7 @@ jobs:
               cd $PROJECT_DIR
               git fetch --tags
               git checkout $LATEST_RELEASE_TAG
-              git pull origin $LATEST_RELEASE_TAG  # Pull для последнего релиза
+              git pull origin $LATEST_RELEASE_TAG
             fi
           EOF
       
