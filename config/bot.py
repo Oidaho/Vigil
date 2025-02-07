@@ -12,5 +12,5 @@ class BotSettings(BaseSettings):
 
     # Опциональные переменные
     API_VERSION: str = "5.199"
-    COMMAND_PREFIX: str = "/"
+    COMMAND_PREFIX: str = "!"
     MAX_SANCTION_POINTS: int = 5

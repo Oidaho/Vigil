@@ -21,6 +21,4 @@ class Settings(BaseSettings):
 
 configs = Settings()
 
-print(configs.model_fields.keys())
-
 __all__ = ("configs",)
