@@ -50,6 +50,7 @@ function saveSettings(currentPeerId) {
         })
         .then(response => {
             if (response.ok) {
+                alert("Настройки успешно изменены!");
                 location.reload();
             } else {
                 alert("An error occurred while saving the settings.");
